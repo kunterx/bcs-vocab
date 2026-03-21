@@ -18,9 +18,8 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-top:env(safe-area-inset-top);}
 .logo{font-size:17px;font-weight:700;color:var(--accent);}
 .nav-right{display:flex;align-items:center;gap:8px;}
-.sync-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);transition:background .3s;}
-.sync-dot.online{background:var(--green);}
-.sync-dot.syncing{background:var(--accent);animation:pulse 1s infinite;}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:transparent;transition:background .3s;}
+.sync-dot.error{background:var(--red);}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 .nav-tabs{display:flex;gap:3px;background:var(--surface);border-radius:10px;padding:3px;border:1px solid var(--border);}
 .nav-tab{font-size:12px;font-weight:500;padding:6px 14px;border-radius:7px;cursor:pointer;color:var(--muted);border:none;background:transparent;font-family:inherit;transition:all .15s;}
@@ -76,8 +75,6 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .card-example{font-size:13px;font-style:italic;color:var(--muted);border-left:2px solid var(--accent);padding-left:11px;margin-bottom:6px;line-height:1.6;}
 .card-trap{font-size:12px;color:var(--muted);margin-top:6px;}
 .card-trap strong{color:var(--red);}
-.ai-btn{width:100%;margin-top:10px;padding:11px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--accent);cursor:pointer;font-family:inherit;text-align:center;}
-.ai-btn:active{opacity:.7;}
 .diff-row{display:flex;gap:6px;margin-top:10px;}
 .diff-row button{flex:1;padding:16px 4px;border-radius:10px;border:1px solid var(--border);font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--card);}
 .diff-row button:active{opacity:.7;}
@@ -250,7 +247,6 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <button class="tool-btn" onclick="exportData()">Dis aktar</button>
       <label class="tool-btn" style="cursor:pointer">Ic aktar<input type="file" accept=".json" onchange="importData(this)" style="display:none"></label>
       <button class="tool-btn" onclick="openThemeSheet()">Tema</button>
-      <button class="tool-btn" onclick="openApiSheet()">API</button>
       <button class="tool-btn" style="color:var(--red)" onclick="openBulkDelete()">Toplu sil</button>
     </div>
     <div class="list-header">
@@ -337,18 +333,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
   </div>
 </div>
 
-<!-- API KEY -->
-<div class="sheet-overlay" id="api-overlay" onclick="closeApiSheet()"></div>
-<div class="sheet" id="api-sheet">
-  <div class="sheet-inner">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title">Claude API Key</div>
-    <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6">console.anthropic.com adresinden ucretsiz key alabilirsin.</p>
-    <input class="form-input" id="api-key-input" type="password" placeholder="sk-ant-..." style="margin-bottom:10px;font-family:monospace;font-size:13px;">
-    <button class="sheet-apply" onclick="saveApiKey()">Kaydet</button>
-    <div id="api-status" style="font-size:12px;color:var(--muted);text-align:center;margin-top:8px;"></div>
-  </div>
-</div>
+
 
 <!-- BULK DELETE -->
 <div class="sheet-overlay" id="bd-overlay" onclick="closeBulkDelete()"></div>
@@ -378,29 +363,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
   </div>
 </div>
 
-<!-- AI CHAT -->
-<div class="ai-overlay" id="ai-overlay">
-  <div class="ai-box" onclick="event.stopPropagation()">
-    <div class="ai-header">
-      <div>
-        <div class="ai-title">Kelime Kocu</div>
-        <div class="ai-word-lbl" id="ai-word-lbl"></div>
-      </div>
-      <button class="ai-close" onclick="closeAiChat()">x</button>
-    </div>
-    <div class="ai-messages" id="ai-messages"></div>
-    <div class="ai-quick">
-      <button class="ai-qbtn" onclick="aiQuick('3 farkli ornek cumle yaz')">Ornekler</button>
-      <button class="ai-qbtn" onclick="aiQuick('Egzersiz yap beni sina')">Egzersiz</button>
-      <button class="ai-qbtn" onclick="aiQuick('Turetilmis halleri neler')">Turevler</button>
-      <button class="ai-qbtn" onclick="aiQuick('Ne zaman kullanilmaz')">Tuzaklar</button>
-    </div>
-    <div class="ai-input-row">
-      <input class="ai-input" id="ai-input" placeholder="Sor..." onkeydown="if(event.key==='Enter')sendAiMsg()">
-      <button class="ai-send" onclick="sendAiMsg()">Git</button>
-    </div>
-  </div>
-</div>
+
 
 <div class="toast" id="toast"></div>
 
@@ -433,7 +396,7 @@ let saveTimer=null;
 function setSyncDot(state) {
   const dot = document.getElementById('sync-dot');
   if(!dot) return;
-  dot.className = 'sync-dot' + (state==='online'?' online':state==='syncing'?' syncing':'');
+  dot.className = 'sync-dot' + (state==='error'?' error':'');
 }
 
 // Firebase realtime listener
@@ -446,21 +409,21 @@ onValue(dbRef, (snapshot) => {
     updateStats();
     buildFilterPanel();
     buildWeekChart();
-    setSyncDot('online');
+    setSyncDot('ok');
   } else {
-    setSyncDot('online');
+    setSyncDot('ok');
   }
 }, (error) => {
-  setSyncDot('');
+  setSyncDot('error');
   showToast('Firebase baglanti hatasi');
 });
 
 function saveDb() {
-  setSyncDot('syncing');
+  setSyncDot('ok');
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
     set(dbRef, db).then(() => setSyncDot('online')).catch(() => {
-      setSyncDot('');
+      setSyncDot('error');
       showToast('Kayit hatasi');
     });
   }, 600);
@@ -477,12 +440,7 @@ function closeThemeSheet(){document.getElementById('th-sheet').classList.remove(
 function initTheme(){document.body.dataset.theme=currentTheme==='slate'?'':currentTheme;const sw=document.getElementById('sw-'+currentTheme);if(sw)sw.classList.add('active');}
 window.setTheme=setTheme;window.openThemeSheet=openThemeSheet;window.closeThemeSheet=closeThemeSheet;
 
-// API KEY
-function getApiKey(){try{return localStorage.getItem('bcs_api_key')||'';}catch(e){return '';}}
-function openApiSheet(){const k=getApiKey();document.getElementById('api-key-input').value='';document.getElementById('api-status').textContent=k?'Key kayitli':'Key girilmemis';document.getElementById('api-sheet').classList.add('show');document.getElementById('api-overlay').classList.add('show');}
-function closeApiSheet(){document.getElementById('api-sheet').classList.remove('show');document.getElementById('api-overlay').classList.remove('show');}
-function saveApiKey(){const val=document.getElementById('api-key-input').value.trim();if(!val){showToast('Key bos olamaz');return;}if(!val.startsWith('sk-ant-')){showToast('Gecersiz key formati');return;}localStorage.setItem('bcs_api_key',val);closeApiSheet();showToast('API key kaydedildi');}
-window.openApiSheet=openApiSheet;window.closeApiSheet=closeApiSheet;window.saveApiKey=saveApiKey;
+
 
 // WEEKLY CHART
 function buildWeekChart(){
@@ -566,7 +524,7 @@ function showNext(){
           (current.example?'<div class="card-example">'+current.example+'</div>':'')+
           (current.example2?'<div class="card-example">'+current.example2+'</div>':'')+
           (current.trap?'<div class="card-trap"><strong>Dikkat:</strong> '+current.trap+'</div>':'')+
-          '<button class="ai-btn" id="ai-btn">Daha fazla ogren</button>'+
+          
         '</div>'+
         '<div class="flip-hint" id="fh">Dokunarak cevir</div>'+
       '</div>'+
@@ -582,7 +540,6 @@ function showNext(){
       '</div>';
     document.getElementById('speak-btn').addEventListener('click',e=>{e.stopPropagation();speak(current.word);});
     document.getElementById('fc').addEventListener('click',e=>{if(e.target.closest('#speak-btn')||e.target.closest('#ai-btn'))return;flipCard();});
-    document.getElementById('ai-btn').addEventListener('click',e=>{e.stopPropagation();openAiChat();});
     document.querySelectorAll('#abts button[data-r]').forEach(btn=>{btn.addEventListener('click',()=>answerDiff(parseInt(btn.dataset.r)));});
     initSwipe();
   }catch(e){showToast('Kart hatasi');}
@@ -628,7 +585,7 @@ window.exportData=function(){try{const blob=new Blob([JSON.stringify(db,null,2)]
 window.importData=function(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{try{const data=JSON.parse(e.target.result);if(!data.words)throw new Error();db=data;if(!db.activity)db.activity={};saveDb();updateStats();buildFilterPanel();renderList('all');buildWeekChart();showToast(db.words.length+' kelime yuklendi');}catch(err){showToast('Dosya hatasi');}input.value='';};reader.readAsText(file);};
 
 // LIST
-function renderList(mode){let words=[...(db.words||[])];if(mode==='filtered')words=applyFilters(words,activeListFilters);document.getElementById('list-count').textContent=words.length+' kelime';const list=document.getElementById('word-list');if(!words.length){list.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:14px">Kelime yok</div>';return;}list.innerHTML=words.map(w=>{const d=w.difficulty||0;const dc=d?DC[d]:'var(--muted)';const isNew=!d&&!w.known&&!w.skipped;return '<div class="word-item"><div><div class="wi-word">'+(w.word||'')+'</div><div class="wi-meta">'+(w.episode||'')+' - '+(w.tr||'')+'</div></div><div class="wi-right">'+(w.skipped||isNew?'<span class="skip-badge">'+(isNew?'yeni':'atlandi')+'</span>':'')+(d&&!w.skipped?'<span class="diff-badge" style="color:'+dc+';background:'+dc+'22">'+d+'</span>':'')+'<button class="wi-speak" onclick="speak(\''+w.word.replace(/'/g,"\\'")+'\')">ses</button>'+'<button class="btn-del" onclick="askDelete(\''+w.id+'\',\''+w.word.replace(/'/g,"\\'")+'\')">\xd7</button></div></div>';}).join('');}
+function renderList(mode){let words=[...(db.words||[])];if(mode==='filtered')words=applyFilters(words,activeListFilters);document.getElementById('list-count').textContent=words.length+' kelime';const list=document.getElementById('word-list');if(!words.length){list.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:14px">Kelime yok</div>';return;}list.innerHTML=words.map(w=>{const d=w.difficulty||0;const dc=d?DC[d]:'var(--muted)';const isNew=!d&&!w.known&&!w.skipped;return '<div class="word-item"><div><div class="wi-word">'+(w.word||'')+'</div><div class="wi-meta">'+(w.episode||'')+' - '+(w.tr||'')+'</div></div><div class="wi-right">'+(w.skipped||isNew?'<span class="skip-badge">'+(isNew?'yeni':'atlandi')+'</span>':'')+(d&&!w.skipped?'<span class="diff-badge" style="color:'+dc+';background:'+dc+'22">'+d+'</span>':'')+'<button class="wi-speak" onclick="speak(\''+w.word.replace(/'/g,"\\'")+'\')">&#9654;</button>'+'<button class="btn-del" onclick="askDelete(\''+w.id+'\',\''+w.word.replace(/'/g,"\\'")+'\')">\xd7</button></div></div>';}).join('');}
 window.askDelete=function(id,word){pendingDeleteId=id;document.getElementById('confirm-word').textContent=word;document.getElementById('confirm-overlay').classList.add('show');};
 window.closeConfirm=function(){pendingDeleteId=null;document.getElementById('confirm-overlay').classList.remove('show');};
 window.confirmDelete=function(){if(!pendingDeleteId)return;db.words=(db.words||[]).filter(w=>String(w.id)!==String(pendingDeleteId));saveDb();window.closeConfirm();renderList('all');updateStats();buildFilterPanel();showToast('Silindi');};
@@ -640,18 +597,12 @@ window.confirmBulkDelete=function(){const sel=[...document.querySelectorAll('[da
 window.showAddScreen=function(){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.getElementById('screen-add').classList.add('active');};
 window.showScreen=function(name,btn){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.getElementById('screen-'+name).classList.add('active');if(btn)btn.classList.add('active');if(name==='study'){document.getElementById('study-home').style.display='block';document.getElementById('study-card').style.display='none';buildFilterPanel();buildWeekChart();}if(name==='list')renderList('all');updateStats();};
 
-// AI CHAT
-let aiHistory=[];let aiWord='';
-function openAiChat(){if(!getApiKey()){showToast('Once API key gir - Liste > API');return;}if(!current)return;aiWord=current.word||'';const ctx='Kelime: '+(current.word||'')+' Turkce: '+(current.tr||'')+' Tur: '+(current.pos||'')+' Register: '+(current.register||'')+' Colocation: '+(current.collocation||'')+' Ornek1: '+(current.example||'')+' Ornek2: '+(current.example2||'')+' Tuzak: '+(current.trap||'');aiHistory=[{role:'user',content:'Kelime: '+ctx},{role:'assistant',content:'Hazirım! '+aiWord+' hakkında ne öğrenmek istiyorsun?'}];document.getElementById('ai-word-lbl').textContent=aiWord+' - '+(current.tr||'');document.getElementById('ai-messages').innerHTML='<div class="ai-msg bot">Hazırım! <strong>'+aiWord+'</strong> hakkında ne öğrenmek istiyorsun?</div>';document.getElementById('ai-overlay').classList.add('show');setTimeout(()=>{const inp=document.getElementById('ai-input');if(inp)inp.focus();},300);}
-window.closeAiChat=function(){document.getElementById('ai-overlay').classList.remove('show');};
-window.aiQuick=function(text){document.getElementById('ai-input').value=text;window.sendAiMsg();};
-window.sendAiMsg=async function(){const input=document.getElementById('ai-input');const text=input.value.trim();if(!text)return;const key=getApiKey();if(!key){showToast('API key yok');return;}input.value='';const msgs=document.getElementById('ai-messages');msgs.innerHTML+='<div class="ai-msg user">'+text+'</div>';const loading=document.createElement('div');loading.className='ai-msg loading';loading.textContent='Yaziyor...';msgs.appendChild(loading);msgs.scrollTop=msgs.scrollHeight;aiHistory.push({role:'user',content:text});try{const res=await fetch('https://winter-bush-3fc7.kuntercevher.workers.dev',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,system:'Sen bir Ingilizce kelime kocusun. Ogrenciye Turkce aciklama yapabilirsin ama Ingilizce ornekler Ingilizce olsun. Kisa ve net ol. Kelime: '+aiWord,messages:aiHistory.slice(-8)})});const data=await res.json();const reply=(data.content&&data.content[0])?data.content[0].text:'Cevap alinamadi';aiHistory.push({role:'assistant',content:reply});loading.className='ai-msg bot';loading.textContent=reply;}catch(e){loading.className='ai-msg bot';loading.textContent='Baglanti hatasi.';}msgs.scrollTop=msgs.scrollHeight;};
+
 
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2400);}
 window.showToast=showToast;
 
 document.getElementById('confirm-overlay').addEventListener('click',function(e){if(e.target===this)window.closeConfirm();});
-document.getElementById('ai-overlay').addEventListener('click',function(e){if(e.target===this)window.closeAiChat();});
 try{window.speechSynthesis&&(window.speechSynthesis.onvoiceschanged=()=>{});}catch(e){}
 initTheme();updateStats();buildWeekChart();
 </script>
