@@ -26,7 +26,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .screen{display:none;}.screen.active{display:block;}
 
 /* STATS */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:16px;}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:16px;}
 .stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 4px;text-align:center;}
 .stat-n{font-size:20px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums;}
 .stat-l{font-size:10px;color:var(--muted);margin-top:2px;}
@@ -42,13 +42,19 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .wc-day{font-size:9px;color:var(--muted);}
 .wc-popup{position:absolute;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:12px;color:var(--text);white-space:nowrap;pointer-events:none;z-index:10;transform:translateX(-50%);bottom:50px;}
 
-/* MODE CHIPS */
-.mode-panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:14px;}
+/* MODE BUTTONS */
+.mode-panel{margin-bottom:14px;}
 .mode-panel-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:10px;}
-.mode-chips{display:flex;flex-wrap:wrap;gap:6px;}
-.mode-chip{font-size:12px;padding:7px 13px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:inherit;user-select:none;transition:all .15s;line-height:1.3;text-align:center;}
-.mode-chip .mode-sub{font-size:10px;opacity:.75;display:block;}
-.mode-chip.on{background:var(--card);color:var(--text);border-color:var(--accent);}
+.mode-buttons{display:flex;flex-direction:column;gap:8px;}
+.mode-btn{width:100%;padding:16px 20px;border-radius:14px;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;font-family:inherit;text-align:left;transition:all .15s;display:flex;align-items:center;justify-content:space-between;}
+.mode-btn:active{opacity:.8;}
+.mode-btn-left{display:flex;flex-direction:column;gap:3px;}
+.mode-btn-title{font-size:15px;font-weight:600;color:var(--text);}
+.mode-btn-sub{font-size:11px;color:var(--muted);}
+.mode-btn-arrow{font-size:18px;color:var(--muted);opacity:.5;}
+.mode-btn.on{border-color:var(--accent);background:var(--card);}
+.mode-btn.on .mode-btn-title{color:var(--accent);}
+.mode-btn.on .mode-btn-arrow{color:var(--accent);opacity:1;}
 
 /* FILTER PANEL */
 .filter-panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;}
@@ -169,8 +175,8 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .theme-name{font-size:11px;color:var(--muted);font-weight:500;}
 
 /* LIST */
-.list-toolbar{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
-.tool-btn{padding:10px 14px;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:10px;font-size:13px;cursor:pointer;font-family:inherit;}
+.list-toolbar{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px;}
+.tool-btn{padding:12px 14px;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:10px;font-size:13px;cursor:pointer;font-family:inherit;text-align:center;}
 .tool-btn:active{opacity:.7;}
 .list-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
 .list-count{font-size:13px;color:var(--muted);}
@@ -224,7 +230,6 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
         <div class="stat"><div class="stat-n" id="st-total">0</div><div class="stat-l">toplam</div></div>
         <div class="stat"><div class="stat-n" id="st-known">0</div><div class="stat-l">bilinen</div></div>
         <div class="stat"><div class="stat-n" id="st-unknown">0</div><div class="stat-l">bilinmeyen</div></div>
-        <div class="stat"><div class="stat-n" id="st-skip">0</div><div class="stat-l">atlandi</div></div>
       </div>
       <!-- Week chart -->
       <div class="week-chart">
@@ -234,11 +239,23 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <!-- Mode selection -->
       <div class="mode-panel">
         <div class="mode-panel-title">Mod</div>
-        <div class="mode-chips">
-          <div class="mode-chip on" data-mode="en-tr" onclick="selectMode(this)">İngilizce → Türkçe</div>
-          <div class="mode-chip" data-mode="tr-en" onclick="selectMode(this)">Türkçe → İngilizce</div>
-          <div class="mode-chip" data-mode="mcq" onclick="selectMode(this)">İngilizce → Türkçe<span class="mode-sub">çoktan seçmeli</span></div>
-          <div class="mode-chip" data-mode="fill" onclick="selectMode(this)">Boşluk Doldur</div>
+        <div class="mode-buttons">
+          <div class="mode-btn on" data-mode="en-tr" onclick="selectMode(this)">
+            <div class="mode-btn-left"><span class="mode-btn-title">İngilizce → Türkçe</span><span class="mode-btn-sub">Kelimeyi gör, anlamı bul</span></div>
+            <span class="mode-btn-arrow">›</span>
+          </div>
+          <div class="mode-btn" data-mode="tr-en" onclick="selectMode(this)">
+            <div class="mode-btn-left"><span class="mode-btn-title">Türkçe → İngilizce</span><span class="mode-btn-sub">Anlamı gör, kelimeyi bul</span></div>
+            <span class="mode-btn-arrow">›</span>
+          </div>
+          <div class="mode-btn" data-mode="mcq" onclick="selectMode(this)">
+            <div class="mode-btn-left"><span class="mode-btn-title">Çoktan Seçmeli</span><span class="mode-btn-sub">İngilizce → Türkçe, 4 şık</span></div>
+            <span class="mode-btn-arrow">›</span>
+          </div>
+          <div class="mode-btn" data-mode="fill" onclick="selectMode(this)">
+            <div class="mode-btn-left"><span class="mode-btn-title">Boşluk Doldur</span><span class="mode-btn-sub">Cümledeki boşluğu tamamla</span></div>
+            <span class="mode-btn-arrow">›</span>
+          </div>
         </div>
       </div>
       <!-- Filter panel -->
@@ -477,10 +494,10 @@ function logActivity(){const t=today();if(!db.activity)db.activity={};db.activit
 
 // ── MODE SELECTION ──
 window.selectMode=function(el){
-  document.querySelectorAll('.mode-chip').forEach(c=>c.classList.remove('on'));
+  document.querySelectorAll('.mode-btn').forEach(c=>c.classList.remove('on'));
   el.classList.add('on');
   currentMode=el.dataset.mode;
-  buildFilterPanel(); // rebuild ep chips with new mode's progress
+  buildFilterPanel();
   updateSelCount();
 };
 
@@ -551,7 +568,6 @@ function updateStats(){
   document.getElementById('st-total').textContent=words.length;
   document.getElementById('st-known').textContent=words.filter(w=>isKnownInMode(w,currentMode)).length;
   document.getElementById('st-unknown').textContent=words.filter(w=>!isKnownInMode(w,currentMode)).length;
-  document.getElementById('st-skip').textContent=words.filter(w=>getProgress(w,currentMode)==='skipped').length;
   updateSelCount();
 }
 
@@ -622,18 +638,13 @@ function showNext(){
         '<div class="flip-hint" id="fh">Dokunarak cevir</div>'+
       '</div>'+
       '<div id="abts" style="display:none">'+
-        '<div class="diff-row">'+
-          '<button class="rb1" data-r="1">1</button>'+
-          '<button class="rb2" data-r="2">2</button>'+
-          '<button class="rb3" data-r="3">3</button>'+
-          '<button class="rb4" data-r="4">4</button>'+
-          '<button class="rb5" data-r="5">5</button>'+
+        '<div style="display:flex;gap:8px;margin-top:10px">'+
+          '<button style="flex:1;padding:16px;border-radius:10px;border:1px solid var(--border);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;background:var(--card);color:var(--muted)" id="btn-skip">Atla</button>'+
+          '<button style="flex:2;padding:16px;border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--green);color:#fff" id="btn-known">Bildim ✓</button>'+
         '</div>'+
-        '<div class="diff-hint"><span>Kolay</span><span>Zor</span></div>'+
       '</div>';
     document.getElementById('speak-btn').addEventListener('click',e=>{e.stopPropagation();speak(current.word);});
     document.getElementById('fc').addEventListener('click',e=>{if(e.target.closest('#speak-btn'))return;flipCard();});
-    document.querySelectorAll('#abts button[data-r]').forEach(btn=>{btn.addEventListener('click',()=>answerDiff(parseInt(btn.dataset.r)));});
     initSwipe();
   }catch(e){showToast('Kart hatasi');}
 }
@@ -643,6 +654,8 @@ function flipCard(){if(flipped)return;flipped=true;try{
   document.getElementById('fh').style.display='none';
   document.getElementById('abts').style.display='block';
   speak(current.word);
+  document.getElementById('btn-known').addEventListener('click',answerKnown);
+  document.getElementById('btn-skip').addEventListener('click',answerSkip);
 }catch(e){}}
 
 function answerKnown(){
@@ -680,15 +693,25 @@ function initSwipe(){
 
 function showFlashSummary(){
   document.getElementById('prog').style.width='100%';
-  const hc=retryIds.length;
-  const diffRows=[1,2,3,4,5].map(r=>'<div class="ds-item"><div class="ds-n" style="color:'+DC[r]+'">'+(sDiff[r]||0)+'</div><div class="ds-l">'+r+'</div></div>').join('');
-  document.getElementById('study-area').innerHTML='<div class="summary"><div class="summary-title">Bitti!</div><div class="summary-sub">'+sTotal+' kelime</div><div class="summary-3"><div class="summary-item"><div class="summary-n" style="color:var(--green)">'+sKnown+'</div><div class="summary-l">Bildim</div></div><div class="summary-item"><div class="summary-n" style="color:var(--red)">'+Object.values(sDiff).reduce((a,b)=>a+b,0)+'</div><div class="summary-l">Bilemedim</div></div><div class="summary-item"><div class="summary-n" style="color:var(--muted)">'+sSkipped+'</div><div class="summary-l">Atlandi</div></div></div><div class="diff-summary">'+diffRows+'</div>'+(hc>0?'<button class="retry-btn" onclick="retryHard()">4-5 tekrar ('+hc+')</button>':'')+'<button class="done-btn" onclick="backToHome()">Tamam</button></div>';
+  document.getElementById('study-area').innerHTML='<div class="summary"><div class="summary-title">Bitti!</div><div class="summary-sub">'+sTotal+' kelime</div><div class="summary-3"><div class="summary-item"><div class="summary-n" style="color:var(--green)">'+sKnown+'</div><div class="summary-l">Bildim</div></div><div class="summary-item"><div class="summary-n" style="color:var(--muted)">'+sSkipped+'</div><div class="summary-l">Atlandi</div></div><div class="summary-item"><div class="summary-n" style="color:var(--accent)">'+Math.round(sKnown/Math.max(sTotal,1)*100)+'%</div><div class="summary-l">Basari</div></div></div>'+'<button class="done-btn" onclick="backToHome()">Tamam</button></div>';
   buildWeekChart();buildFilterPanel();
 }
-window.retryHard=function(){queue=db.words.filter(w=>retryIds.includes(w.id)).sort(()=>Math.random()-.5);retryIds=[];sKnown=0;sSkipped=0;sDiff={1:0,2:0,3:0,4:0,5:0};sTotal=queue.length;showNext();};
 window.backToHome=function(){document.getElementById('study-home').style.display='block';document.getElementById('study-card').style.display='none';document.getElementById('prog').style.width='0%';document.getElementById('study-area').innerHTML='';updateStats();buildWeekChart();buildFilterPanel();};
 
-// ── MCQ MODE ──
+// Quiz/Fill swipe: swipe right = next (already answered), swipe left = skip question
+function initQuizSwipe(container,onSwipeLeft,onSwipeRight){
+  const card=container.querySelector('.flashcard');if(!card)return;
+  let sx=0,sy=0,dragging=false,moved=false;
+  function onStart(x,y){sx=x;sy=y;dragging=true;moved=false;}
+  function onMove(x,y){if(!dragging)return;const dx=x-sx;if(!moved&&Math.abs(dx)<8)return;moved=true;card.style.transform='translateX('+dx+'px) rotate('+(dx*0.025)+'deg)';card.style.transition='none';}
+  function onEnd(x){if(!dragging)return;dragging=false;const dx=x-sx;card.style.transition='transform .2s ease';if(moved&&dx<-80){card.style.transform='translateX(-130%) rotate(-10deg)';setTimeout(()=>{card.style.transform='';onSwipeLeft();},180);}else if(moved&&dx>80){card.style.transform='translateX(130%) rotate(10deg)';setTimeout(()=>{card.style.transform='';onSwipeRight();},180);}else{card.style.transform='';}}
+  card.addEventListener('touchstart',e=>{onStart(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
+  card.addEventListener('touchmove',e=>{onMove(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
+  card.addEventListener('touchend',e=>{onEnd(e.changedTouches[0].clientX);},{passive:true});
+  card.addEventListener('mousedown',e=>{if(e.target.closest('button'))return;onStart(e.clientX,e.clientY);});
+  document.addEventListener('mousemove',e=>{if(dragging)onMove(e.clientX,e.clientY);});
+  document.addEventListener('mouseup',e=>{if(dragging)onEnd(e.clientX);});
+}
 const MQ={queue:[],idx:0,correct:0,wrong:0,answered:false,opts:[]};
 
 function startMcq(words){
@@ -732,6 +755,7 @@ function mqShow(){
 
   area.innerHTML='';area.append(card,lbl,opts,fb);
   document.getElementById('mq-speak').addEventListener('click',e=>{e.stopPropagation();speak(w.word);});
+  initQuizSwipe(area,()=>{if(!MQ.answered){MQ.idx++;mqShow();}},()=>{if(!MQ.answered){MQ.idx++;mqShow();}});
 }
 
 function mqAnswer(i){
@@ -822,6 +846,7 @@ function fzShow(){
   });
 
   area.innerHTML='';area.append(card,lbl,opts,fb);
+  initQuizSwipe(area,()=>{if(!FZ.answered){FZ.idx++;fzShow();}},()=>{if(!FZ.answered){FZ.idx++;fzShow();}});
 }
 
 function fzAnswer(chosen,answer,item,w,options){
