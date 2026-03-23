@@ -49,7 +49,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .mode-btn{width:100%;padding:16px 20px;border-radius:14px;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;font-family:inherit;text-align:left;transition:all .15s;display:flex;align-items:center;justify-content:space-between;}
 .mode-btn:active{opacity:.8;}
 .mode-btn-left{display:flex;flex-direction:column;gap:3px;}
-.mode-btn-title{font-size:15px;font-weight:600;color:var(--text);}
+.mode-btn-title{font-size:17px;font-weight:600;color:var(--text);}
 .mode-btn-sub{font-size:11px;color:var(--muted);}
 .mode-btn-arrow{font-size:18px;color:var(--muted);opacity:.5;}
 .mode-btn.on{border-color:var(--accent);background:var(--card);}
@@ -217,7 +217,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
     <div class="nav-right">
       <div class="sync-dot" id="sync-dot" title="Senkronizasyon durumu"></div>
       <div class="nav-tabs">
-        <button class="nav-tab active" onclick="showScreen('study',this)">Calis</button>
+        <button class="nav-tab active" onclick="showScreen('study',this)">Çalış</button>
         <button class="nav-tab" onclick="showScreen('list',this)">Liste</button>
       </div>
     </div>
@@ -274,7 +274,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
             <div class="chip" data-type="status" data-val="unknown" onclick="toggleStatus(this)">Bilinmeyen</div>
           </div>
         </div>
-        <button class="start-btn" onclick="startStudy()">Calismaya basla</button>
+        <button class="start-btn" onclick="startStudy()">Çalışmaya Başla</button>
         <div class="sel-count" id="sel-count"></div>
       </div>
     </div>
@@ -307,29 +307,12 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
   <!-- ADD SCREEN -->
   <div class="screen" id="screen-add">
     <div class="add-form">
-      <div class="form-title">Claude'dan toplu ekle</div>
+      <div class="form-title">JSON Dosyasını Yapıştır</div>
       <div class="form-group">
-        <label class="form-label">JSON listesini yapistir</label>
+        <label class="form-label">JSON listesini yapıştır</label>
         <textarea class="form-textarea" id="f-bulk" style="min-height:110px;font-size:12px;" placeholder='[{"word":"show up","tr":"gelmek","episode":"S1E1","fill_sentences":[{"sentence":"He did not _____ until late.","options":["show up","run into","look into","come across"],"answer":"show up"}]}]'></textarea>
       </div>
-      <button class="btn-primary" onclick="bulkAdd()">Tumunu ekle</button>
-    </div>
-    <div class="add-form">
-      <div class="form-title">Tek kelime ekle</div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Kelime *</label><input class="form-input" id="f-word" placeholder="show up"></div>
-        <div class="form-group"><label class="form-label">Tür</label><select class="form-select" id="f-pos"><option>fiil (v)</option><option>isim (n)</option><option>sifat (adj)</option><option>zarf (adv)</option><option>deyim</option></select></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Anlam *</label><input class="form-input" id="f-tr" placeholder="gelmek"></div>
-        <div class="form-group"><label class="form-label">Register</label><select class="form-select" id="f-reg"><option value="formal">formal</option><option value="informal">informal</option><option value="slang">slang</option><option value="legal">legal</option></select></div>
-      </div>
-      <div class="form-group"><label class="form-label">Colocation</label><input class="form-input" id="f-col"></div>
-      <div class="form-group"><label class="form-label">Örnek cümle 1</label><textarea class="form-textarea" id="f-ex" style="min-height:60px"></textarea></div>
-      <div class="form-group"><label class="form-label">Örnek cümle 2</label><textarea class="form-textarea" id="f-ex2" style="min-height:60px"></textarea></div>
-      <div class="form-group"><label class="form-label">Tuzak / not</label><input class="form-input" id="f-trap"></div>
-      <div class="form-group"><label class="form-label">Bölüm</label><input class="form-input" id="f-ep" placeholder="S1E1"></div>
-      <button class="btn-primary" onclick="addOne()">Kelimeyi ekle</button>
+      <button class="btn-primary" onclick="bulkAdd()">Tümünü Ekle</button>
     </div>
   </div>
 </div>
