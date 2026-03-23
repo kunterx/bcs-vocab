@@ -175,7 +175,8 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .theme-name{font-size:11px;color:var(--muted);font-weight:500;}
 
 /* LIST */
-.list-toolbar{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px;}
+.list-toolbar{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:0px;}
+.list-spacer{height:14px;}
 .tool-btn{padding:12px 14px;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:10px;font-size:13px;cursor:pointer;font-family:inherit;text-align:center;}
 .tool-btn:active{opacity:.7;}
 .list-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
@@ -225,11 +226,11 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
   <!-- STUDY SCREEN -->
   <div class="screen active" id="screen-study">
     <div id="study-home">
-      <!-- Stats -->
-      <div class="stats">
-        <div class="stat"><div class="stat-n" id="st-total">0</div><div class="stat-l">toplam</div></div>
-        <div class="stat"><div class="stat-n" id="st-known">0</div><div class="stat-l">bilinen</div></div>
-        <div class="stat"><div class="stat-n" id="st-unknown">0</div><div class="stat-l">bilinmeyen</div></div>
+      <!-- Stats (hidden) -->
+      <div style="display:none">
+        <div id="st-total">0</div>
+        <div id="st-known">0</div>
+        <div id="st-unknown">0</div>
       </div>
       <!-- Week chart -->
       <div class="week-chart">
@@ -287,10 +288,11 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
   <div class="screen" id="screen-list">
     <div class="list-toolbar">
       <button class="tool-btn" onclick="showAddScreen()">+ Ekle</button>
-      <button class="tool-btn" onclick="exportData()">Dis aktar</button>
+      <button class="tool-btn" onclick="exportData()">Dışa aktar</button>
       <button class="tool-btn" onclick="openThemeSheet()">Tema</button>
       <button class="tool-btn" style="color:var(--red)" onclick="openBulkDelete()">Toplu sil</button>
     </div>
+    <div class="list-spacer"></div>
     <div class="list-header">
       <div class="list-count" id="list-count">0 kelime</div>
       <div class="list-filter-row">
@@ -639,8 +641,6 @@ function showNext(){
       '</div>'+
       '<div id="abts" style="display:none">'+
         '<div style="display:flex;gap:8px;margin-top:10px">'+
-          '<button style="flex:1;padding:16px;border-radius:10px;border:1px solid var(--border);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;background:var(--card);color:var(--muted)" id="btn-skip">Atla</button>'+
-          '<button style="flex:2;padding:16px;border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--green);color:#fff" id="btn-known">Bildim ✓</button>'+
         '</div>'+
       '</div>';
     document.getElementById('speak-btn').addEventListener('click',e=>{e.stopPropagation();speak(current.word);});
@@ -652,10 +652,7 @@ function showNext(){
 function flipCard(){if(flipped)return;flipped=true;try{
   document.getElementById('cb').classList.add('show');
   document.getElementById('fh').style.display='none';
-  document.getElementById('abts').style.display='block';
   speak(current.word);
-  document.getElementById('btn-known').addEventListener('click',answerKnown);
-  document.getElementById('btn-skip').addEventListener('click',answerSkip);
 }catch(e){}}
 
 function answerKnown(){
@@ -698,19 +695,19 @@ function showFlashSummary(){
 }
 window.backToHome=function(){document.getElementById('study-home').style.display='block';document.getElementById('study-card').style.display='none';document.getElementById('prog').style.width='0%';document.getElementById('study-area').innerHTML='';updateStats();buildWeekChart();buildFilterPanel();};
 
-// Quiz/Fill swipe: swipe right = next (already answered), swipe left = skip question
+// Quiz/Fill swipe: full page swipe — right = previous, left = next
 function initQuizSwipe(container,onSwipeLeft,onSwipeRight){
-  const card=container.querySelector('.flashcard');if(!card)return;
   let sx=0,sy=0,dragging=false,moved=false;
   function onStart(x,y){sx=x;sy=y;dragging=true;moved=false;}
-  function onMove(x,y){if(!dragging)return;const dx=x-sx;if(!moved&&Math.abs(dx)<8)return;moved=true;card.style.transform='translateX('+dx+'px) rotate('+(dx*0.025)+'deg)';card.style.transition='none';}
-  function onEnd(x){if(!dragging)return;dragging=false;const dx=x-sx;card.style.transition='transform .2s ease';if(moved&&dx<-80){card.style.transform='translateX(-130%) rotate(-10deg)';setTimeout(()=>{card.style.transform='';onSwipeLeft();},180);}else if(moved&&dx>80){card.style.transform='translateX(130%) rotate(10deg)';setTimeout(()=>{card.style.transform='';onSwipeRight();},180);}else{card.style.transform='';}}
-  card.addEventListener('touchstart',e=>{onStart(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
-  card.addEventListener('touchmove',e=>{onMove(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
-  card.addEventListener('touchend',e=>{onEnd(e.changedTouches[0].clientX);},{passive:true});
-  card.addEventListener('mousedown',e=>{if(e.target.closest('button'))return;onStart(e.clientX,e.clientY);});
+  function onMove(x,y){if(!dragging)return;const dx=x-sx;if(!moved&&Math.abs(dx)<8)return;moved=true;}
+  function onEnd(x){if(!dragging)return;dragging=false;const dx=x-sx;if(moved&&dx<-80){onSwipeLeft();}else if(moved&&dx>80){onSwipeRight();}}
+  document.addEventListener('touchstart',e=>{onStart(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
+  document.addEventListener('touchmove',e=>{onMove(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
+  document.addEventListener('touchend',e=>{onEnd(e.changedTouches[0].clientX);},{passive:true});
+  document.addEventListener('mousedown',e=>{if(e.target.closest('button'))return;onStart(e.clientX,e.clientY);});
   document.addEventListener('mousemove',e=>{if(dragging)onMove(e.clientX,e.clientY);});
   document.addEventListener('mouseup',e=>{if(dragging)onEnd(e.clientX);});
+  container._swipeCleanup=function(){document.removeEventListener('touchstart',onStart);document.removeEventListener('touchend',onEnd);document.removeEventListener('mousedown',onStart);document.removeEventListener('mouseup',onEnd);}
 }
 const MQ={queue:[],idx:0,correct:0,wrong:0,answered:false,opts:[]};
 
@@ -739,7 +736,7 @@ function mqShow(){
 
   const card=document.createElement('div');
   card.className='flashcard';card.style.minHeight='auto';card.style.marginBottom='12px';
-  card.innerHTML=`<div class="card-top"><div class="card-ep">${escH(w.episode||'')}</div></div><div class="card-word">${escH(w.word)}</div>${w.pos?`<div class="card-pos">${escH(w.pos)}</div>`:''}<button class="speak-btn" id="mq-speak">&#9654; Telaffuz</button>`;
+  card.innerHTML=`<div class="card-top"><div class="card-ep">${escH(w.episode||'')}</div><div style="font-size:11px;color:var(--muted)">${MQ.idx+1}/${MQ.queue.length}</div></div><div class="card-word">${escH(w.word)}</div>${w.pos?`<div class="card-pos">${escH(w.pos)}</div>`:''}<button class="speak-btn" id="mq-speak">&#9654; Telaffuz</button>`;
 
   const lbl=document.createElement('div');
   lbl.style.cssText='font-size:11px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em';
@@ -753,9 +750,16 @@ function mqShow(){
     btn.addEventListener('click',()=>mqAnswer(i));opts.appendChild(btn);
   });
 
-  area.innerHTML='';area.append(card,lbl,opts,fb);
+  const swipeHint=document.createElement('div');
+  swipeHint.style.cssText='display:flex;justify-content:space-between;margin-top:10px;padding:0 4px;';
+  swipeHint.innerHTML='<span style="font-size:11px;color:var(--muted)">◀ Önceki</span><span style="font-size:11px;color:var(--muted)">Sonraki ▶</span>';
+
+  area.innerHTML='';area.append(card,lbl,opts,fb,swipeHint);
   document.getElementById('mq-speak').addEventListener('click',e=>{e.stopPropagation();speak(w.word);});
-  initQuizSwipe(area,()=>{if(!MQ.answered){MQ.idx++;mqShow();}},()=>{if(!MQ.answered){MQ.idx++;mqShow();}});
+  initQuizSwipe(area,
+    ()=>{MQ.idx++;mqShow();},  // swipe left = next
+    ()=>{if(MQ.idx>0){MQ.idx--;mqShow();}}  // swipe right = previous
+  );
 }
 
 function mqAnswer(i){
@@ -773,13 +777,10 @@ function mqAnswer(i){
 
   const detail=document.createElement('div');
   detail.style.cssText='margin-top:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;border-top:3px solid '+(ok?'var(--green)':'var(--red)');
-  detail.innerHTML=`<div style="font-size:12px;font-weight:700;color:${ok?'var(--green)':'var(--red)'};margin-bottom:10px">${ok?'Dogru!':'Yanlis'}</div><div class="card-tr">${escH(w.tr)}</div>${w.collocation?`<div class="card-colloc" style="margin-top:10px">Colocation: <span>${escH(w.collocation)}</span></div>`:''} ${w.example?`<div class="card-example" style="margin-top:8px">"${escH(w.example)}"</div>`:''}${w.trap?`<div class="card-trap" style="margin-top:8px"><strong>Dikkat:</strong> ${escH(w.trap)}</div>`:''}`;
+  detail.innerHTML=`<div style="font-size:12px;font-weight:700;color:${ok?'var(--green)':'var(--red)'};margin-bottom:10px">${ok?'Dogru!':'Yanlis'}</div><div class="card-tr">${escH(w.tr)}</div>${w.collocation?`<div class="card-colloc" style="margin-top:10px">Colocation: <span>${escH(w.collocation)}</span></div>`:''} ${w.example?`<div class="card-example" style="margin-top:8px">${escH(w.example)}</div>`:''}${w.example2?`<div class="card-example" style="margin-top:6px">${escH(w.example2)}</div>`:''}${w.trap?`<div class="card-trap" style="margin-top:8px"><strong>Dikkat:</strong> ${escH(w.trap)}</div>`:''}`;
 
-  const nb=document.createElement('button');nb.className='quiz-next-btn';
-  nb.textContent=(MQ.idx+1<MQ.queue.length)?'Sonraki':'Sonucu Gör';
-  nb.addEventListener('click',()=>{MQ.idx++;mqShow();});
   const fb=document.getElementById('mq-fb');
-  if(fb){fb.appendChild(detail);fb.appendChild(nb);}
+  if(fb){fb.appendChild(detail);}
 }
 
 function mqSummary(){
@@ -828,7 +829,7 @@ function fzShow(){
 
   const card=document.createElement('div');
   card.className='flashcard';card.style.minHeight='auto';card.style.marginBottom='12px';
-  card.innerHTML=`<div class="card-top"><div class="card-ep">${escH(w.episode||'')}</div></div><div style="font-size:16px;line-height:1.9;color:var(--text)">${displaySent}</div>`;
+  card.innerHTML=`<div class="card-top"><div class="card-ep">${escH(w.episode||'')}</div><div style="font-size:11px;color:var(--muted)">${FZ.idx+1}/${FZ.queue.length}</div></div><div style="font-size:16px;line-height:1.9;color:var(--text)">${displaySent}</div>`;
 
   const lbl=document.createElement('div');
   lbl.style.cssText='font-size:11px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em';
@@ -846,7 +847,16 @@ function fzShow(){
   });
 
   area.innerHTML='';area.append(card,lbl,opts,fb);
-  initQuizSwipe(area,()=>{if(!FZ.answered){FZ.idx++;fzShow();}},()=>{if(!FZ.answered){FZ.idx++;fzShow();}});
+
+  const swipeHint=document.createElement('div');
+  swipeHint.style.cssText='display:flex;justify-content:space-between;margin-top:10px;padding:0 4px;';
+  swipeHint.innerHTML='<span style="font-size:11px;color:var(--muted)">◀ Önceki</span><span style="font-size:11px;color:var(--muted)">Sonraki ▶</span>';
+  area.appendChild(swipeHint);
+
+  initQuizSwipe(area,
+    ()=>{if(!FZ.answered){FZ.idx++;fzShow();}else{FZ.idx++;fzShow();}},  // swipe left = next
+    ()=>{if(FZ.idx>0){FZ.idx--;fzShow();}}  // swipe right = previous
+  );
 }
 
 function fzAnswer(chosen,answer,item,w,options){
@@ -871,11 +881,8 @@ function fzAnswer(chosen,answer,item,w,options){
   detail.style.cssText='margin-top:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;border-top:3px solid '+(ok?'var(--green)':'var(--red)');
   detail.innerHTML=`<div style="font-size:12px;font-weight:700;color:${ok?'var(--green)':'var(--red)'};margin-bottom:10px">${ok?'Dogru! — '+escH(answer):'Yanlis — Dogru: '+escH(answer)}</div><div style="font-size:15px;line-height:1.8;margin-bottom:12px;color:var(--text)">${filledSent}</div><div class="card-tr">${escH(w.tr)}</div>${w.collocation?`<div class="card-colloc" style="margin-top:8px">Colocation: <span>${escH(w.collocation)}</span></div>`:''}${w.trap?`<div class="card-trap" style="margin-top:8px"><strong>Dikkat:</strong> ${escH(w.trap)}</div>`:''}`;
 
-  const nb=document.createElement('button');nb.className='quiz-next-btn';
-  nb.textContent=(FZ.idx+1<FZ.queue.length)?'Sonraki':'Sonucu Gör';
-  nb.addEventListener('click',()=>{FZ.idx++;fzShow();});
   const fb=document.getElementById('fz-fb');
-  if(fb){fb.appendChild(detail);fb.appendChild(nb);}
+  if(fb){fb.appendChild(detail);}
 }
 
 function fzSummary(){
