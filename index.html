@@ -21,7 +21,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .sync-dot{width:8px;height:8px;border-radius:50%;background:transparent;transition:background .3s;}
 .sync-dot.error{background:var(--red);}
 .nav-tabs{display:flex;gap:3px;background:var(--surface);border-radius:10px;padding:3px;border:1px solid var(--border);}
-.nav-tab{font-size:12px;font-weight:500;padding:6px 14px;border-radius:7px;cursor:pointer;color:var(--muted);border:none;background:transparent;font-family:inherit;transition:all .15s;}
+.nav-tab{font-size:12px;font-weight:700;padding:6px 14px;border-radius:7px;cursor:pointer;color:var(--muted);border:none;background:transparent;font-family:inherit;transition:all .15s;}
 .nav-tab.active{background:var(--card);color:var(--text);border:1px solid var(--border);}
 .screen{display:none;}.screen.active{display:block;}
 
@@ -177,7 +177,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 /* LIST */
 .list-toolbar{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:0px;}
 .list-spacer{height:40px;}
-.tool-btn{padding:12px 14px;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:10px;font-size:13px;cursor:pointer;font-family:inherit;text-align:center;}
+.tool-btn{padding:12px 14px;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;text-align:center;}
 .tool-btn:active{opacity:.7;}
 .list-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
 .list-count{font-size:13px;color:var(--muted);}
@@ -714,10 +714,10 @@ function initQuizSwipe(container,onSwipeLeft,onSwipeRight){
   _quizSwipeRight=onSwipeRight;
   _quizSwipeActive=false;
 }
-const MQ={queue:[],idx:0,correct:0,wrong:0,answered:false,opts:[]};
+const MQ={queue:[],idx:0,correct:0,wrong:0,answered:false,opts:[],history:{}};
 
 function startMcq(words){
-  Object.assign(MQ,{queue:shuffle(words),idx:0,correct:0,wrong:0});
+  Object.assign(MQ,{queue:shuffle(words),idx:0,correct:0,wrong:0,history:{}});
   document.getElementById('study-home').style.display='none';
   document.getElementById('study-card').style.display='block';
   document.getElementById('prog').style.width='0%';
@@ -730,14 +730,21 @@ function mqProgress(){
 
 function mqShow(){
   if(MQ.idx>=MQ.queue.length){mqSummary();return;}
-  MQ.answered=false;mqProgress();
+  mqProgress();
   const w=MQ.queue[MQ.idx];
   const all=db.words||[];
   const area=document.getElementById('study-area');
+  const hist=MQ.history[MQ.idx];
 
-  const others=shuffle(all.filter(x=>x.id!==w.id&&x.tr)).slice(0,3);
-  if(others.length<3){MQ.idx++;mqShow();return;}
-  MQ.opts=shuffle([{t:w.tr,ok:true},...others.map(o=>({t:o.tr,ok:false}))]);
+  // Use saved opts if revisiting, otherwise generate new ones
+  if(hist){
+    MQ.opts=hist.opts;
+  } else {
+    const others=shuffle(all.filter(x=>x.id!==w.id&&x.tr)).slice(0,3);
+    if(others.length<3){MQ.idx++;mqShow();return;}
+    MQ.opts=shuffle([{t:w.tr,ok:true},...others.map(o=>({t:o.tr,ok:false}))]);
+  }
+  MQ.answered=!!hist;
 
   const card=document.createElement('div');
   card.className='flashcard';card.style.minHeight='auto';card.style.marginBottom='12px';
@@ -752,8 +759,17 @@ function mqShow(){
 
   MQ.opts.forEach((o,i)=>{
     const btn=document.createElement('button');btn.className='quiz-option';btn.textContent=o.t;
-    btn.addEventListener('click',()=>mqAnswer(i));opts.appendChild(btn);
+    if(!hist) btn.addEventListener('click',()=>mqAnswer(i));
+    else btn.disabled=true;
+    opts.appendChild(btn);
   });
+
+  // Restore answer state if revisiting
+  if(hist){
+    const btns=opts.querySelectorAll('.quiz-option');
+    if(btns[hist.chosen])btns[hist.chosen].classList.add(hist.ok?'correct':'wrong');
+    if(!hist.ok)MQ.opts.forEach((o,j)=>{if(o.ok&&btns[j])btns[j].classList.add('reveal');});
+  }
 
   const swipeHint=document.createElement('div');
   swipeHint.style.cssText='display:flex;justify-content:space-between;margin-top:10px;padding:0 4px;';
@@ -761,9 +777,19 @@ function mqShow(){
 
   area.innerHTML='';area.append(card,lbl,opts,fb,swipeHint);
   document.getElementById('mq-speak').addEventListener('click',e=>{e.stopPropagation();speak(w.word);});
+
+  // Restore detail card if revisiting
+  if(hist){
+    const ok=hist.ok;
+    const detail=document.createElement('div');
+    detail.style.cssText='margin-top:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;border-top:3px solid '+(ok?'var(--green)':'var(--red)');
+    detail.innerHTML=`<div style="font-size:12px;font-weight:700;color:${ok?'var(--green)':'var(--red)'};margin-bottom:10px">${ok?'Dogru!':'Yanlis'}</div><div class="card-tr">${escH(w.tr)}</div>${w.collocation?`<div class="card-colloc" style="margin-top:10px">Colocation: <span>${escH(w.collocation)}</span></div>`:''} ${w.example?`<div class="card-example" style="margin-top:8px">${escH(w.example)}</div>`:''}${w.example2?`<div class="card-example" style="margin-top:6px">${escH(w.example2)}</div>`:''}${w.trap?`<div class="card-trap" style="margin-top:8px"><strong>Dikkat:</strong> ${escH(w.trap)}</div>`:''}`;
+    fb.appendChild(detail);
+  }
+
   initQuizSwipe(area,
-    ()=>{MQ.idx++;mqShow();},  // swipe left = next
-    ()=>{if(MQ.idx>0){MQ.idx--;mqShow();}}  // swipe right = previous
+    ()=>{MQ.idx++;mqShow();},
+    ()=>{if(MQ.idx>0){MQ.idx--;mqShow();}}
   );
 }
 
@@ -775,6 +801,9 @@ function mqAnswer(i){
   if(btns[i])btns[i].classList.add(ok?'correct':'wrong');
   if(!ok)MQ.opts.forEach((o,j)=>{if(o.ok&&btns[j])btns[j].classList.add('reveal');});
   if(ok){MQ.correct++;speak(w.word);}else{MQ.wrong++;}
+
+  // Save answer to history
+  MQ.history[MQ.idx]={opts:MQ.opts,chosen:i,ok};
 
   // update progress
   const idx=db.words.findIndex(x=>x.id===w.id);
@@ -804,15 +833,14 @@ function mqSummary(){
 }
 
 // ── FILL MODE ──
-const FZ={queue:[],idx:0,correct:0,wrong:0,answered:false};
+const FZ={queue:[],idx:0,correct:0,wrong:0,answered:false,history:{}};
 
 function startFill(words){
-  // build queue: each word × each fill_sentence item
   const q=[];
   shuffle(words).forEach(w=>{
     shuffle(w.fill_sentences||[]).slice(0,2).forEach(item=>q.push({w,item}));
   });
-  Object.assign(FZ,{queue:shuffle(q),idx:0,correct:0,wrong:0});
+  Object.assign(FZ,{queue:shuffle(q),idx:0,correct:0,wrong:0,history:{}});
   document.getElementById('study-home').style.display='none';
   document.getElementById('study-card').style.display='block';
   document.getElementById('prog').style.width='0%';
@@ -825,11 +853,12 @@ function fzProgress(){
 
 function fzShow(){
   if(FZ.idx>=FZ.queue.length){fzSummary();return;}
-  FZ.answered=false;fzProgress();
+  fzProgress();
   const {w,item}=FZ.queue[FZ.idx];
   const area=document.getElementById('study-area');
+  const hist=FZ.history[FZ.idx];
+  FZ.answered=!!hist;
 
-  // display: replace _____ with styled blank
   const displaySent=escH(item.sentence).replace(/___+/g,'<span style="color:var(--accent);font-weight:700;font-size:18px">_____</span>');
 
   const card=document.createElement('div');
@@ -843,24 +872,42 @@ function fzShow(){
   const opts=document.createElement('div');opts.className='quiz-options';
   const fb=document.createElement('div');fb.id='fz-fb';
 
-  // use options directly from fill_sentences item
-  const options=shuffle(item.options||[]);
+  const options=hist ? hist.options : shuffle(item.options||[]);
   options.forEach(opt=>{
     const btn=document.createElement('button');btn.className='quiz-option';btn.textContent=opt;
-    btn.addEventListener('click',()=>fzAnswer(opt,item.answer,item,w,options));
+    if(!hist) btn.addEventListener('click',()=>fzAnswer(opt,item.answer,item,w,options));
+    else btn.disabled=true;
     opts.appendChild(btn);
   });
 
-  area.innerHTML='';area.append(card,lbl,opts,fb);
+  // Restore answer highlight if revisiting
+  if(hist){
+    const btns=opts.querySelectorAll('.quiz-option');
+    btns.forEach((b,i)=>{
+      if(options[i]===item.answer) b.classList.add(hist.ok&&options[i]===hist.chosen?'correct':'reveal');
+      if(options[i]===hist.chosen&&!hist.ok) b.classList.add('wrong');
+    });
+  }
 
   const swipeHint=document.createElement('div');
   swipeHint.style.cssText='display:flex;justify-content:space-between;margin-top:10px;padding:0 4px;';
   swipeHint.innerHTML='<span style="font-size:11px;color:var(--muted)">◀ Önceki</span><span style="font-size:11px;color:var(--muted)">Sonraki ▶</span>';
-  area.appendChild(swipeHint);
+
+  area.innerHTML='';area.append(card,lbl,opts,fb,swipeHint);
+
+  // Restore detail card if revisiting
+  if(hist){
+    const ok=hist.ok;
+    const filledSent=escH(item.sentence).replace(/___+/g,`<span style="color:var(--green);font-weight:700;text-decoration:underline">${escH(item.answer)}</span>`);
+    const detail=document.createElement('div');
+    detail.style.cssText='margin-top:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;border-top:3px solid '+(ok?'var(--green)':'var(--red)');
+    detail.innerHTML=`<div style="font-size:12px;font-weight:700;color:${ok?'var(--green)':'var(--red)'};margin-bottom:10px">${ok?'Dogru! — '+escH(item.answer):'Yanlis — Dogru: '+escH(item.answer)}</div><div style="font-size:15px;line-height:1.8;margin-bottom:12px;color:var(--text)">${filledSent}</div><div class="card-tr">${escH(w.tr)}</div>${w.collocation?`<div class="card-colloc" style="margin-top:8px">Colocation: <span>${escH(w.collocation)}</span></div>`:''}${w.example?`<div class="card-example" style="margin-top:8px">${escH(w.example)}</div>`:''}${w.example2?`<div class="card-example" style="margin-top:6px">${escH(w.example2)}</div>`:''}${w.trap?`<div class="card-trap" style="margin-top:8px"><strong>Dikkat:</strong> ${escH(w.trap)}</div>`:''}`;
+    fb.appendChild(detail);
+  }
 
   initQuizSwipe(area,
-    ()=>{if(!FZ.answered){FZ.idx++;fzShow();}else{FZ.idx++;fzShow();}},  // swipe left = next
-    ()=>{if(FZ.idx>0){FZ.idx--;fzShow();}}  // swipe right = previous
+    ()=>{FZ.idx++;fzShow();},
+    ()=>{if(FZ.idx>0){FZ.idx--;fzShow();}}
   );
 }
 
@@ -870,18 +917,18 @@ function fzAnswer(chosen,answer,item,w,options){
   const btns=document.querySelectorAll('.quiz-options .quiz-option');
   btns.forEach((b,i)=>{
     b.disabled=true;
-    if(options[i]===answer)b.classList.add(ok&&options[i]===chosen?'correct':'reveal');
-    if(options[i]===chosen&&!ok)b.classList.add('wrong');
+    if(options[i]===answer) b.classList.add(ok&&options[i]===chosen?'correct':'reveal');
+    if(options[i]===chosen&&!ok) b.classList.add('wrong');
   });
   if(ok){FZ.correct++;speak(w.word);}else{FZ.wrong++;}
 
-  // update progress
+  // Save to history
+  FZ.history[FZ.idx]={options,chosen,ok};
+
   const idx=db.words.findIndex(x=>x.id===w.id);
   if(idx!==-1){setProgress(db.words[idx],'fill',ok?'known':'unknown');logActivity();updateStreak();saveDb();}
 
-  // show filled sentence
   const filledSent=escH(item.sentence).replace(/___+/g,`<span style="color:var(--green);font-weight:700;text-decoration:underline">${escH(answer)}</span>`);
-
   const detail=document.createElement('div');
   detail.style.cssText='margin-top:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;border-top:3px solid '+(ok?'var(--green)':'var(--red)');
   detail.innerHTML=`<div style="font-size:12px;font-weight:700;color:${ok?'var(--green)':'var(--red)'};margin-bottom:10px">${ok?'Dogru! — '+escH(answer):'Yanlis — Dogru: '+escH(answer)}</div><div style="font-size:15px;line-height:1.8;margin-bottom:12px;color:var(--text)">${filledSent}</div><div class="card-tr">${escH(w.tr)}</div>${w.collocation?`<div class="card-colloc" style="margin-top:8px">Colocation: <span>${escH(w.collocation)}</span></div>`:''}${w.example?`<div class="card-example" style="margin-top:8px">${escH(w.example)}</div>`:''}${w.example2?`<div class="card-example" style="margin-top:6px">${escH(w.example2)}</div>`:''}${w.trap?`<div class="card-trap" style="margin-top:8px"><strong>Dikkat:</strong> ${escH(w.trap)}</div>`:''}`;
