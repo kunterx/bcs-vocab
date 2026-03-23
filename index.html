@@ -176,7 +176,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 
 /* LIST */
 .list-toolbar{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:0px;}
-.list-spacer{height:14px;}
+.list-spacer{height:40px;}
 .tool-btn{padding:12px 14px;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:10px;font-size:13px;cursor:pointer;font-family:inherit;text-align:center;}
 .tool-btn:active{opacity:.7;}
 .list-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
@@ -693,21 +693,26 @@ function showFlashSummary(){
   document.getElementById('study-area').innerHTML='<div class="summary"><div class="summary-title">Bitti!</div><div class="summary-sub">'+sTotal+' kelime</div><div class="summary-3"><div class="summary-item"><div class="summary-n" style="color:var(--green)">'+sKnown+'</div><div class="summary-l">Bildim</div></div><div class="summary-item"><div class="summary-n" style="color:var(--muted)">'+sSkipped+'</div><div class="summary-l">Atlandi</div></div><div class="summary-item"><div class="summary-n" style="color:var(--accent)">'+Math.round(sKnown/Math.max(sTotal,1)*100)+'%</div><div class="summary-l">Basari</div></div></div>'+'<button class="done-btn" onclick="backToHome()">Tamam</button></div>';
   buildWeekChart();buildFilterPanel();
 }
-window.backToHome=function(){document.getElementById('study-home').style.display='block';document.getElementById('study-card').style.display='none';document.getElementById('prog').style.width='0%';document.getElementById('study-area').innerHTML='';updateStats();buildWeekChart();buildFilterPanel();};
+window.backToHome=function(){_quizSwipeLeft=null;_quizSwipeRight=null;document.getElementById('study-home').style.display='block';document.getElementById('study-card').style.display='none';document.getElementById('prog').style.width='0%';document.getElementById('study-area').innerHTML='';updateStats();buildWeekChart();buildFilterPanel();};
 
-// Quiz/Fill swipe: full page swipe — right = previous, left = next
+// Quiz/Fill swipe: global singleton — replaces itself each call, no listener buildup
+let _quizSwipeLeft=null,_quizSwipeRight=null,_quizSwipeActive=false;
+function _quizSwipeStart(x){_quizSwipeActive=true;window._qsx=x;}
+function _quizSwipeEnd(x){
+  if(!_quizSwipeActive)return;_quizSwipeActive=false;
+  const dx=x-window._qsx;
+  if(dx<-60&&_quizSwipeLeft)_quizSwipeLeft();
+  else if(dx>60&&_quizSwipeRight)_quizSwipeRight();
+}
+document.addEventListener('touchstart',e=>{_quizSwipeStart(e.touches[0].clientX);},{passive:true});
+document.addEventListener('touchend',e=>{_quizSwipeEnd(e.changedTouches[0].clientX);},{passive:true});
+document.addEventListener('mousedown',e=>{if(!e.target.closest('button'))_quizSwipeStart(e.clientX);});
+document.addEventListener('mouseup',e=>{_quizSwipeEnd(e.clientX);});
+
 function initQuizSwipe(container,onSwipeLeft,onSwipeRight){
-  let sx=0,sy=0,dragging=false,moved=false;
-  function onStart(x,y){sx=x;sy=y;dragging=true;moved=false;}
-  function onMove(x,y){if(!dragging)return;const dx=x-sx;if(!moved&&Math.abs(dx)<8)return;moved=true;}
-  function onEnd(x){if(!dragging)return;dragging=false;const dx=x-sx;if(moved&&dx<-80){onSwipeLeft();}else if(moved&&dx>80){onSwipeRight();}}
-  document.addEventListener('touchstart',e=>{onStart(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
-  document.addEventListener('touchmove',e=>{onMove(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
-  document.addEventListener('touchend',e=>{onEnd(e.changedTouches[0].clientX);},{passive:true});
-  document.addEventListener('mousedown',e=>{if(e.target.closest('button'))return;onStart(e.clientX,e.clientY);});
-  document.addEventListener('mousemove',e=>{if(dragging)onMove(e.clientX,e.clientY);});
-  document.addEventListener('mouseup',e=>{if(dragging)onEnd(e.clientX);});
-  container._swipeCleanup=function(){document.removeEventListener('touchstart',onStart);document.removeEventListener('touchend',onEnd);document.removeEventListener('mousedown',onStart);document.removeEventListener('mouseup',onEnd);}
+  _quizSwipeLeft=onSwipeLeft;
+  _quizSwipeRight=onSwipeRight;
+  _quizSwipeActive=false;
 }
 const MQ={queue:[],idx:0,correct:0,wrong:0,answered:false,opts:[]};
 
@@ -879,7 +884,7 @@ function fzAnswer(chosen,answer,item,w,options){
 
   const detail=document.createElement('div');
   detail.style.cssText='margin-top:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;border-top:3px solid '+(ok?'var(--green)':'var(--red)');
-  detail.innerHTML=`<div style="font-size:12px;font-weight:700;color:${ok?'var(--green)':'var(--red)'};margin-bottom:10px">${ok?'Dogru! — '+escH(answer):'Yanlis — Dogru: '+escH(answer)}</div><div style="font-size:15px;line-height:1.8;margin-bottom:12px;color:var(--text)">${filledSent}</div><div class="card-tr">${escH(w.tr)}</div>${w.collocation?`<div class="card-colloc" style="margin-top:8px">Colocation: <span>${escH(w.collocation)}</span></div>`:''}${w.trap?`<div class="card-trap" style="margin-top:8px"><strong>Dikkat:</strong> ${escH(w.trap)}</div>`:''}`;
+  detail.innerHTML=`<div style="font-size:12px;font-weight:700;color:${ok?'var(--green)':'var(--red)'};margin-bottom:10px">${ok?'Dogru! — '+escH(answer):'Yanlis — Dogru: '+escH(answer)}</div><div style="font-size:15px;line-height:1.8;margin-bottom:12px;color:var(--text)">${filledSent}</div><div class="card-tr">${escH(w.tr)}</div>${w.collocation?`<div class="card-colloc" style="margin-top:8px">Colocation: <span>${escH(w.collocation)}</span></div>`:''}${w.example?`<div class="card-example" style="margin-top:8px">${escH(w.example)}</div>`:''}${w.example2?`<div class="card-example" style="margin-top:6px">${escH(w.example2)}</div>`:''}${w.trap?`<div class="card-trap" style="margin-top:8px"><strong>Dikkat:</strong> ${escH(w.trap)}</div>`:''}`;
 
   const fb=document.getElementById('fz-fb');
   if(fb){fb.appendChild(detail);}
