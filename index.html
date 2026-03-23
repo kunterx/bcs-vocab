@@ -172,6 +172,67 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .ai-send:active{opacity:.8;}
 .toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 20px;font-size:13px;color:var(--text);opacity:0;transition:opacity .3s;pointer-events:none;z-index:300;white-space:nowrap;}
 .toast.show{opacity:1;}
+
+.quiz-home{margin-bottom:14px;}
+.quiz-mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.quiz-mode-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 14px;text-align:center;cursor:pointer;transition:all .15s;}
+.quiz-mode-card:active{opacity:.7;}
+.quiz-mode-icon{font-size:28px;margin-bottom:8px;}
+.quiz-mode-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.quiz-mode-sub{font-size:11px;color:var(--muted);}
+.quiz-mode-card.selected{border-color:var(--accent);background:var(--card);}
+.quiz-start-btn{width:100%;padding:13px;background:var(--accent);color:var(--bg);border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px 20px;margin-bottom:12px;position:relative;}
+.quiz-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:16px 16px 0 0;}
+.quiz-label{font-size:11px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em;}
+.quiz-question{font-size:17px;font-weight:600;color:var(--text);line-height:1.5;margin-bottom:6px;}
+.quiz-ep{font-size:11px;color:var(--muted);margin-bottom:16px;}
+.quiz-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:16px;padding:12px 14px;font-family:inherit;outline:none;margin-bottom:10px;}
+.quiz-input:focus{border-color:var(--accent);}
+.quiz-check-btn{width:100%;padding:12px;background:var(--accent);color:var(--bg);border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
+.quiz-check-btn:active{opacity:.8;}
+.quiz-options{display:grid;gap:8px;}
+.quiz-option{padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:14px;color:var(--text);cursor:pointer;font-family:inherit;text-align:left;transition:all .15s;}
+.quiz-option:active{opacity:.7;}
+.quiz-option.correct{background:rgba(80,200,128,.15);border-color:#50c880;color:#50c880;}
+.quiz-option.wrong{background:rgba(208,104,104,.15);border-color:#d06868;color:#d06868;}
+.quiz-option.reveal{background:rgba(80,200,128,.1);border-color:#50c880;}
+.quiz-feedback{padding:14px 16px;border-radius:10px;font-size:14px;margin-bottom:10px;line-height:1.5;}
+.quiz-feedback.correct{background:rgba(80,200,128,.15);color:#50c880;}
+.quiz-feedback.wrong{background:rgba(208,104,104,.15);color:#d06868;}
+.quiz-next-btn{width:100%;padding:12px;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit;}
+.quiz-progress{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.quiz-prog-bar{flex:1;height:4px;background:var(--border);border-radius:2px;}
+.quiz-prog-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .3s;}
+.quiz-prog-text{font-size:12px;color:var(--muted);white-space:nowrap;}
+.quiz-summary{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px 20px;text-align:center;}
+.quiz-summary-title{font-size:22px;font-weight:700;color:var(--accent);margin-bottom:4px;}
+.quiz-summary-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.quiz-score-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px;}
+.quiz-score-item{background:var(--surface);border-radius:10px;padding:14px;}
+.quiz-score-n{font-size:26px;font-weight:700;}
+.quiz-score-l{font-size:12px;color:var(--muted);margin-top:3px;}
+.quiz-again-btn{width:100%;padding:12px;background:var(--accent);color:var(--bg);border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px;}
+.quiz-back-btn{width:100%;padding:12px;background:transparent;border:1px solid var(--border);color:var(--text);border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit;}
+.fill-blank{font-size:17px;font-weight:600;color:var(--text);line-height:1.8;margin-bottom:16px;}
+.fill-blank .blank{display:inline-block;min-width:100px;border-bottom:2px solid var(--accent);color:var(--accent);font-style:italic;}
+
+.quiz-options{display:grid;gap:8px;margin-bottom:4px;}
+.quiz-option{padding:14px 16px;background:var(--surface);border:2px solid var(--border);border-radius:10px;font-size:14px;color:var(--text);cursor:pointer;font-family:inherit;text-align:left;transition:all .15s;}
+.quiz-option:active{opacity:.7;}
+.quiz-option.correct{background:rgba(80,200,128,.15);border-color:#50c880;color:#50c880;font-weight:600;}
+.quiz-option.wrong{background:rgba(208,104,104,.15);border-color:#d06868;color:#d06868;}
+.quiz-option.reveal{background:rgba(80,200,128,.1);border-color:#50c880;}
+.quiz-next-btn{width:100%;padding:12px;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit;margin-top:10px;}
+.quiz-again-btn{width:100%;padding:12px;background:var(--accent);color:var(--bg);border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px;}
+.quiz-back-btn{width:100%;padding:12px;background:transparent;border:1px solid var(--border);color:var(--text);border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit;}
+.quiz-summary{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px 20px;text-align:center;}
+.quiz-summary-title{font-size:22px;font-weight:700;color:var(--accent);margin-bottom:4px;}
+.quiz-summary-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.quiz-score-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px;}
+.quiz-score-item{background:var(--surface);border-radius:10px;padding:14px;}
+.quiz-score-n{font-size:26px;font-weight:700;}
+.quiz-score-l{font-size:12px;color:var(--muted);margin-top:3px;}
 </style>
 </head>
 <body>
@@ -182,6 +243,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <div class="sync-dot" id="sync-dot" title="Senkronizasyon durumu"></div>
       <div class="nav-tabs">
         <button class="nav-tab active" onclick="showScreen('study',this)">Calis</button>
+        <button class="nav-tab" onclick="showScreen('quiz',this)">Egzersiz</button>
         <button class="nav-tab" onclick="showScreen('list',this)">Liste</button>
       </div>
     </div>
@@ -238,6 +300,28 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
     <div id="study-card" style="display:none">
       <div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%"></div></div>
       <div id="study-area"></div>
+    </div>
+  </div>
+
+    <div class="screen" id="screen-quiz">
+    <div id="quiz-home" style="padding-top:4px">
+      <div class="fp-title" style="margin-bottom:16px">Egzersiz</div>
+      <div class="fp-section" style="margin-bottom:16px">
+        <div class="fp-label">Bolum</div>
+        <div class="chip-row" id="quiz-ep-chips"></div>
+      </div>
+      <button class="start-btn" id="quiz-start-btn">Turkce Anlami Bul</button>
+      <button class="start-btn" id="quiz-fill-btn" style="margin-top:8px;background:var(--surface);color:var(--text);border:1px solid var(--border)">Cumlede Bosluk Doldur</button>
+      <div class="sel-count" id="quiz-count" style="margin-top:8px"></div>
+    </div>
+    <div id="quiz-area" style="display:none">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <div style="flex:1;height:3px;background:var(--border);border-radius:2px;">
+          <div id="quiz-prog-fill" style="height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;transition:width .3s;width:0%"></div>
+        </div>
+        <div id="quiz-prog-text" style="font-size:12px;color:var(--muted);white-space:nowrap">0/0</div>
+      </div>
+      <div id="quiz-content"></div>
     </div>
   </div>
 
@@ -404,6 +488,7 @@ onValue(dbRef, (snapshot) => {
   const data = snapshot.val();
   if(data) {
     db = data;
+    window.db = db;
     if(!db.activity) db.activity = {};
     if(!db.words) db.words = [];
     updateStats();
@@ -523,6 +608,7 @@ function showNext(){
           (current.collocation?'<div class="card-colloc">Colocation: <span>'+current.collocation+'</span></div>':'')+
           (current.example?'<div class="card-example">'+current.example+'</div>':'')+
           (current.example2?'<div class="card-example">'+current.example2+'</div>':'')+
+          ((current.fill_sentences&&current.fill_sentences.length>0)?'<button id="more-ex-btn" style="margin-top:10px;font-size:12px;color:var(--muted);background:transparent;border:1px solid var(--border);border-radius:6px;padding:5px 12px;cursor:pointer;font-family:inherit">+ Daha fazla ornek</button>':'')+
           (current.trap?'<div class="card-trap"><strong>Dikkat:</strong> '+current.trap+'</div>':'')+
           
         '</div>'+
@@ -545,7 +631,29 @@ function showNext(){
   }catch(e){showToast('Kart hatasi');}
 }
 
-function flipCard(){if(flipped)return;flipped=true;try{document.getElementById('cb').classList.add('show');document.getElementById('fh').style.display='none';document.getElementById('abts').style.display='block';speak(current.word);}catch(e){}}
+function flipCard(){if(flipped)return;flipped=true;try{
+    document.getElementById('cb').classList.add('show');
+    document.getElementById('fh').style.display='none';
+    document.getElementById('abts').style.display='block';
+    speak(current.word);
+    const moreBtn=document.getElementById('more-ex-btn');
+    if(moreBtn){
+      const fills=(current.fill_sentences||[]).filter(f=>typeof f==='object'?f.sentence:f);
+      let si=0;
+      moreBtn.addEventListener('click',e=>{
+        e.stopPropagation();
+        if(si>=fills.length){moreBtn.style.display='none';return;}
+        const item=fills[si++];
+        const sent=typeof item==='string'?item:(item.sentence||'');
+        if(!sent)return;
+        const div=document.createElement('div');
+        div.className='card-example';div.style.marginTop='6px';
+        div.textContent='"'+sent+'"';
+        moreBtn.before(div);
+        if(si>=fills.length)moreBtn.style.display='none';
+      });
+    }
+  }catch(e){}}
 function answerKnown(){const idx=db.words.findIndex(w=>w.id===current.id);if(idx!==-1)db.words[idx]=calcKnown(db.words[idx]);sKnown++;retryIds=retryIds.filter(id=>id!==current.id);logActivity();updateStreak();saveDb();showNext();}
 function answerSkip(){const idx=db.words.findIndex(w=>w.id===current.id);if(idx!==-1)db.words[idx].skipped=true;sSkipped++;saveDb();showNext();}
 function answerDiff(r){const idx=db.words.findIndex(w=>w.id===current.id);if(idx!==-1)db.words[idx]=calcDiff(db.words[idx],r);sDiff[r]=(sDiff[r]||0)+1;if(r>=4&&!retryIds.includes(current.id)){retryIds.push(current.id);const ww=db.words.find(w=>w.id===current.id);if(ww)queue.push(Object.assign({},ww));}logActivity();updateStreak();saveDb();showNext();}
@@ -577,7 +685,7 @@ function updateStreak(){const t=today();if(db.lastStudy!==t){db.streak=(db.lastS
 function updateStats(){document.getElementById('st-total').textContent=(db.words||[]).length;document.getElementById('st-known').textContent=(db.words||[]).filter(w=>w.known).length;document.getElementById('st-unknown').textContent=(db.words||[]).filter(w=>!w.known&&(w.difficulty||0)>0&&!w.skipped).length;document.getElementById('st-skip').textContent=(db.words||[]).filter(w=>w.skipped||(!(w.difficulty||0)&&!w.known)).length;updateSelCount();}
 
 // ADD
-window.bulkAdd=function(){const raw=document.getElementById('f-bulk').value.trim();if(!raw){showToast('Once listeyi yapistir');return;}let words;try{words=JSON.parse(raw);}catch(e){showToast('Format hatasi');return;}if(!Array.isArray(words)){showToast('[ ] icinde olmali');return;}if(!db.words)db.words=[];let added=0;words.forEach(w=>{if(!w.word||!w.tr)return;if(db.words.find(x=>x.word.toLowerCase()===w.word.toLowerCase()))return;db.words.push({id:Date.now()+Math.random(),word:w.word,tr:w.tr,pos:w.pos||'',register:w.register||'formal',collocation:w.collocation||'',example:w.example||'',example2:w.example2||'',trap:w.trap||'',episode:w.episode||'',interval:1,ease:2.5,reviews:0,known:false,skipped:false,difficulty:0,nextReview:null});added++;});saveDb();document.getElementById('f-bulk').value='';showToast(added+' kelime eklendi');updateStats();buildFilterPanel();};
+window.bulkAdd=function(){const raw=document.getElementById('f-bulk').value.trim();if(!raw){showToast('Once listeyi yapistir');return;}let words;try{words=JSON.parse(raw);}catch(e){showToast('Format hatasi');return;}if(!Array.isArray(words)){showToast('[ ] icinde olmali');return;}if(!db.words)db.words=[];let added=0;words.forEach(w=>{if(!w.word||!w.tr)return;if(db.words.find(x=>x.word.toLowerCase()===w.word.toLowerCase()))return;db.words.push({id:Date.now()+Math.random(),word:w.word,tr:w.tr,pos:w.pos||'',register:w.register||'formal',collocation:w.collocation||'',example:w.example||'',example2:w.example2||'',fill_sentences:w.fill_sentences||[],trap:w.trap||'',episode:w.episode||'',interval:1,ease:2.5,reviews:0,known:false,skipped:false,difficulty:0,nextReview:null});added++;});saveDb();document.getElementById('f-bulk').value='';showToast(added+' kelime eklendi');updateStats();buildFilterPanel();};
 window.addOne=function(){const word=document.getElementById('f-word').value.trim();const tr=document.getElementById('f-tr').value.trim();if(!word||!tr){showToast('Kelime ve anlam zorunlu');return;}if(!db.words)db.words=[];if(db.words.find(x=>x.word.toLowerCase()===word.toLowerCase())){showToast('Zaten var');return;}db.words.push({id:Date.now(),word,tr,pos:document.getElementById('f-pos').value,register:document.getElementById('f-reg').value,collocation:document.getElementById('f-col').value.trim(),example:document.getElementById('f-ex').value.trim(),example2:document.getElementById('f-ex2').value.trim(),trap:document.getElementById('f-trap').value.trim(),episode:document.getElementById('f-ep').value.trim(),interval:1,ease:2.5,reviews:0,known:false,skipped:false,difficulty:0,nextReview:null});saveDb();['f-word','f-tr','f-col','f-ex','f-ex2','f-trap','f-ep'].forEach(id=>{document.getElementById(id).value='';});showToast(word+' eklendi');updateStats();buildFilterPanel();};
 
 // EXPORT/IMPORT
@@ -594,17 +702,568 @@ window.closeBulkDelete=function(){document.getElementById('bd-sheet').classList.
 window.updateBdCount=function(){const sel=[...document.querySelectorAll('[data-type="bd-ep"].on')].map(c=>c.dataset.val);const n=sel.length===0?0:(db.words||[]).filter(w=>sel.includes(w.episode)).length;document.getElementById('bd-count').textContent=sel.length===0?'Bolum secilmedi':n+' kelime silinecek';};
 window.confirmBulkDelete=function(){const sel=[...document.querySelectorAll('[data-type="bd-ep"].on')].map(c=>c.dataset.val);if(!sel.length){showToast('Once bolum sec');return;}const n=(db.words||[]).filter(w=>sel.includes(w.episode)).length;if(!n){showToast('Bu bolumlerde kelime yok');window.closeBulkDelete();return;}db.words=(db.words||[]).filter(w=>!sel.includes(w.episode));saveDb();window.closeBulkDelete();renderList('all');updateStats();buildFilterPanel();showToast(n+' kelime silindi');};
 
+window.db=db;
+window.getEps=getEps;
 window.showAddScreen=function(){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.getElementById('screen-add').classList.add('active');};
-window.showScreen=function(name,btn){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.getElementById('screen-'+name).classList.add('active');if(btn)btn.classList.add('active');if(name==='study'){document.getElementById('study-home').style.display='block';document.getElementById('study-card').style.display='none';buildFilterPanel();buildWeekChart();}if(name==='list')renderList('all');updateStats();};
+window.showScreen=function(name,btn){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.getElementById('screen-'+name).classList.add('active');if(btn)btn.classList.add('active');if(name==='study'){document.getElementById('study-home').style.display='block';document.getElementById('study-card').style.display='none';buildFilterPanel();buildWeekChart();}if(name==='quiz'){buildQuizEpChips();document.getElementById('quiz-home').style.display='block';document.getElementById('quiz-area').style.display='none';}if(name==='list')renderList('all');updateStats();};
+
+
 
 
 
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2400);}
+
+// ── QUIZ ──
+const QZ = {queue:[], idx:0, correct:0, wrong:0, answered:false, opts:[]};
+
+function qzE(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function qzShuffle(a){ return [...a].sort(()=>Math.random()-.5); }
+function qzDb(){ return db.words||[]; }
+
+function qzBuildEpChips(){
+  const row=document.getElementById('quiz-ep-chips'); if(!row)return;
+  const eps=[...new Set(qzDb().map(w=>w.episode).filter(Boolean))].sort();
+  row.innerHTML=eps.length===0
+    ?'<span style="font-size:12px;color:var(--muted)">Kelime yok</span>'
+    :eps.map(ep=>`<div class="chip" data-type="quiz-ep" data-val="${ep}">${ep}</div>`).join('');
+  row.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{
+    c.classList.toggle('on'); qzCount();
+  }));
+  qzCount();
+}
+
+function qzCount(){
+  const sel=[...document.querySelectorAll('[data-type="quiz-ep"].on')].map(c=>c.dataset.val);
+  const words=qzDb().filter(w=>w.word&&w.tr&&(sel.length===0||sel.includes(w.episode)));
+  const el=document.getElementById('quiz-count');
+  if(el)el.textContent=words.length>0?words.length+' kelime secili':'';
+}
+
+function qzStart(){
+  const sel=[...document.querySelectorAll('[data-type="quiz-ep"].on')].map(c=>c.dataset.val);
+  let words=qzDb().filter(w=>w.word&&w.tr);
+  if(sel.length>0)words=words.filter(w=>sel.includes(w.episode));
+  if(words.length<4){showToast('En az 4 kelime lazim');return;}
+  Object.assign(QZ,{queue:qzShuffle(words),idx:0,correct:0,wrong:0});
+  document.getElementById('quiz-home').style.display='none';
+  document.getElementById('quiz-area').style.display='block';
+  qzShow();
+}
+
+function qzProgress(){
+  const f=document.getElementById('quiz-prog-fill');
+  const t=document.getElementById('quiz-prog-text');
+  if(f)f.style.width=Math.round(QZ.idx/QZ.queue.length*100)+'%';
+  if(t)t.textContent=(QZ.idx+1)+'/'+QZ.queue.length;
+}
+
+function qzShow(){
+  if(QZ.idx>=QZ.queue.length){qzSummary();return;}
+  QZ.answered=false; qzProgress();
+  const w=QZ.queue[QZ.idx];
+  const all=qzDb();
+  const box=document.getElementById('quiz-content'); if(!box)return;
+
+  const others=qzShuffle(all.filter(x=>x.id!==w.id&&x.tr)).slice(0,3);
+  QZ.opts=qzShuffle([{t:w.tr,ok:true},...others.map(o=>({t:o.tr,ok:false}))]);
+
+  const card=document.createElement('div');
+  card.className='flashcard';card.style.minHeight='auto';card.style.marginBottom='10px';
+  card.innerHTML=`
+    <div class="card-top"><div class="card-ep">${qzE(w.episode||'')}</div></div>
+    <div class="card-word">${qzE(w.word)}</div>
+    ${w.pos?`<div class="card-pos">${qzE(w.pos)}</div>`:''}
+    <button class="speak-btn" id="qz-speak">&#9654; Telaffuz</button>`;
+
+  const label=document.createElement('div');
+  label.style.cssText='font-size:11px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em';
+  label.textContent='Turkce anlami nedir?';
+
+  const optsDiv=document.createElement('div');
+  optsDiv.className='quiz-options';
+
+  const fb=document.createElement('div');fb.id='qz-fb';
+
+  QZ.opts.forEach((o,i)=>{
+    const btn=document.createElement('button');
+    btn.className='quiz-option';
+    btn.textContent=o.t;
+    btn.addEventListener('click',()=>qzAnswer(i));
+    optsDiv.appendChild(btn);
+  });
+
+  box.innerHTML='';
+  box.append(card,label,optsDiv,fb);
+
+  document.getElementById('qz-speak').addEventListener('click',e=>{
+    e.stopPropagation(); speak(w.word);
+  });
+}
+
+function qzAnswer(i){
+  if(QZ.answered)return; QZ.answered=true;
+  const w=QZ.queue[QZ.idx];
+  const ok=QZ.opts[i].ok;
+  const btns=document.querySelectorAll('.quiz-options .quiz-option');
+  btns.forEach(b=>b.disabled=true);
+  if(btns[i])btns[i].classList.add(ok?'correct':'wrong');
+  if(!ok) QZ.opts.forEach((o,j)=>{if(o.ok&&btns[j])btns[j].classList.add('reveal');});
+  if(ok){QZ.correct++;speak(w.word);}else{QZ.wrong++;}
+
+  const regCls={formal:'reg-formal',informal:'reg-informal',slang:'reg-slang',legal:'reg-legal'}[w.register]||'';
+  const detail=document.createElement('div');
+  detail.style.cssText='margin-top:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;border-top:3px solid '+(ok?'var(--green)':'var(--red)');
+  detail.innerHTML=`
+    <div style="font-size:12px;font-weight:700;color:${ok?'var(--green)':'var(--red)'};margin-bottom:10px">${ok?'Dogru!':'Yanlis'}</div>
+    <div class="card-tr">${qzE(w.tr)}</div>
+    ${w.register?`<span class="card-register ${regCls}">${qzE(w.register)}</span>`:''}
+    ${w.collocation?`<div class="card-colloc" style="margin-top:10px">Colocation: <span>${qzE(w.collocation)}</span></div>`:''}
+    ${w.example?`<div class="card-example" style="margin-top:8px">"${qzE(w.example)}"</div>`:''}
+    ${w.example2?`<div class="card-example" style="margin-top:6px">"${qzE(w.example2)}"</div>`:''}
+    ${w.trap?`<div class="card-trap" style="margin-top:8px"><strong>Dikkat:</strong> ${qzE(w.trap)}</div>`:''}`;
+
+  const nb=document.createElement('button');
+  nb.className='quiz-next-btn';
+  nb.textContent=(QZ.idx+1<QZ.queue.length)?'Sonraki':'Sonucu Gor';
+  nb.addEventListener('click',()=>{QZ.idx++;qzShow();});
+
+  const fb=document.getElementById('qz-fb');
+  if(fb){fb.appendChild(detail);fb.appendChild(nb);}
+}
+
+
+// ── FILL MODE (yeni format: fill_sentences + parts) ──
+const FZ = {queue:[], idx:0, correct:0, wrong:0, answered:false, opts:[], currentSentence:null, currentW:null};
+
+function fzGetSentences(w){
+  // fill_sentences array varsa kullan, yoksa eski example/example2'ye bak
+  if(w.fill_sentences && w.fill_sentences.length > 0) return w.fill_sentences;
+  const fallback = [];
+  if(w.example) fallback.push({sentence: w.example, parts: [w.word]});
+  if(w.example2) fallback.push({sentence: w.example2, parts: [w.word]});
+  return fallback;
+}
+
+function fzBuildSentence(item, w){
+  // item: {sentence, parts} veya string
+  if(typeof item === 'string'){
+    // eski format - string ise
+    const re = new RegExp(w.word.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi');
+    if(!re.test(item)) return null;
+    return {
+      display: qzE(item).replace(new RegExp(w.word.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),
+        '<span style="color:var(--accent);font-weight:700">_____</span>'),
+      answer: w.word
+    };
+  }
+  // yeni format - {sentence, parts}
+  const {sentence, parts} = item;
+  let display = qzE(sentence);
+  // Her _____ i sırayla parts ile eşleştir
+  const blanks = (sentence.match(/_____/g)||[]).length;
+  if(blanks === 0) return null;
+  return {
+    display: display.replace(/_____/g, '<span style="color:var(--accent);font-weight:700;font-size:18px">_____</span>'),
+    answer: w.word,  // şık her zaman base form
+    parts: parts     // cevap gösterimde kullanılacak
+  };
+}
+
+function fzStart(){
+  const sel=[...document.querySelectorAll('[data-type="quiz-ep"].on')].map(c=>c.dataset.val);
+  let words=qzDb().filter(w=>w.word&&w.tr&&fzGetSentences(w).length>0);
+  if(sel.length>0)words=words.filter(w=>sel.includes(w.episode));
+  if(words.length<4){showToast('En az 4 ornek cumleli kelime lazim');return;}
+  
+  // Her kelimeden session'da 2 farklı cümle seç, queue'ya ekle
+  const sessionQueue = [];
+  qzShuffle(words).forEach(w => {
+    const sents = qzShuffle(fzGetSentences(w));
+    const picked = sents.slice(0, Math.min(2, sents.length));
+    picked.forEach(s => sessionQueue.push({w, sentItem: s}));
+  });
+  
+  Object.assign(FZ,{queue:qzShuffle(sessionQueue),idx:0,correct:0,wrong:0});
+  document.getElementById('quiz-home').style.display='none';
+  document.getElementById('quiz-area').style.display='block';
+  fzShow();
+}
+
+function fzProgress(){
+  const f=document.getElementById('quiz-prog-fill');
+  const t=document.getElementById('quiz-prog-text');
+  if(f)f.style.width=Math.round(FZ.idx/FZ.queue.length*100)+'%';
+  if(t)t.textContent=(FZ.idx+1)+'/'+FZ.queue.length;
+}
+
+function fzShow(){
+  if(FZ.idx>=FZ.queue.length){fzSummary();return;}
+  FZ.answered=false; fzProgress();
+  const {w, sentItem} = FZ.queue[FZ.idx];
+  const all=qzDb();
+  const box=document.getElementById('quiz-content');if(!box)return;
+
+  const built = fzBuildSentence(sentItem, w);
+  if(!built){FZ.idx++;fzShow();return;}
+  FZ.currentSentence = built;
+  FZ.currentW = w;
+
+  const others=qzShuffle(all.filter(x=>x.id!==w.id&&x.word)).slice(0,3);
+  FZ.opts=qzShuffle([{t:w.word,ok:true},...others.map(o=>({t:o.word,ok:false}))]);
+
+  const card=document.createElement('div');
+  card.className='flashcard';card.style.minHeight='auto';card.style.marginBottom='10px';
+  card.innerHTML=`
+    <div class="card-top"><div class="card-ep">${qzE(w.episode||'')}</div></div>
+    <div style="font-size:16px;line-height:1.9;color:var(--text);margin-bottom:12px">${built.display}</div>`;
+
+  const label=document.createElement('div');
+  label.style.cssText='font-size:11px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em';
+  label.textContent='Bosluga hangi kelime gelir?';
+
+  const optsDiv=document.createElement('div');
+  optsDiv.className='quiz-options';
+  const fb=document.createElement('div');fb.id='qz-fb';
+
+  FZ.opts.forEach((o,i)=>{
+    const btn=document.createElement('button');
+    btn.className='quiz-option';btn.textContent=o.t;
+    btn.addEventListener('click',()=>fzAnswer(i));
+    optsDiv.appendChild(btn);
+  });
+
+  box.innerHTML='';
+  box.append(card,label,optsDiv,fb);
+}
+
+function fzAnswer(i){
+  if(FZ.answered)return; FZ.answered=true;
+  const w = FZ.currentW;
+  const built = FZ.currentSentence;
+  const ok=FZ.opts[i].ok;
+  const btns=document.querySelectorAll('.quiz-options .quiz-option');
+  btns.forEach(b=>b.disabled=true);
+  if(btns[i])btns[i].classList.add(ok?'correct':'wrong');
+  if(!ok)FZ.opts.forEach((o,j)=>{if(o.ok&&btns[j])btns[j].classList.add('reveal');});
+  if(ok){FZ.correct++;speak(w.word);}else{FZ.wrong++;}
+
+  // Dolu cümleyi göster
+  let filledSentence = built.display;
+  if(built.parts && built.parts.length > 0){
+    let pi = 0;
+    filledSentence = filledSentence.replace(/<span style="color:var\(--accent\);font-weight:700;font-size:18px">_____<\/span>/g, ()=>{
+      const part = built.parts[pi++] || '';
+      return '<span style="color:var(--green);font-weight:700;text-decoration:underline">'+qzE(part)+'</span>';
+    });
+  }
+
+  const regCls={formal:'reg-formal',informal:'reg-informal',slang:'reg-slang',legal:'reg-legal'}[w.register]||'';
+  const detail=document.createElement('div');
+  detail.style.cssText='margin-top:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;border-top:3px solid '+(ok?'var(--green)':'var(--red)');
+  detail.innerHTML=`
+    <div style="font-size:12px;font-weight:700;color:${ok?'var(--green)':'var(--red)'};margin-bottom:10px">${ok?'Dogru! — '+qzE(w.word):'Yanlis — Dogru: '+qzE(w.word)}</div>
+    <div style="font-size:15px;line-height:1.8;margin-bottom:12px;color:var(--text)">${filledSentence}</div>
+    <div class="card-tr">${qzE(w.tr)}</div>
+    ${w.register?`<span class="card-register ${regCls}">${qzE(w.register)}</span>`:''}
+    ${w.collocation?`<div class="card-colloc" style="margin-top:10px">Colocation: <span>${qzE(w.collocation)}</span></div>`:''}
+    ${w.example?`<div class="card-example" style="margin-top:8px">"${qzE(w.example)}"</div>`:''}
+    ${w.example2?`<div class="card-example" style="margin-top:6px">"${qzE(w.example2)}"</div>`:''}
+    ${w.trap?`<div class="card-trap" style="margin-top:8px"><strong>Dikkat:</strong> ${qzE(w.trap)}</div>`:''}`;
+
+  const nb=document.createElement('button');
+  nb.className='quiz-next-btn';
+  nb.textContent=(FZ.idx+1<FZ.queue.length)?'Sonraki':'Sonucu Gor';
+  nb.addEventListener('click',()=>{FZ.idx++;fzShow();});
+
+  const fb=document.getElementById('qz-fb');
+  if(fb){fb.appendChild(detail);fb.appendChild(nb);}
+}
+
+function fzSummary(){
+  const total = FZ.queue.length;
+  const pct=Math.round(FZ.correct/total*100);
+  const f=document.getElementById('quiz-prog-fill');if(f)f.style.width='100%';
+  const box=document.getElementById('quiz-content');
+  const sum=document.createElement('div');sum.className='quiz-summary';
+  sum.innerHTML=`
+    <div class="quiz-summary-title">Bitti!</div>
+    <div class="quiz-summary-sub">${total} soru &middot; %${pct} basari</div>
+    <div class="quiz-score-grid">
+      <div class="quiz-score-item"><div class="quiz-score-n" style="color:var(--green)">${FZ.correct}</div><div class="quiz-score-l">Dogru</div></div>
+      <div class="quiz-score-item"><div class="quiz-score-n" style="color:var(--red)">${FZ.wrong}</div><div class="quiz-score-l">Yanlis</div></div>
+      <div class="quiz-score-item"><div class="quiz-score-n" style="color:var(--accent)">%${pct}</div><div class="quiz-score-l">Basari</div></div>
+    </div>`;
+  const tekrar=document.createElement('button');tekrar.className='quiz-again-btn';tekrar.textContent='Tekrar';tekrar.addEventListener('click',fzStart);
+  const geri=document.createElement('button');geri.className='quiz-back-btn';geri.textContent='Geri';
+  geri.addEventListener('click',()=>{
+    document.getElementById('quiz-home').style.display='block';
+    document.getElementById('quiz-area').style.display='none';
+    qzBuildEpChips();
+  });
+  box.innerHTML='';box.append(sum,tekrar,geri);
+}
+
+function qzSummary(){
+  const pct=Math.round(QZ.correct/QZ.queue.length*100);
+  const f=document.getElementById('quiz-prog-fill');if(f)f.style.width='100%';
+  const box=document.getElementById('quiz-content');
+  box.innerHTML=`
+    <div class="quiz-summary">
+      <div class="quiz-summary-title">Bitti!</div>
+      <div class="quiz-summary-sub">${QZ.queue.length} soru &middot; %${pct} basari</div>
+      <div class="quiz-score-grid">
+        <div class="quiz-score-item"><div class="quiz-score-n" style="color:var(--green)">${QZ.correct}</div><div class="quiz-score-l">Dogru</div></div>
+        <div class="quiz-score-item"><div class="quiz-score-n" style="color:var(--red)">${QZ.wrong}</div><div class="quiz-score-l">Yanlis</div></div>
+        <div class="quiz-score-item"><div class="quiz-score-n" style="color:var(--accent)">%${pct}</div><div class="quiz-score-l">Basari</div></div>
+      </div>
+      <div id="qz-sum-btns"></div>
+    </div>`;
+  const tekrar=document.createElement('button');
+  tekrar.className='quiz-again-btn';tekrar.textContent='Tekrar';
+  tekrar.addEventListener('click',qzStart);
+  const geri=document.createElement('button');
+  geri.className='quiz-back-btn';geri.textContent='Geri';
+  geri.addEventListener('click',()=>{
+    document.getElementById('quiz-home').style.display='block';
+    document.getElementById('quiz-area').style.display='none';
+    qzBuildEpChips();
+  });
+  const btnsDiv=document.getElementById('qz-sum-btns');
+  btnsDiv.appendChild(tekrar);btnsDiv.appendChild(geri);
+}
+
+// showScreen quiz hook
+const _origShowScreen=window.showScreen;
+window.showScreen=function(name,btn){
+  _origShowScreen(name,btn);
+  if(name==='quiz')qzBuildEpChips();
+};
+
+// Quiz start button
+document.addEventListener('DOMContentLoaded',()=>{
+  const sb=document.getElementById('quiz-start-btn');
+  if(sb)sb.addEventListener('click',qzStart);
+});
+// Fallback if DOMContentLoaded already fired
+const sb=document.getElementById('quiz-start-btn');
+if(sb)sb.addEventListener('click',qzStart);
+const fb2=document.getElementById('quiz-fill-btn');
+if(fb2)fb2.addEventListener('click',fzStart);
+
+
 window.showToast=showToast;
+
+// QUIZ MODULE - clean version
+(function(){
+
+var quizMode='mcq';
+var quizQueue=[];
+var quizIdx=0;
+var quizCorrect=0;
+var quizWrong=0;
+var quizAnswered=false;
+
+window.selectQuizMode=function(el,mode){
+  quizMode=mode;
+  document.querySelectorAll('.quiz-mode-card').forEach(function(c){c.classList.remove('selected');});
+  el.classList.add('selected');
+};
+
+window.buildQuizEpChips=function(){
+  var row=document.getElementById('quiz-ep-chips');if(!row)return;
+  var eps=window.getEps?window.getEps():[];
+  row.innerHTML=eps.length===0?'<span style="font-size:12px;color:var(--muted)">Kelime yok</span>':
+    eps.map(function(ep){return '<div class="chip" data-type="quiz-ep" data-val="'+ep+'" onclick="toggleChip(this)">'+ep+'</div>';}).join('');
+};
+
+function getQuizWords(){
+  var sel=[].slice.call(document.querySelectorAll('[data-type="quiz-ep"].on')).map(function(c){return c.dataset.val;});
+  var words=(window.db&&window.db.words?window.db.words:[]).filter(function(w){return w.word&&w.tr;});
+  if(sel.length>0)words=words.filter(function(w){return sel.includes(w.episode);});
+  return words;
+}
+
+function shuffle(arr){return arr.slice().sort(function(){return Math.random()-.5;});}
+
+window.startQuiz=function(){
+  var words=getQuizWords();
+  if(words.length<4){window.showToast('En az 4 kelime lazim');return;}
+  quizQueue=shuffle(words);
+  quizIdx=0;quizCorrect=0;quizWrong=0;
+  document.getElementById('quiz-home').style.display='none';
+  document.getElementById('quiz-area').style.display='block';
+  showQ();
+};
+
+function updateProgress(){
+  var total=quizQueue.length;
+  var pct=Math.round(quizIdx/total*100);
+  var fill=document.getElementById('quiz-prog-fill');
+  var txt=document.getElementById('quiz-prog-text');
+  if(fill)fill.style.width=pct+'%';
+  if(txt)txt.textContent=(quizIdx+1)+'/'+total;
+}
+
+function showQ(){
+  if(quizIdx>=quizQueue.length){showSummary();return;}
+  quizAnswered=false;
+  updateProgress();
+  var w=quizQueue[quizIdx];
+  var allWords=(window.db&&window.db.words?window.db.words:[]);
+  var content=document.getElementById('quiz-content');
+  if(!content)return;
+
+  if(quizMode==='mcq'){
+    var others=shuffle(allWords.filter(function(x){return x.id!==w.id&&x.tr;})).slice(0,3);
+    var options=shuffle([{text:w.tr,correct:true}].concat(others.map(function(o){return {text:o.tr,correct:false};})));
+    var html='<div class="quiz-card">';
+    html+='<div class="quiz-label">Bu kelimenin Turkce anlami nedir?</div>';
+    html+='<div class="quiz-question">'+escHtml(w.word)+'</div>';
+    html+='<div class="quiz-ep">'+(w.pos||'')+((w.pos&&w.episode)?' · ':''+(w.episode||''))+'</div>';
+    html+='<button class="speak-btn" onclick="window.speak(\''+esc(w.word)+'\')">&#9654; Telaffuz</button>';
+    html+='</div><div class="quiz-options" id="quiz-opts">';
+    options.forEach(function(o,i){
+      html+='<button class="quiz-option" data-correct="'+o.correct+'" data-word="'+esc(w.word)+'" data-answer="'+esc(w.tr)+'" onclick="window.checkMcq(this)">'+escHtml(o.text)+'</button>';
+    });
+    html+='</div>';
+    content.innerHTML=html;
+
+  } else if(quizMode==='fill'){
+    var ex=w.example||w.example2||'';
+    var sentence=ex?ex.replace(new RegExp(w.word,'gi'),'_____'):('_____ : '+w.tr);
+    var html='<div class="quiz-card">';
+    html+='<div class="quiz-label">Boslugu doldurun</div>';
+    html+='<div class="fill-blank">'+escHtml(sentence)+'</div>';
+    html+='<div class="quiz-ep">'+(w.episode||'')+'</div>';
+    html+='</div>';
+    html+='<input class="quiz-input" id="qinput" placeholder="Cevabin..." autocomplete="off">';
+    html+='<button class="quiz-check-btn" id="qcheckbtn">Kontrol et</button>';
+    html+='<div id="quiz-feedback"></div>';
+    content.innerHTML=html;
+    document.getElementById('qinput').addEventListener('keydown',function(e){if(e.key==='Enter')doFill(w.word,w.tr);});
+    document.getElementById('qcheckbtn').addEventListener('click',function(){doFill(w.word,w.tr);});
+    setTimeout(function(){var inp=document.getElementById('qinput');if(inp)inp.focus();},200);
+
+  } else if(quizMode==='rev'){
+    var html='<div class="quiz-card">';
+    html+='<div class="quiz-label">Ingilizce kelimeyi yazin</div>';
+    html+='<div class="quiz-question">'+escHtml(w.tr)+'</div>';
+    html+='<div class="quiz-ep">'+(w.pos||'')+((w.episode)?' · '+w.episode:'')+'</div>';
+    if(w.collocation)html+='<div class="quiz-ep">Ipucu: '+escHtml(w.collocation.split('/')[0])+'</div>';
+    html+='</div>';
+    html+='<input class="quiz-input" id="qinput" placeholder="Ingilizce..." autocomplete="off">';
+    html+='<button class="quiz-check-btn" id="qcheckbtn">Kontrol et</button>';
+    html+='<div id="quiz-feedback"></div>';
+    content.innerHTML=html;
+    document.getElementById('qinput').addEventListener('keydown',function(e){if(e.key==='Enter')doRev(w.word);});
+    document.getElementById('qcheckbtn').addEventListener('click',function(){doRev(w.word);});
+    setTimeout(function(){var inp=document.getElementById('qinput');if(inp)inp.focus();},200);
+
+  } else if(quizMode==='col'){
+    if(!w.collocation){quizIdx++;showQ();return;}
+    var others=shuffle(allWords.filter(function(x){return x.id!==w.id&&x.collocation;})).slice(0,3);
+    if(others.length<3){quizIdx++;showQ();return;}
+    var correct=w.collocation.split('/')[0].trim();
+    var options=shuffle([{text:correct,correct:true}].concat(others.map(function(o){return {text:o.collocation.split('/')[0].trim(),correct:false};})));
+    var html='<div class="quiz-card">';
+    html+='<div class="quiz-label">Dogru colocation hangisi?</div>';
+    html+='<div class="quiz-question">'+escHtml(w.word)+'</div>';
+    html+='<div class="quiz-ep">'+escHtml(w.tr)+((w.episode)?' · '+w.episode:'')+'</div>';
+    html+='</div><div class="quiz-options" id="quiz-opts">';
+    options.forEach(function(o){
+      html+='<button class="quiz-option" data-correct="'+o.correct+'" data-word="'+esc(w.word)+'" data-answer="'+esc(correct)+'" onclick="window.checkMcq(this)">'+escHtml(o.text)+'</button>';
+    });
+    html+='</div>';
+    content.innerHTML=html;
+  }
+}
+
+function esc(str){return (str||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
+function escHtml(str){return (str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function addNextBtn(){
+  var nb=document.createElement('button');
+  nb.className='quiz-next-btn';nb.style.marginTop='10px';
+  nb.textContent=(quizIdx+1<quizQueue.length)?'Sonraki':'Bitir';
+  nb.addEventListener('click',function(){quizIdx++;showQ();});
+  document.getElementById('quiz-content').appendChild(nb);
+}
+
+window.checkMcq=function(btn){
+  if(quizAnswered)return;
+  quizAnswered=true;
+  var correct=btn.dataset.correct==='true';
+  var word=btn.dataset.word;
+  var answer=btn.dataset.answer;
+  [].slice.call(document.querySelectorAll('.quiz-option')).forEach(function(b){
+    b.disabled=true;
+    if(b.dataset.correct==='true')b.classList.add('reveal');
+  });
+  if(correct){btn.classList.add('correct');quizCorrect++;if(word)window.speak(word);}
+  else{btn.classList.add('wrong');quizWrong++;}
+  var fb=document.createElement('div');
+  fb.className='quiz-feedback '+(correct?'correct':'wrong');
+  fb.textContent=correct?('Dogru! '+word):('Yanlis. Dogru: '+answer);
+  document.getElementById('quiz-content').appendChild(fb);
+  addNextBtn();
+};
+
+function doFill(word,tr){
+  if(quizAnswered)return;
+  var inp=document.getElementById('qinput');if(!inp)return;
+  var val=inp.value.trim().toLowerCase();
+  var correct=val===word.toLowerCase()||(val.length>=3&&word.toLowerCase().startsWith(val.substring(0,Math.min(val.length,4))));
+  quizAnswered=true;inp.disabled=true;
+  var fb=document.getElementById('quiz-feedback');
+  if(correct){quizCorrect++;fb.className='quiz-feedback correct';fb.textContent='Dogru! '+word;window.speak(word);}
+  else{quizWrong++;fb.className='quiz-feedback wrong';fb.textContent='Yanlis. Dogru: '+word+' ('+tr+')';}
+  addNextBtn();
+}
+
+function doRev(word){
+  if(quizAnswered)return;
+  var inp=document.getElementById('qinput');if(!inp)return;
+  var val=inp.value.trim().toLowerCase();
+  var correct=val===word.toLowerCase()||(val.length>=3&&word.toLowerCase().startsWith(val.substring(0,Math.min(val.length,4))));
+  quizAnswered=true;inp.disabled=true;
+  var fb=document.getElementById('quiz-feedback');
+  if(correct){quizCorrect++;fb.className='quiz-feedback correct';fb.textContent='Dogru! '+word;window.speak(word);}
+  else{quizWrong++;fb.className='quiz-feedback wrong';fb.textContent='Yanlis. Dogru: '+word;}
+  addNextBtn();
+}
+
+function showSummary(){
+  var total=quizQueue.length;
+  var pct=Math.round(quizCorrect/total*100);
+  var fill=document.getElementById('quiz-prog-fill');
+  if(fill)fill.style.width='100%';
+  document.getElementById('quiz-content').innerHTML=
+    '<div class="quiz-summary">'+
+    '<div class="quiz-summary-title">Bitti!</div>'+
+    '<div class="quiz-summary-sub">'+total+' soru &middot; %'+pct+' basari</div>'+
+    '<div class="quiz-score-grid">'+
+      '<div class="quiz-score-item"><div class="quiz-score-n" style="color:var(--green)">'+quizCorrect+'</div><div class="quiz-score-l">Dogru</div></div>'+
+      '<div class="quiz-score-item"><div class="quiz-score-n" style="color:var(--red)">'+quizWrong+'</div><div class="quiz-score-l">Yanlis</div></div>'+
+      '<div class="quiz-score-item"><div class="quiz-score-n" style="color:var(--accent)">%'+pct+'</div><div class="quiz-score-l">Basari</div></div>'+
+    '</div>'+
+    '<button class="quiz-again-btn" onclick="window.startQuiz()">Tekrar</button>'+
+    '<button class="quiz-back-btn" onclick="window.backToQuizHome()">Mod sec</button>'+
+    '</div>';
+}
+
+window.backToQuizHome=function(){
+  document.getElementById('quiz-home').style.display='block';
+  document.getElementById('quiz-area').style.display='none';
+  window.buildQuizEpChips();
+};
+
+})();
+
 
 document.getElementById('confirm-overlay').addEventListener('click',function(e){if(e.target===this)window.closeConfirm();});
 try{window.speechSynthesis&&(window.speechSynthesis.onvoiceschanged=()=>{});}catch(e){}
 initTheme();updateStats();buildWeekChart();
+
 </script>
 </body>
 </html>
