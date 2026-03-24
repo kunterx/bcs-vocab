@@ -647,7 +647,7 @@ function updateModeResumeBtns(){
         existing.className='mode-btn-resume';
         btn.querySelector('.mode-btn-left').appendChild(existing);
       }
-      existing.innerHTML='<button class="resume-btn" onclick="event.stopPropagation();resumeMode(''+mode+'')">▶ Devam Et'+(label?' <span style="opacity:.7;font-size:9px">'+label+'</span>':'')+'</button><button class="finish-btn" onclick="event.stopPropagation();discardSession(''+mode+'')">✕ Sil</button>';
+      existing.innerHTML='<button class="resume-btn" onclick="event.stopPropagation();resumeMode(&quot;'+mode+'&quot;)">▶ Devam Et'+(label?' <span style="opacity:.7;font-size:9px">'+label+'</span>':'')+'</button><button class="finish-btn" onclick="event.stopPropagation();discardSession(&quot;'+mode+'&quot;)">✕ Sil</button>';
     } else {
       if(existing)existing.remove();
     }
@@ -776,7 +776,7 @@ function calcDiff(w,r){if(r>=4){w.interval=1;w.ease=Math.max(1.3,(w.ease||2.5)-0
 function updateStreak(){const t=today();if(db.lastStudy!==t){db.streak=(db.lastStudy===prevDay(t))?db.streak+1:1;db.lastStudy=t;}}
 
 // ── START STUDY ──
-window.startStudy=function(){clearSession();
+window.startStudy=function(){clearSession(currentMode);
   const f=getStudyFilters();
   let words=applyFilters([...(db.words||[])],f,currentMode);
   if(currentMode==='fill'){
