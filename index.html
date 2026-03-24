@@ -157,7 +157,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .type-letter-box.revealed{background:rgba(224,200,112,.13);border-color:var(--accent);color:var(--accent);}
 .type-letter-box.correct-box{background:rgba(80,200,128,.15);border-color:#50c880;color:#50c880;}
 .type-letter-box.wrong-box{background:rgba(208,104,104,.15);border-color:#d06868;color:#d06868;}
-.type-letter-underline{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:60%;height:2px;background:var(--border);border-radius:1px;}
+.type-letter-underline{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:70%;height:2px;background:var(--border);border-radius:1px;}
 .type-action-row{display:flex;gap:8px;margin:10px 0;}
 .hint-btn{flex:1;padding:11px 10px;border-radius:10px;border:1.5px solid var(--accent);background:transparent;color:var(--accent);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;}
 .hint-btn:active{opacity:.7;}
@@ -845,7 +845,7 @@ function showNextFromCurrent(){
 }
 
 // ── SPEECH (Google Cloud TTS + cache) ──
-const GOOGLE_TTS_KEY = 'AIzaSyA25BoEygiQ1dL6cmV9JwtpF5msE1g_gv4';
+const GOOGLE_TTS_KEY = 'YOUR_GOOGLE_TTS_KEY';
 
 // ── TTS CACHE (localStorage — kalıcı) ──
 const TTS_CACHE_PREFIX = 'bcs_tts_';
