@@ -704,6 +704,7 @@ window.discardSession=function(mode){
 
 // Show flashcard for already-set current (resume)
 function showNextFromCurrent(){
+  _quizSwipeLeft=null;_quizSwipeRight=null;
   try{
     const area=document.getElementById('study-area');
     const done=sTotal-queue.length-1;
@@ -799,6 +800,7 @@ window.startStudy=function(){clearSession(currentMode);
 
 // ── FLASHCARD ──
 function showNext(){
+  _quizSwipeLeft=null;_quizSwipeRight=null;
   try{
     const area=document.getElementById('study-area');
     const done=sTotal-queue.length;
