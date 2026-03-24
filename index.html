@@ -241,20 +241,20 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <div class="mode-panel">
         <div class="mode-panel-title">Mod</div>
         <div class="mode-buttons">
-          <div class="mode-btn on" data-mode="en-tr" onclick="selectMode(this)">
-            <div class="mode-btn-left"><span class="mode-btn-title">İngilizce → Türkçe</span><span class="mode-btn-sub">Kelimeyi gör, anlamı bul</span></div>
-            <span class="mode-btn-arrow">›</span>
-          </div>
-          <div class="mode-btn" data-mode="tr-en" onclick="selectMode(this)">
-            <div class="mode-btn-left"><span class="mode-btn-title">Türkçe → İngilizce</span><span class="mode-btn-sub">Anlamı gör, kelimeyi bul</span></div>
+          <div class="mode-btn on" data-mode="fill" onclick="selectMode(this)">
+            <div class="mode-btn-left"><span class="mode-btn-title">Boşluk Doldur</span><span class="mode-btn-sub">Cümledeki boşluğu tamamla</span></div>
             <span class="mode-btn-arrow">›</span>
           </div>
           <div class="mode-btn" data-mode="mcq" onclick="selectMode(this)">
             <div class="mode-btn-left"><span class="mode-btn-title">Çoktan Seçmeli</span><span class="mode-btn-sub">İngilizce → Türkçe, 4 şık</span></div>
             <span class="mode-btn-arrow">›</span>
           </div>
-          <div class="mode-btn" data-mode="fill" onclick="selectMode(this)">
-            <div class="mode-btn-left"><span class="mode-btn-title">Boşluk Doldur</span><span class="mode-btn-sub">Cümledeki boşluğu tamamla</span></div>
+          <div class="mode-btn" data-mode="en-tr" onclick="selectMode(this)">
+            <div class="mode-btn-left"><span class="mode-btn-title">İngilizce → Türkçe</span><span class="mode-btn-sub">Kelimeyi gör, anlamı bul</span></div>
+            <span class="mode-btn-arrow">›</span>
+          </div>
+          <div class="mode-btn" data-mode="tr-en" onclick="selectMode(this)">
+            <div class="mode-btn-left"><span class="mode-btn-title">Türkçe → İngilizce</span><span class="mode-btn-sub">Anlamı gör, kelimeyi bul</span></div>
             <span class="mode-btn-arrow">›</span>
           </div>
         </div>
@@ -288,7 +288,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
   <div class="screen" id="screen-list">
     <div class="list-toolbar">
       <button class="tool-btn" onclick="showAddScreen()">+ Ekle</button>
-      <button class="tool-btn" onclick="exportData()">Dışa aktar</button>
+      <button class="tool-btn" onclick="openRenameSheet()">Düzenle</button>
       <button class="tool-btn" onclick="openThemeSheet()">Tema</button>
       <button class="tool-btn" style="color:var(--red)" onclick="openBulkDelete()">Toplu sil</button>
     </div>
@@ -299,6 +299,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
         <button class="lf-btn active" onclick="resetListFilter(this)">Tümü</button>
         <button class="lf-btn" onclick="openListFilter()">Filtrele</button>
         <button class="lf-btn" onclick="copyListWords()">Kopyala</button>
+        <button class="lf-btn" onclick="exportFiltered()">Dışa Aktar</button>
       </div>
     </div>
     <div class="word-list" id="word-list"></div>
@@ -366,6 +367,27 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
   </div>
 </div>
 
+<!-- RENAME EPISODE SHEET -->
+<div class="sheet-overlay" id="rn-overlay" onclick="closeRenameSheet()"></div>
+<div class="sheet" id="rn-sheet">
+  <div class="sheet-inner">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Bölüm Adını Değiştir</div>
+    <div class="sheet-section">
+      <div class="sheet-label">Bölüm seç</div>
+      <div class="chip-row" id="rn-ep-chips"></div>
+    </div>
+    <div class="sheet-section" id="rn-input-section" style="display:none">
+      <div class="sheet-label">Yeni ad</div>
+      <input class="form-input" id="rn-new-name" placeholder="Yeni bölüm adı" style="margin-top:4px">
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px;">
+      <button class="sheet-apply" style="background:var(--surface);color:var(--text);border:1px solid var(--border);" onclick="closeRenameSheet()">Vazgeç</button>
+      <button class="sheet-apply" id="rn-confirm-btn" style="display:none" onclick="confirmRename()">Yeniden Adlandır</button>
+    </div>
+  </div>
+</div>
+
 <!-- CONFIRM DELETE -->
 <div class="confirm-overlay" id="confirm-overlay">
   <div class="confirm-box">
@@ -406,7 +428,7 @@ let queue=[], retryIds=[], current=null, flipped=false;
 let sKnown=0, sSkipped=0, sDiff={1:0,2:0,3:0,4:0,5:0}, sTotal=0;
 let activeListFilters={eps:[],status:null};
 let pendingDeleteId=null;
-let currentMode='en-tr'; // en-tr | tr-en | mcq | fill
+let currentMode='fill'; // fill | mcq | en-tr | tr-en
 let saveTimer=null;
 let currentListWords=[]; // track currently listed words for copy
 
@@ -991,13 +1013,51 @@ window.addOne=function(){
   showToast(word+' eklendi');updateStats();buildFilterPanel();
 };
 
-// ── EXPORT ──
-window.exportData=function(){
+// ── EXPORT (filtered list) ──
+window.exportFiltered=function(){
+  if(!currentListWords.length){showToast('Liste boş');return;}
   try{
-    const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
-    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='bcs_vocab_yedek.json';a.click();
-    showToast('Disa aktarildi');
+    const blob=new Blob([JSON.stringify(currentListWords,null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='bcs_vocab_export.json';a.click();
+    showToast(currentListWords.length+' kelime dışa aktarıldı');
   }catch(e){showToast('Hata');}
+};
+
+// ── RENAME EPISODE ──
+let selectedRenameEp=null;
+window.openRenameSheet=function(){
+  selectedRenameEp=null;
+  const row=document.getElementById('rn-ep-chips');
+  const eps=getEps();
+  row.innerHTML=eps.length===0?'<span style="font-size:12px;color:var(--muted)">Bölüm yok</span>':eps.map(ep=>'<div class="chip" data-ep="'+escH(ep)+'" onclick="selectRenameEp(this)">'+escH(ep)+'</div>').join('');
+  document.getElementById('rn-input-section').style.display='none';
+  document.getElementById('rn-confirm-btn').style.display='none';
+  document.getElementById('rn-new-name').value='';
+  document.getElementById('rn-sheet').classList.add('show');
+  document.getElementById('rn-overlay').classList.add('show');
+};
+window.closeRenameSheet=function(){
+  document.getElementById('rn-sheet').classList.remove('show');
+  document.getElementById('rn-overlay').classList.remove('show');
+  selectedRenameEp=null;
+};
+window.selectRenameEp=function(el){
+  document.querySelectorAll('#rn-ep-chips .chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  selectedRenameEp=el.dataset.ep;
+  document.getElementById('rn-new-name').value=selectedRenameEp;
+  document.getElementById('rn-input-section').style.display='block';
+  document.getElementById('rn-confirm-btn').style.display='block';
+};
+window.confirmRename=function(){
+  const newName=document.getElementById('rn-new-name').value.trim();
+  if(!selectedRenameEp){showToast('Önce bölüm seç');return;}
+  if(!newName){showToast('Yeni ad boş olamaz');return;}
+  if(newName===selectedRenameEp){closeRenameSheet();return;}
+  const count=(db.words||[]).filter(w=>w.episode===selectedRenameEp).length;
+  (db.words||[]).forEach(w=>{if(w.episode===selectedRenameEp)w.episode=newName;});
+  saveDb();closeRenameSheet();renderList('all');buildFilterPanel();
+  showToast(count+' kelime "'+newName+'" olarak güncellendi');
 };
 
 // ── LIST ──
