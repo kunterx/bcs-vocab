@@ -746,15 +746,32 @@ function showNextFromCurrent(){
 
 // ── SPEECH (Google Cloud TTS + cache) ──
 const GOOGLE_TTS_KEY = 'AIzaSyA25BoEygiQ1dL6cmV9JwtpF5msE1g_gv4';
-const ttsCache = {};
+
+// ── TTS CACHE (localStorage — kalıcı) ──
+const TTS_CACHE_PREFIX = 'bcs_tts_';
+const TTS_CACHE_MAX = 200; // maksimum kaç ses saklanacak
+
+function ttsLoad(text) {
+  try { return localStorage.getItem(TTS_CACHE_PREFIX + text); } catch(e) { return null; }
+}
+function ttsSave(text, audioSrc) {
+  try {
+    // Limit aşılırsa en eski kayıtları temizle
+    const keys = Object.keys(localStorage).filter(k => k.startsWith(TTS_CACHE_PREFIX));
+    if (keys.length >= TTS_CACHE_MAX) {
+      keys.slice(0, keys.length - TTS_CACHE_MAX + 1).forEach(k => localStorage.removeItem(k));
+    }
+    localStorage.setItem(TTS_CACHE_PREFIX + text, audioSrc);
+  } catch(e) {}
+}
 
 async function speak(text) {
   if (!text) return;
   try {
-    // Cache'de varsa direkt çal
-    if (ttsCache[text]) {
-      const audio = new Audio(ttsCache[text]);
-      audio.play();
+    // localStorage cache'de varsa direkt çal
+    const cached = ttsLoad(text);
+    if (cached) {
+      new Audio(cached).play();
       return;
     }
     // Google Cloud TTS API çağrısı
@@ -773,16 +790,15 @@ async function speak(text) {
     const data = await response.json();
     if (data.audioContent) {
       const audioSrc = 'data:audio/mp3;base64,' + data.audioContent;
-      ttsCache[text] = audioSrc; // Cache'e kaydet
-      const audio = new Audio(audioSrc);
-      audio.play();
+      ttsSave(text, audioSrc); // localStorage'a kalıcı kaydet
+      new Audio(audioSrc).play();
     } else {
-      // API hatası varsa Web Speech API'ye düş
       _speakFallback(text);
     }
   } catch(e) {
     _speakFallback(text);
   }
+}
 }
 
 function _speakFallback(text) {
