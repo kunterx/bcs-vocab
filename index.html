@@ -744,9 +744,57 @@ function showNextFromCurrent(){
   }catch(e){showNext();}
 }
 
-// ── SPEECH ──
-function speak(word){try{if(!('speechSynthesis' in window))return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(word);u.lang='en-US';u.rate=0.82;const vs=window.speechSynthesis.getVoices();const am=vs.find(v=>v.lang==='en-US'&&(v.name.includes('Google')||v.name.includes('Samantha')||v.name.includes('Alex')||v.name.includes('David')));if(am)u.voice=am;window.speechSynthesis.speak(u);}catch(e){}}
-window.speak=speak;
+// ── SPEECH (Google Cloud TTS + cache) ──
+const GOOGLE_TTS_KEY = 'AIzaSyD7TPQEYI9vHsnDORLBkZuJEo3Qha1vmhs';
+const ttsCache = {};
+
+async function speak(text) {
+  if (!text) return;
+  try {
+    // Cache'de varsa direkt çal
+    if (ttsCache[text]) {
+      const audio = new Audio(ttsCache[text]);
+      audio.play();
+      return;
+    }
+    // Google Cloud TTS API çağrısı
+    const response = await fetch(
+      `https://texttospeech.googleapis.com/v1/text:synthesize?key=${GOOGLE_TTS_KEY}`,
+      {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          input: {text},
+          voice: {languageCode: 'en-US', name: 'en-US-Journey-D'},
+          audioConfig: {audioEncoding: 'MP3', speakingRate: 0.9}
+        })
+      }
+    );
+    const data = await response.json();
+    if (data.audioContent) {
+      const audioSrc = 'data:audio/mp3;base64,' + data.audioContent;
+      ttsCache[text] = audioSrc; // Cache'e kaydet
+      const audio = new Audio(audioSrc);
+      audio.play();
+    } else {
+      // API hatası varsa Web Speech API'ye düş
+      _speakFallback(text);
+    }
+  } catch(e) {
+    _speakFallback(text);
+  }
+}
+
+function _speakFallback(text) {
+  try {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US'; u.rate = 0.82;
+    window.speechSynthesis.speak(u);
+  } catch(e) {}
+}
+window.speak = speak;
 
 // ── DETAIL CARD HTML BUILDER ──
 function buildDetailHTML(w, ok, labelHTML, extraTopHTML){
