@@ -152,7 +152,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 /* TYPE MODE */
 .type-blank-row{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin:14px 0 10px;justify-content:center;}
 .type-word-group{display:inline-flex;gap:3px;align-items:flex-end;}
-.type-letter-box{width:28px;height:36px;border-radius:6px;border:2px solid var(--border);background:var(--surface);color:var(--text);font-size:15px;font-weight:700;text-align:center;font-family:inherit;outline:none;transition:border-color .15s,background .15s,color .15s;pointer-events:none;display:flex;align-items:center;justify-content:center;position:relative;}
+.type-letter-box{width:28px;height:36px;border-radius:6px;border:2px solid var(--border);background:var(--surface);color:var(--text);font-size:15px;font-weight:700;text-align:center;font-family:inherit;outline:none;transition:border-color .15s,background .15s,color .15s;display:flex;align-items:center;justify-content:center;position:relative;user-select:none;}
 .type-letter-box.active-target{border-color:var(--accent);background:rgba(224,200,112,.1);}
 .type-letter-box.revealed{background:rgba(224,200,112,.13);border-color:var(--accent);color:var(--accent);}
 .type-letter-box.correct-box{background:rgba(80,200,128,.15);border-color:#50c880;color:#50c880;}
@@ -1407,7 +1407,8 @@ function tyBuildBlankRow(answer, states, interactive){
       // tap-to-hint mode: clicking a box reveals that letter
       if(interactive && currentHintMode==='tap' && !st.revealed && !TY.answered){
         box.style.cursor='pointer';
-        box.addEventListener('click',()=>tyHintTap(si));
+        box.style.borderColor='var(--accent2)';
+        box.addEventListener('click',(e)=>{e.stopPropagation();tyHintTap(si);});
       }
       grpDiv.appendChild(box);
     });
@@ -1461,6 +1462,21 @@ function tyShow(){
   const blankRow=tyBuildBlankRow(answer,TY.letterStates,!TY.answered);
   blankRow.id='ty-blank-row';
 
+  // Türkçeyi Göster butonu
+  const trRevealWrap=document.createElement('div');
+  trRevealWrap.style.cssText='text-align:center;margin-bottom:4px;';
+  const trRevealBtn=document.createElement('button');
+  trRevealBtn.style.cssText='font-size:12px;color:var(--muted);background:none;border:1px solid var(--border);border-radius:7px;padding:5px 14px;cursor:pointer;font-family:inherit;transition:all .15s;';
+  trRevealBtn.textContent='Türkçeyi Göster';
+  const trRevealDiv=document.createElement('div');
+  trRevealDiv.style.cssText='display:none;font-size:15px;font-weight:700;color:var(--accent);margin-top:6px;text-align:center;';
+  trRevealDiv.textContent=w.tr||'';
+  trRevealBtn.addEventListener('click',()=>{
+    trRevealDiv.style.display='block';
+    trRevealBtn.style.display='none';
+  });
+  trRevealWrap.append(trRevealBtn,trRevealDiv);
+
   // Action row: Harf Al + Kontrol Et
   const actionRow=document.createElement('div');
   actionRow.className='type-action-row';
@@ -1468,7 +1484,9 @@ function tyShow(){
   const hintBtn=document.createElement('button');
   hintBtn.className='hint-btn';hintBtn.id='ty-hint-btn';
   hintBtn.innerHTML='Harf Al <span class="hint-cost">-10p</span>';
-  if(TY.answered||currentHintMode==='tap') hintBtn.disabled=true;
+  if(TY.answered) hintBtn.disabled=true;
+  // tap modunda "Harf Al" gizle, kutuya tıklama aktif
+  if(currentHintMode==='tap') hintBtn.style.display='none';
   hintBtn.addEventListener('click',tyHint);
 
   const checkBtn=document.createElement('button');
@@ -1485,7 +1503,10 @@ function tyShow(){
   const kb=tyBuildKeyboard(answer);
 
   area.innerHTML='';
-  area.append(card,scoreBadge,blankRow,actionRow,fb,kb);
+  // blank-row etrafında 2 kutu yüksekliği boşluk (spacer div)
+  const spacerTop=document.createElement('div');spacerTop.style.height='28px';
+  const spacerBot=document.createElement('div');spacerBot.style.height='28px';
+  area.append(card,scoreBadge,trRevealWrap,spacerTop,blankRow,spacerBot,actionRow,fb,kb);
 
   // Restore feedback if revisiting
   if(hist){
