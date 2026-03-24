@@ -222,12 +222,11 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 <body>
 <div class="app">
   <div class="nav">
-    <div class="logo">BCS Vocab</div>
+    <div class="logo" onclick="showScreen('study',null)" style="cursor:pointer">BCS Vocab</div>
     <div class="nav-right">
       <div class="sync-dot" id="sync-dot" title="Senkronizasyon durumu"></div>
       <div class="nav-tabs">
-        <button class="nav-tab active" onclick="showScreen('study',this)">Çalış</button>
-        <button class="nav-tab" onclick="showScreen('list',this)">Liste</button>
+        <button class="nav-tab" onclick="showScreen(document.getElementById('screen-list').classList.contains('active')?'study':'list',this)" id="settings-tab" style="font-size:18px;line-height:1;padding:6px 12px">☰</button>
       </div>
     </div>
   </div>
@@ -295,6 +294,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 
   <!-- LIST SCREEN -->
   <div class="screen" id="screen-list">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div style="font-size:15px;font-weight:700;color:var(--text)">Ayarlar</div>
+    </div>
     <div class="list-toolbar">
       <button class="tool-btn" onclick="showAddScreen()">+ Ekle</button>
       <button class="tool-btn" onclick="openRenameSheet()">Düzenle</button>
@@ -381,9 +383,20 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 <div class="sheet" id="rn-sheet">
   <div class="sheet-inner">
     <div class="sheet-handle"></div>
-    <div class="sheet-title">Bölüm Adını Değiştir</div>
+    <div class="sheet-title">Düzenle</div>
+
+    <!-- Seslendirme -->
     <div class="sheet-section">
-      <div class="sheet-label">Bölüm seç</div>
+      <div class="sheet-label">Seslendirme</div>
+      <div class="chip-row" id="tts-chips">
+        <div class="chip" id="tts-chip-google" onclick="selectTts('google',this)">Google</div>
+        <div class="chip" id="tts-chip-device" onclick="selectTts('device',this)">Cihaz</div>
+      </div>
+    </div>
+
+    <!-- Bölüm Yeniden Adlandır -->
+    <div class="sheet-section">
+      <div class="sheet-label">Bölüm Adını Değiştir</div>
       <div class="chip-row" id="rn-ep-chips"></div>
     </div>
     <div class="sheet-section" id="rn-input-section" style="display:none">
@@ -767,6 +780,7 @@ function ttsSave(text, audioSrc) {
 
 async function speak(text) {
   if (!text) return;
+  if (currentTtsEngine === 'device') { _speakFallback(text); return; }
   try {
     // localStorage cache'de varsa direkt çal
     const cached = ttsLoad(text);
@@ -1283,6 +1297,26 @@ window.exportFiltered=function(){
   }catch(e){showToast('Hata');}
 };
 
+// ── TTS ENGINE SELECTION ──
+let currentTtsEngine = localStorage.getItem('bcs_tts_engine') || 'google';
+
+window.selectTts = function(engine, el) {
+  currentTtsEngine = engine;
+  localStorage.setItem('bcs_tts_engine', engine);
+  document.querySelectorAll('#tts-chips .chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  showToast(engine === 'google' ? 'Google sesi aktif' : 'Cihaz sesi aktif');
+};
+
+function initTtsChips() {
+  const g = document.getElementById('tts-chip-google');
+  const d = document.getElementById('tts-chip-device');
+  if (!g || !d) return;
+  g.classList.remove('on'); d.classList.remove('on');
+  if (currentTtsEngine === 'google') g.classList.add('on');
+  else d.classList.add('on');
+}
+
 // ── RENAME EPISODE ──
 let selectedRenameEp=null;
 window.openRenameSheet=function(){
@@ -1293,6 +1327,7 @@ window.openRenameSheet=function(){
   document.getElementById('rn-input-section').style.display='none';
   document.getElementById('rn-confirm-btn').style.display='none';
   document.getElementById('rn-new-name').value='';
+  initTtsChips();
   document.getElementById('rn-sheet').classList.add('show');
   document.getElementById('rn-overlay').classList.add('show');
 };
@@ -1388,13 +1423,16 @@ window.resetListFilter=function(btn){
 
 // ── SCREEN NAV ──
 window.showScreen=function(name,btn){
-  // If study card is visible and we are navigating away, save session
   const studyCard=document.getElementById('study-card');
   if(studyCard&&studyCard.style.display!=='none'){saveSession();}
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('screen-'+name).classList.add('active');
-  if(btn)btn.classList.add('active');
+  const settingsTab=document.getElementById('settings-tab');
+  if(settingsTab){
+    const isSettings=name==='list';
+    settingsTab.classList.toggle('active',isSettings);
+    settingsTab.textContent=isSettings?'✕':'☰';
+  }
   if(name==='study'){document.getElementById('study-home').style.display='block';document.getElementById('study-card').style.display='none';buildFilterPanel();buildWeekChart();updateModeResumeBtns();}
   if(name==='list')renderList('all');
   updateStats();
