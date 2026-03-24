@@ -149,6 +149,33 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .quiz-score-n{font-size:26px;font-weight:700;}
 .quiz-score-l{font-size:12px;color:var(--muted);margin-top:3px;}
 
+/* TYPE MODE */
+.type-blank-row{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin:14px 0 10px;justify-content:center;}
+.type-word-group{display:inline-flex;gap:3px;align-items:flex-end;}
+.type-letter-box{width:28px;height:36px;border-radius:6px;border:2px solid var(--border);background:var(--surface);color:var(--text);font-size:15px;font-weight:700;text-align:center;font-family:inherit;outline:none;transition:border-color .15s,background .15s,color .15s;pointer-events:none;display:flex;align-items:center;justify-content:center;position:relative;}
+.type-letter-box.active-target{border-color:var(--accent);background:rgba(224,200,112,.1);}
+.type-letter-box.revealed{background:rgba(224,200,112,.13);border-color:var(--accent);color:var(--accent);}
+.type-letter-box.correct-box{background:rgba(80,200,128,.15);border-color:#50c880;color:#50c880;}
+.type-letter-box.wrong-box{background:rgba(208,104,104,.15);border-color:#d06868;color:#d06868;}
+.type-letter-underline{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:60%;height:2px;background:var(--border);border-radius:1px;}
+.type-action-row{display:flex;gap:8px;margin:10px 0;}
+.hint-btn{flex:1;padding:11px 10px;border-radius:10px;border:1.5px solid var(--accent);background:transparent;color:var(--accent);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;}
+.hint-btn:active{opacity:.7;}
+.hint-btn:disabled{opacity:.3;cursor:default;border-color:var(--border);color:var(--muted);}
+.check-btn{flex:2;padding:11px 10px;border-radius:10px;border:none;background:var(--accent);color:var(--bg);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;}
+.check-btn:active{opacity:.8;}
+.hint-cost{font-size:10px;opacity:.75;font-weight:400;}
+/* Keyboard */
+.type-keyboard{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:10px 8px;margin-top:4px;}
+.kb-row{display:flex;gap:5px;justify-content:center;margin-bottom:5px;}
+.kb-row:last-child{margin-bottom:0;}
+.kb-key{min-width:30px;height:40px;border-radius:7px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .1s;display:flex;align-items:center;justify-content:center;padding:0 6px;}
+.kb-key:active{background:var(--accent);color:var(--bg);transform:scale(.93);}
+.kb-key.kb-del{font-size:16px;min-width:44px;color:var(--muted);}
+.kb-key.kb-space{flex:1;max-width:120px;font-size:12px;color:var(--muted);}
+.type-score-badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:var(--accent);background:rgba(224,200,112,.12);border:1px solid rgba(224,200,112,.25);border-radius:8px;padding:4px 10px;margin-bottom:8px;}
+.type-score-delta{font-size:11px;color:var(--red);font-weight:600;}
+
 /* ADD FORM */
 .add-form{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:12px;}
 .form-title{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:14px;text-transform:uppercase;letter-spacing:.07em;}
@@ -255,6 +282,10 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
           </div>
           <div class="mode-btn" data-mode="mcq" onclick="selectMode(this)">
             <div class="mode-btn-left"><span class="mode-btn-title">Çoktan Seçmeli</span><span class="mode-btn-sub">İngilizce → Türkçe, 4 şık</span></div>
+            <span class="mode-btn-arrow">›</span>
+          </div>
+          <div class="mode-btn" data-mode="type" onclick="selectMode(this)">
+            <div class="mode-btn-left"><span class="mode-btn-title">Yazarak Çalış</span><span class="mode-btn-sub">Cümleyi harf harf tamamla</span></div>
             <span class="mode-btn-arrow">›</span>
           </div>
           <div class="mode-btn" data-mode="en-tr" onclick="selectMode(this)">
@@ -394,6 +425,25 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
     </div>
 
+    <!-- Harf Al Modu -->
+    <div class="sheet-section">
+      <div class="sheet-label">Harf Al Modu (Yazarak Çalış)</div>
+      <div class="chip-row" id="hint-mode-chips">
+        <div class="chip" id="hint-chip-sequential" onclick="selectHintMode('sequential',this)">Soldan Sağa</div>
+        <div class="chip" id="hint-chip-random" onclick="selectHintMode('random',this)">Rastgele</div>
+        <div class="chip" id="hint-chip-tap" onclick="selectHintMode('tap',this)">Tıklayarak Seç</div>
+      </div>
+    </div>
+
+    <!-- Boşluk Doldurma Şık Kaynağı -->
+    <div class="sheet-section">
+      <div class="sheet-label">Boşluk Doldurma — Yanlış Şık Kaynağı</div>
+      <div class="chip-row" id="fill-src-chips">
+        <div class="chip" id="fill-src-chip-options" onclick="selectFillSrc('options',this)">Yüklenen Şıklar</div>
+        <div class="chip" id="fill-src-chip-group" onclick="selectFillSrc('group',this)">Gruptaki Kelimeler</div>
+      </div>
+    </div>
+
     <!-- Bölüm Yeniden Adlandır -->
     <div class="sheet-section">
       <div class="sheet-label">Bölüm Adını Değiştir</div>
@@ -450,7 +500,7 @@ let queue=[], retryIds=[], current=null, flipped=false;
 let sKnown=0, sSkipped=0, sDiff={1:0,2:0,3:0,4:0,5:0}, sTotal=0;
 let activeListFilters={eps:[],status:null};
 let pendingDeleteId=null;
-let currentMode='fill'; // fill | mcq | en-tr | tr-en
+let currentMode='fill'; // fill | mcq | en-tr | tr-en | type
 let saveTimer=null;
 let currentListWords=[];
 
@@ -463,6 +513,12 @@ function saveSession(){
       const qSer=FZ.queue.map(({w,item})=>({wid:w.id,sentence:item.sentence}));
       localStorage.setItem(sessionKey('fill'),JSON.stringify({
         mode:'fill',queue:qSer,idx:FZ.idx,correct:FZ.correct,wrong:FZ.wrong,history:FZ.history
+      }));
+    } else if(currentMode==='type'){
+      if(!TY.queue.length)return;
+      const qSer=TY.queue.map(({w,item})=>({wid:w.id,sentence:item.sentence}));
+      localStorage.setItem(sessionKey('type'),JSON.stringify({
+        mode:'type',queue:qSer,idx:TY.idx,totalScore:TY.totalScore,history:TY.history
       }));
     } else if(currentMode==='mcq'){
       if(!MQ.queue.length)return;
@@ -485,7 +541,7 @@ function clearSession(mode){try{localStorage.removeItem(sessionKey(mode||current
 function loadSession(mode){try{const raw=localStorage.getItem(sessionKey(mode));if(!raw)return null;return JSON.parse(raw);}catch(e){return null;}}
 function hasSession(mode){
   const s=loadSession(mode);if(!s)return false;
-  if(s.mode==='fill'||s.mode==='mcq'){return s.queue&&s.queue.length>0&&s.idx<s.queue.length;}
+  if(s.mode==='fill'||s.mode==='mcq'||s.mode==='type'){return s.queue&&s.queue.length>0&&s.idx<s.queue.length;}
   return (s.queue&&s.queue.length>0)||s.currentId;
 }
 
@@ -503,7 +559,7 @@ onValue(dbRef,(snapshot)=>{
     if(!db.activity)db.activity={};
     if(!db.words)db.words=[];
     // migrate old words: ensure progress object exists
-    db.words.forEach(w=>{if(!w.progress)w.progress={'en-tr':null,'tr-en':null,'mcq':null,'fill':null};});
+    db.words.forEach(w=>{if(!w.progress)w.progress={'en-tr':null,'tr-en':null,'mcq':null,'fill':null,'type':null};if(!w.progress.type)w.progress.type=null;});
     updateStats();
     buildFilterPanel();
     buildWeekChart();
@@ -572,7 +628,7 @@ function getProgress(w,mode){
   return w.progress[mode]||null;
 }
 function setProgress(w,mode,val){
-  if(!w.progress)w.progress={'en-tr':null,'tr-en':null,'mcq':null,'fill':null};
+  if(!w.progress)w.progress={'en-tr':null,'tr-en':null,'mcq':null,'fill':null,'type':null};
   w.progress[mode]=val;
 }
 function isKnownInMode(w,mode){
@@ -586,15 +642,34 @@ function epProgress(ep,mode){
   return Math.round(known/words.length*100);
 }
 
-// ── FILTER PANEL ──
+// ── EPISODE SCORE TRACKING ──
+// db.epScores = { 'fill:S1E1': 85, 'mcq:S1E2': 70, ... }
+function saveEpScore(mode, eps, score){
+  if(!db.epScores) db.epScores={};
+  eps.forEach(ep=>{ db.epScores[mode+':'+ep]=score; });
+  saveDb();
+}
+function getEpScore(mode, ep){
+  if(!db.epScores) return null;
+  const v=db.epScores[mode+':'+ep];
+  return (v!==undefined&&v!==null)?v:null;
+}
+// Clear scores for episodes when a new session starts
+function clearEpScores(mode, eps){
+  if(!db.epScores) return;
+  eps.forEach(ep=>{ delete db.epScores[mode+':'+ep]; });
+  saveDb();
+}
 function buildFilterPanel(){
   const row=document.getElementById('ep-chips');if(!row)return;
   const eps=getEps();
   if(!eps.length){row.innerHTML='<span style="font-size:12px;color:var(--muted)">Kelime yok</span>';updateSelCount();return;}
   row.innerHTML=eps.map(ep=>{
     const pct=epProgress(ep,currentMode);
+    const score=getEpScore(currentMode,ep);
     const pctStr=pct!==null?' <span class="ep-pct">%'+pct+'</span>':'';
-    return '<div class="ep-chip" data-type="ep" data-val="'+ep+'" onclick="toggleEpChip(this)">'+escH(ep)+pctStr+'</div>';
+    const scoreStr=score!==null?' <span class="ep-pct" style="color:var(--green)">%'+score+'✓</span>':'';
+    return '<div class="ep-chip" data-type="ep" data-val="'+ep+'" onclick="toggleEpChip(this)">'+escH(ep)+pctStr+scoreStr+'</div>';
   }).join('');
   updateSelCount();
 }
@@ -622,7 +697,7 @@ function updateSelCount(){
   const f=getStudyFilters();
   let words=applyFilters([...(db.words||[])],f,currentMode);
   // for fill mode, filter to words that have fill_sentences
-  if(currentMode==='fill')words=words.filter(w=>w.fill_sentences&&w.fill_sentences.length>0);
+  if(currentMode==='fill'||currentMode==='type')words=words.filter(w=>w.fill_sentences&&w.fill_sentences.length>0);
   const el=document.getElementById('sel-count');
   if(el)el.textContent=words.length>0?words.length+' kelime secili':'Filtre secilmedi';
 }
@@ -639,7 +714,7 @@ function updateStats(){
 
 // ── MODE RESUME BUTTONS ──
 function updateModeResumeBtns(){
-  const modes=['fill','mcq','en-tr','tr-en'];
+  const modes=['fill','mcq','en-tr','tr-en','type'];
   modes.forEach(mode=>{
     const btn=document.querySelector('.mode-btn[data-mode="'+mode+'"]');
     if(!btn)return;
@@ -648,7 +723,7 @@ function updateModeResumeBtns(){
     const hasSess=sess&&sess.mode===mode;
     if(hasSess){
       let idxDisp='',totalDisp='';
-      if(sess.mode==='fill'||sess.mode==='mcq'){
+      if(sess.mode==='fill'||sess.mode==='mcq'||sess.mode==='type'){
         idxDisp=sess.idx;totalDisp=sess.queue.length;
       } else {
         const done=sess.sTotal-(sess.queue?sess.queue.length:0)-(sess.currentId?1:0);
@@ -688,6 +763,18 @@ window.resumeMode=function(mode){
     Object.assign(FZ,{queue:q,idx:sess.idx||0,correct:sess.correct||0,wrong:sess.wrong||0,history:sess.history||{}});
     document.getElementById('prog').style.width='0%';
     fzShow();
+  } else if(mode==='type'){
+    const q=[];
+    sess.queue.forEach(({wid,sentence})=>{
+      const w=db.words.find(x=>String(x.id)===String(wid));
+      if(!w)return;
+      const item=(w.fill_sentences||[]).find(s=>s.sentence===sentence);
+      if(item)q.push({w,item});
+    });
+    if(!q.length){clearSession('type');showToast('Oturum geçersiz');backToHome();return;}
+    Object.assign(TY,{queue:q,idx:sess.idx||0,totalScore:sess.totalScore||0,history:sess.history||{}});
+    document.getElementById('prog').style.width='0%';
+    tyShow();
   } else if(mode==='mcq'){
     const q=sess.queue.map(id=>db.words.find(w=>String(w.id)===String(id))).filter(Boolean);
     if(q.length<4){clearSession('mcq');showToast('Oturum geçersiz');backToHome();return;}
@@ -758,7 +845,7 @@ function showNextFromCurrent(){
 }
 
 // ── SPEECH (Google Cloud TTS + cache) ──
-const GOOGLE_TTS_KEY = 'AIzaSyA25BoEygiQ1dL6cmV9JwtpF5msE1g_gv4';
+const GOOGLE_TTS_KEY = 'YOUR_GOOGLE_TTS_KEY';
 
 // ── TTS CACHE (localStorage — kalıcı) ──
 const TTS_CACHE_PREFIX = 'bcs_tts_';
@@ -854,13 +941,21 @@ function calcDiff(w,r){if(r>=4){w.interval=1;w.ease=Math.max(1.3,(w.ease||2.5)-0
 function updateStreak(){const t=today();if(db.lastStudy!==t){db.streak=(db.lastStudy===prevDay(t))?db.streak+1:1;db.lastStudy=t;}}
 
 // ── START STUDY ──
+let currentSessionEps=[];
 window.startStudy=function(){clearSession(currentMode);
   const f=getStudyFilters();
   let words=applyFilters([...(db.words||[])],f,currentMode);
+  currentSessionEps=[...new Set(words.map(w=>w.episode).filter(Boolean))];
+  clearEpScores(currentMode,currentSessionEps);
   if(currentMode==='fill'){
     words=words.filter(w=>w.fill_sentences&&w.fill_sentences.length>0);
     if(!words.length){showToast('Bu filtrede bosluk doldurma sorusu yok');return;}
     startFill(words);return;
+  }
+  if(currentMode==='type'){
+    words=words.filter(w=>w.fill_sentences&&w.fill_sentences.length>0);
+    if(!words.length){showToast('Bu filtrede yazma sorusu yok');return;}
+    startType(words);return;
   }
   if(currentMode==='mcq'){
     if(words.length<4){showToast('En az 4 kelime lazim');return;}
@@ -962,6 +1057,8 @@ function initSwipe(){
 }
 
 function showFlashSummary(){
+  const pct=Math.round(sKnown/Math.max(sTotal,1)*100);
+  saveEpScore(currentMode,currentSessionEps,pct);
   document.getElementById('prog').style.width='100%';
   document.getElementById('study-area').innerHTML='<div class="summary"><div class="summary-title">Bitti!</div><div class="summary-sub">'+sTotal+' kelime</div><div class="summary-3"><div class="summary-item"><div class="summary-n" style="color:var(--green)">'+sKnown+'</div><div class="summary-l">Bildim</div></div><div class="summary-item"><div class="summary-n" style="color:var(--muted)">'+sSkipped+'</div><div class="summary-l">Atlandi</div></div><div class="summary-item"><div class="summary-n" style="color:var(--accent)">'+Math.round(sKnown/Math.max(sTotal,1)*100)+'%</div><div class="summary-l">Basari</div></div></div>'+'<button class="done-btn" onclick="backToHome(true)">Tamam</button></div>';
   buildWeekChart();buildFilterPanel();
@@ -1085,8 +1182,9 @@ function mqAnswer(i){
 }
 
 function mqSummary(){
-  document.getElementById('prog').style.width='100%';
   const pct=Math.round(MQ.correct/MQ.queue.length*100);
+  saveEpScore('mcq',currentSessionEps,pct);
+  document.getElementById('prog').style.width='100%';
   const area=document.getElementById('study-area');
   area.innerHTML=`<div class="quiz-summary"><div class="quiz-summary-title">Bitti!</div><div class="quiz-summary-sub">${MQ.queue.length} soru &middot; %${pct} basari</div><div class="quiz-score-grid"><div class="quiz-score-item"><div class="quiz-score-n" style="color:var(--green)">${MQ.correct}</div><div class="quiz-score-l">Dogru</div></div><div class="quiz-score-item"><div class="quiz-score-n" style="color:var(--red)">${MQ.wrong}</div><div class="quiz-score-l">Yanlis</div></div><div class="quiz-score-item"><div class="quiz-score-n" style="color:var(--accent)">%${pct}</div><div class="quiz-score-l">Basari</div></div></div><button class="quiz-again-btn" id="mq-again">Tekrar</button><button class="quiz-back-btn" id="mq-back">Geri</button></div>`;
   buildFilterPanel();
@@ -1139,7 +1237,16 @@ function fzShow(){
   const opts=document.createElement('div');opts.className='quiz-options';
   const fb=document.createElement('div');fb.id='fz-fb';
 
-  const options=hist ? hist.options : shuffle(item.options||[]);
+  const options=hist ? hist.options : (()=>{
+    if(currentFillSrc==='group'){
+      // Gruptaki kelimelerden yanlış şık üret
+      const groupWords=(db.words||[]).filter(w=>w.fill_sentences&&w.fill_sentences.length>0&&w.id!==FZ.queue[FZ.idx].w.id);
+      const wrongOpts=shuffle(groupWords).slice(0,3).map(x=>x.word);
+      // Eğer yeterli yoksa fill_sentences options'a düş
+      if(wrongOpts.length>=3) return shuffle([item.answer,...wrongOpts.slice(0,3)]);
+    }
+    return shuffle(item.options||[]);
+  })();
   options.forEach(opt=>{
     const btn=document.createElement('button');btn.className='quiz-option';btn.textContent=opt;
     if(!hist) btn.addEventListener('click',()=>fzAnswer(opt,item.answer,item,w,options));
@@ -1220,8 +1327,9 @@ function fzAnswer(chosen,answer,item,w,options){
 }
 
 function fzSummary(){
-  document.getElementById('prog').style.width='100%';
   const pct=FZ.queue.length?Math.round(FZ.correct/FZ.queue.length*100):0;
+  saveEpScore('fill',currentSessionEps,pct);
+  document.getElementById('prog').style.width='100%';
   const area=document.getElementById('study-area');
   area.innerHTML=`<div class="quiz-summary"><div class="quiz-summary-title">Bitti!</div><div class="quiz-summary-sub">${FZ.queue.length} soru &middot; %${pct} basari</div><div class="quiz-score-grid"><div class="quiz-score-item"><div class="quiz-score-n" style="color:var(--green)">${FZ.correct}</div><div class="quiz-score-l">Dogru</div></div><div class="quiz-score-item"><div class="quiz-score-n" style="color:var(--red)">${FZ.wrong}</div><div class="quiz-score-l">Yanlis</div></div><div class="quiz-score-item"><div class="quiz-score-n" style="color:var(--accent)">%${pct}</div><div class="quiz-score-l">Basari</div></div></div><button class="quiz-again-btn" id="fz-again">Tekrar</button><button class="quiz-back-btn" id="fz-back">Geri</button></div>`;
   buildFilterPanel();
@@ -1234,7 +1342,355 @@ function fzSummary(){
   document.getElementById('fz-back').addEventListener('click',()=>backToHome(true));
 }
 
-// ── ADD ──
+// ── TYPE MODE (Yazarak Çalış) ──
+const TY={queue:[],idx:0,totalScore:0,history:{},answered:false,hintCount:0,letterStates:[]};
+
+function startType(words){
+  const q=[];
+  shuffle(words).forEach(w=>{
+    shuffle(w.fill_sentences||[]).slice(0,2).forEach(item=>q.push({w,item}));
+  });
+  Object.assign(TY,{queue:shuffle(q),idx:0,totalScore:0,history:{}});
+  document.getElementById('study-home').style.display='none';
+  document.getElementById('study-card').style.display='block';
+  document.getElementById('prog').style.width='0%';
+  tyShow();
+}
+
+function tyProgress(){
+  document.getElementById('prog').style.width=Math.round(TY.idx/TY.queue.length*100)+'%';
+}
+
+// letterStates: array of {char, revealed, entered} per answer letter
+function buildLetterStates(answer){
+  return answer.split('').map(ch=>({char:ch,revealed:false,entered:''}));
+}
+
+// answer may have spaces (e.g. "fell into") — we render word groups
+function tyBuildBlankRow(answer, states, interactive){
+  const words=[];
+  let wi=0, li=0;
+  // split answer into word groups keeping track of state indices
+  const parts=answer.split(' ');
+  let stateIdx=0;
+  parts.forEach((part,pi)=>{
+    const group={chars:[],stateIndices:[]};
+    for(let c=0;c<part.length;c++){
+      group.chars.push(part[c]);
+      group.stateIndices.push(stateIdx);
+      stateIdx++;
+    }
+    if(pi<parts.length-1) stateIdx++; // skip space state
+    words.push(group);
+  });
+
+  const row=document.createElement('div');
+  row.className='type-blank-row';
+
+  words.forEach((group,gi)=>{
+    const grpDiv=document.createElement('div');
+    grpDiv.className='type-word-group';
+    group.stateIndices.forEach((si,ci)=>{
+      const st=states[si];
+      const box=document.createElement('div');
+      box.className='type-letter-box';
+      box.dataset.stateIdx=si;
+      if(st.revealed){
+        box.textContent=st.char;
+        box.classList.add('revealed');
+      } else if(st.entered){
+        box.textContent=st.entered;
+      } else {
+        // show underline hint
+        const ul=document.createElement('div');ul.className='type-letter-underline';box.appendChild(ul);
+      }
+      // tap-to-hint mode: clicking a box reveals that letter
+      if(interactive && currentHintMode==='tap' && !st.revealed && !TY.answered){
+        box.style.cursor='pointer';
+        box.addEventListener('click',()=>tyHintTap(si));
+      }
+      grpDiv.appendChild(box);
+    });
+    row.appendChild(grpDiv);
+    // space between word groups
+    if(gi<words.length-1){
+      const sp=document.createElement('div');
+      sp.style.cssText='width:10px;flex-shrink:0;';
+      row.appendChild(sp);
+    }
+  });
+  return row;
+}
+
+// Build space-aware states (skip space chars)
+function buildStatesFromAnswer(answer){
+  const states=[];
+  for(let i=0;i<answer.length;i++){
+    if(answer[i]===' '){states.push({char:' ',revealed:true,entered:' ',isSpace:true});}
+    else{states.push({char:answer[i].toLowerCase(),revealed:false,entered:'',isSpace:false});}
+  }
+  return states;
+}
+
+function tyShow(){
+  if(TY.idx>=TY.queue.length){tySummary();return;}
+  tyProgress();
+  const {w,item}=TY.queue[TY.idx];
+  const area=document.getElementById('study-area');
+  const hist=TY.history[TY.idx];
+  TY.answered=!!hist;
+  TY.hintCount=hist?hist.hintCount:0;
+
+  const answer=item.answer;
+  TY.letterStates=hist ? JSON.parse(JSON.stringify(hist.states)) : buildStatesFromAnswer(answer);
+
+  // Build sentence display with blank
+  const displaySent=escH(item.sentence).replace(/___+/g,'<span style="color:var(--accent);font-weight:700;font-size:18px">_____</span>');
+
+  const card=document.createElement('div');
+  card.className='flashcard';card.style.minHeight='auto';card.style.marginBottom='10px';
+  card.innerHTML=`<div class="card-top"><div class="card-ep">${escH(w.episode||'')}</div><div style="font-size:11px;color:var(--muted)">${TY.idx+1}/${TY.queue.length}</div></div><div style="font-size:16px;line-height:1.9;color:var(--text);margin-bottom:4px">${displaySent}</div>`;
+
+  // Score badge
+  const scoreBadge=document.createElement('div');
+  scoreBadge.className='type-score-badge';
+  scoreBadge.id='ty-score-badge';
+  scoreBadge.innerHTML='Toplam: <span id="ty-score-val">'+TY.totalScore+'</span> puan';
+
+  // Letter boxes
+  const blankRow=tyBuildBlankRow(answer,TY.letterStates,!TY.answered);
+  blankRow.id='ty-blank-row';
+
+  // Action row: Harf Al + Kontrol Et
+  const actionRow=document.createElement('div');
+  actionRow.className='type-action-row';
+
+  const hintBtn=document.createElement('button');
+  hintBtn.className='hint-btn';hintBtn.id='ty-hint-btn';
+  hintBtn.innerHTML='Harf Al <span class="hint-cost">-10p</span>';
+  if(TY.answered||currentHintMode==='tap') hintBtn.disabled=true;
+  hintBtn.addEventListener('click',tyHint);
+
+  const checkBtn=document.createElement('button');
+  checkBtn.className='check-btn';checkBtn.id='ty-check-btn';
+  checkBtn.textContent=TY.answered?'Sonraki ▶':'Kontrol Et';
+  checkBtn.addEventListener('click',TY.answered?()=>{TY.idx++;tyShow();}:tyCheck);
+
+  actionRow.append(hintBtn,checkBtn);
+
+  // Feedback area
+  const fb=document.createElement('div');fb.id='ty-fb';
+
+  // Keyboard
+  const kb=tyBuildKeyboard(answer);
+
+  area.innerHTML='';
+  area.append(card,scoreBadge,blankRow,actionRow,fb,kb);
+
+  // Restore feedback if revisiting
+  if(hist){
+    tyRenderFeedback(w,item,hist.ok,hist.hintCount,hist.score);
+    // disable keyboard
+    area.querySelectorAll('.kb-key').forEach(k=>k.disabled=true);
+  }
+
+  // Swipe nav
+  initQuizSwipe(area,
+    ()=>{TY.idx++;tyShow();},
+    ()=>{if(TY.idx>0){TY.idx--;tyShow();}}
+  );
+}
+
+function tyBuildKeyboard(answer){
+  const kb=document.createElement('div');
+  kb.className='type-keyboard';kb.id='ty-keyboard';
+  const rows=[
+    ['q','w','e','r','t','y','u','i','o','p'],
+    ['a','s','d','f','g','h','j','k','l'],
+    ['z','x','c','v','b','n','m','⌫']
+  ];
+  rows.forEach(row=>{
+    const rowDiv=document.createElement('div');rowDiv.className='kb-row';
+    row.forEach(key=>{
+      const btn=document.createElement('button');
+      btn.className='kb-key'+(key==='⌫'?' kb-del':'');
+      btn.textContent=key;
+      btn.addEventListener('click',()=>tyKeyPress(key));
+      rowDiv.appendChild(btn);
+    });
+    kb.appendChild(rowDiv);
+  });
+  return kb;
+}
+
+// Find next empty (non-space, non-revealed) box index
+function tyNextEmpty(){
+  return TY.letterStates.findIndex(s=>!s.isSpace&&!s.revealed&&!s.entered);
+}
+// Find last filled (non-space, non-revealed) box index
+function tyLastFilled(){
+  let last=-1;
+  TY.letterStates.forEach((s,i)=>{if(!s.isSpace&&!s.revealed&&s.entered)last=i;});
+  return last;
+}
+
+function tyKeyPress(key){
+  if(TY.answered)return;
+  if(key==='⌫'){
+    const last=tyLastFilled();
+    if(last>=0){TY.letterStates[last].entered='';tyRefreshBoxes();}
+    return;
+  }
+  const next=tyNextEmpty();
+  if(next<0)return; // all filled
+  TY.letterStates[next].entered=key.toLowerCase();
+  tyRefreshBoxes();
+}
+
+function tyRefreshBoxes(){
+  const {w,item}=TY.queue[TY.idx];
+  const oldRow=document.getElementById('ty-blank-row');
+  if(!oldRow)return;
+  const newRow=tyBuildBlankRow(item.answer,TY.letterStates,!TY.answered);
+  newRow.id='ty-blank-row';
+  oldRow.replaceWith(newRow);
+}
+
+function tyHint(){
+  if(TY.answered)return;
+  // Find next letter to reveal based on mode
+  let targetIdx=-1;
+  if(currentHintMode==='sequential'){
+    targetIdx=TY.letterStates.findIndex(s=>!s.isSpace&&!s.revealed&&s.entered!==s.char);
+  } else if(currentHintMode==='random'){
+    const candidates=TY.letterStates.map((s,i)=>({s,i})).filter(({s})=>!s.isSpace&&!s.revealed&&s.entered!==s.char);
+    if(candidates.length) targetIdx=candidates[Math.floor(Math.random()*candidates.length)].i;
+  } else if(currentHintMode==='tap'){
+    return; // tap mode handled by box click
+  }
+  if(targetIdx<0)return;
+  tyRevealLetter(targetIdx);
+}
+
+function tyHintTap(stateIdx){
+  if(TY.answered)return;
+  const s=TY.letterStates[stateIdx];
+  if(s.isSpace||s.revealed)return;
+  tyRevealLetter(stateIdx);
+}
+
+function tyRevealLetter(idx){
+  TY.letterStates[idx].revealed=true;
+  TY.letterStates[idx].entered=TY.letterStates[idx].char;
+  TY.hintCount++;
+  tyRefreshBoxes();
+  // Update score preview
+  const previewScore=Math.max(0,100-TY.hintCount*10);
+  const sv=document.getElementById('ty-score-val');
+  if(sv) sv.textContent=TY.totalScore+' (bu soru: '+previewScore+'p)';
+}
+
+function tyCheck(){
+  if(TY.answered)return;
+  const {w,item}=TY.queue[TY.idx];
+  const answer=item.answer.toLowerCase();
+  // Build user answer from states
+  const userAns=TY.letterStates.map(s=>s.isSpace?' ':s.entered||'_').join('');
+  const ok=userAns===answer;
+  TY.answered=true;
+
+  const score=Math.max(0,100-TY.hintCount*10);
+  if(ok) TY.totalScore+=score;
+
+  // Mark correct/wrong on boxes
+  TY.letterStates.forEach((s,i)=>{
+    if(s.isSpace)return;
+    if(s.revealed)return; // already accent colored
+    if(ok) s.correct=true;
+    else s.correct=(s.entered===s.char);
+  });
+
+  // Save history
+  TY.history[TY.idx]={states:JSON.parse(JSON.stringify(TY.letterStates)),ok,hintCount:TY.hintCount,score};
+  saveSession();
+
+  const idx2=db.words.findIndex(x=>x.id===w.id);
+  if(idx2!==-1){setProgress(db.words[idx2],'type',ok?'known':'unknown');logActivity();updateStreak();saveDb();}
+
+  // Re-render boxes with color
+  const oldRow=document.getElementById('ty-blank-row');
+  if(oldRow){
+    const newRow=tyBuildBlankRow(item.answer,TY.letterStates,false);
+    // Color each box
+    newRow.querySelectorAll('.type-letter-box').forEach(box=>{
+      const si=parseInt(box.dataset.stateIdx);
+      const s=TY.letterStates[si];
+      if(!s||s.isSpace||s.revealed)return;
+      box.textContent=ok?s.char:(s.entered||'_');
+      box.classList.add(ok?'correct-box':(s.entered===s.char?'correct-box':'wrong-box'));
+    });
+    newRow.id='ty-blank-row';
+    oldRow.replaceWith(newRow);
+  }
+
+  // Disable keyboard
+  document.querySelectorAll('#ty-keyboard .kb-key').forEach(k=>k.disabled=true);
+  // Disable hint btn
+  const hb=document.getElementById('ty-hint-btn');if(hb)hb.disabled=true;
+  // Change check btn to next
+  const cb=document.getElementById('ty-check-btn');
+  if(cb){cb.textContent='Sonraki ▶';cb.onclick=()=>{TY.idx++;tyShow();};}
+
+  // Update score badge
+  const sv=document.getElementById('ty-score-val');
+  if(sv) sv.textContent=TY.totalScore;
+
+  tyRenderFeedback(w,item,ok,TY.hintCount,score);
+  if(ok) speak(w.word);
+}
+
+function tyRenderFeedback(w,item,ok,hintCount,score){
+  const label=ok?'✓ Doğru! +'+score+'p':'✗ Yanlış — Doğru: '+escH(item.answer);
+  const filledSent=escH(item.sentence).replace(/___+/g,`<span style="color:${ok?'var(--green)':'var(--red)'};font-weight:700;text-decoration:underline">${escH(item.answer)}</span>`);
+  const fullSent=item.sentence.replace(/___+/g,item.answer);
+  const topHTML='<div class="sent-with-play" style="margin-bottom:12px" id="ty-sent-top"></div>';
+  const det=buildDetailHTML(w,ok,label,topHTML);
+  const sentRow=det.querySelector('#ty-sent-top');
+  if(sentRow){
+    const sd=document.createElement('div');sd.style.cssText='font-size:15px;line-height:1.8;color:var(--text);flex:1';sd.innerHTML=filledSent;
+    const spb=document.createElement('button');spb.className='inline-play';spb.innerHTML='&#9654;';spb.addEventListener('click',()=>speak(fullSent));
+    sentRow.append(sd,spb);
+  }
+  const fb=document.getElementById('ty-fb');
+  if(fb){fb.innerHTML='';fb.appendChild(det);}
+}
+
+function tySummary(){
+  const maxScore=TY.queue.length*100;
+  const pct=maxScore>0?Math.round(TY.totalScore/maxScore*100):0;
+  saveEpScore('type',currentSessionEps,pct);
+  document.getElementById('prog').style.width='100%';
+  const area=document.getElementById('study-area');
+  area.innerHTML=`<div class="quiz-summary">
+    <div class="quiz-summary-title">Bitti!</div>
+    <div class="quiz-summary-sub">${TY.queue.length} soru</div>
+    <div class="quiz-score-grid">
+      <div class="quiz-score-item"><div class="quiz-score-n" style="color:var(--accent)">${TY.totalScore}</div><div class="quiz-score-l">Puan</div></div>
+      <div class="quiz-score-item"><div class="quiz-score-n" style="color:var(--green)">${pct}%</div><div class="quiz-score-l">Başarı</div></div>
+      <div class="quiz-score-item"><div class="quiz-score-n" style="color:var(--muted)">${TY.queue.length}</div><div class="quiz-score-l">Soru</div></div>
+    </div>
+    <button class="quiz-again-btn" id="ty-again">Tekrar</button>
+    <button class="quiz-back-btn" id="ty-back">Geri</button>
+  </div>`;
+  buildFilterPanel();
+  document.getElementById('ty-again').addEventListener('click',()=>{
+    const f=getStudyFilters();
+    let words=applyFilters([...(db.words||[])],f,'type').filter(w=>w.fill_sentences&&w.fill_sentences.length>0);
+    if(!words.length){showToast('Bu filtrede yazma sorusu yok');return;}
+    startType(words);
+  });
+  document.getElementById('ty-back').addEventListener('click',()=>backToHome(true));
+}
 window.bulkAdd=function(){
   const raw=document.getElementById('f-bulk').value.trim();
   if(!raw){showToast('Once listeyi yapistir');return;}
@@ -1255,7 +1711,7 @@ window.bulkAdd=function(){
       fill_sentences:w.fill_sentences||[],
       trap:w.trap||'',episode:w.episode||'',
       interval:1,ease:2.5,reviews:0,difficulty:0,nextReview:null,
-      progress:{'en-tr':null,'tr-en':null,'mcq':null,'fill':null}
+      progress:{'en-tr':null,'tr-en':null,'mcq':null,'fill':null,'type':null}
     });
     added++;
   });
@@ -1280,7 +1736,7 @@ window.addOne=function(){
     episode:document.getElementById('f-ep').value.trim(),
     fill_sentences:[],
     interval:1,ease:2.5,reviews:0,difficulty:0,nextReview:null,
-    progress:{'en-tr':null,'tr-en':null,'mcq':null,'fill':null}
+    progress:{'en-tr':null,'tr-en':null,'mcq':null,'fill':null,'type':null}
   });
   saveDb();
   ['f-word','f-tr','f-col','f-ex','f-ex2','f-trap','f-ep'].forEach(id=>{document.getElementById(id).value='';});
@@ -1317,7 +1773,41 @@ function initTtsChips() {
   else d.classList.add('on');
 }
 
-// ── RENAME EPISODE ──
+// ── HINT MODE (Yazarak Çalış) ──
+let currentHintMode = localStorage.getItem('bcs_hint_mode') || 'sequential';
+
+window.selectHintMode = function(mode, el) {
+  currentHintMode = mode;
+  localStorage.setItem('bcs_hint_mode', mode);
+  document.querySelectorAll('#hint-mode-chips .chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  showToast(mode==='sequential'?'Soldan sağa aktif':mode==='random'?'Rastgele aktif':'Tıklayarak seç aktif');
+};
+
+function initHintModeChips() {
+  ['sequential','random','tap'].forEach(m=>{
+    const el=document.getElementById('hint-chip-'+m);
+    if(el) el.classList.toggle('on', currentHintMode===m);
+  });
+}
+
+// ── FILL SOURCE (Boşluk Doldurma şık kaynağı) ──
+let currentFillSrc = localStorage.getItem('bcs_fill_src') || 'options';
+
+window.selectFillSrc = function(src, el) {
+  currentFillSrc = src;
+  localStorage.setItem('bcs_fill_src', src);
+  document.querySelectorAll('#fill-src-chips .chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  showToast(src==='options'?'Yüklenen şıklar aktif':'Gruptaki kelimeler aktif');
+};
+
+function initFillSrcChips() {
+  ['options','group'].forEach(s=>{
+    const el=document.getElementById('fill-src-chip-'+s);
+    if(el) el.classList.toggle('on', currentFillSrc===s);
+  });
+}
 let selectedRenameEp=null;
 window.openRenameSheet=function(){
   selectedRenameEp=null;
@@ -1328,6 +1818,8 @@ window.openRenameSheet=function(){
   document.getElementById('rn-confirm-btn').style.display='none';
   document.getElementById('rn-new-name').value='';
   initTtsChips();
+  initHintModeChips();
+  initFillSrcChips();
   document.getElementById('rn-sheet').classList.add('show');
   document.getElementById('rn-overlay').classList.add('show');
 };
