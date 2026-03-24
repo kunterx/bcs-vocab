@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0056)file:///C:/Users/kunte/Downloads/bcs_vocab_v5%20(8).html -->
+<html lang="tr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="BCS Vocab">
@@ -219,47 +219,47 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .toast.show{opacity:1;}
 </style>
 </head>
-<body>
+<body data-theme="amber">
 <div class="app">
   <div class="nav">
     <div class="logo">BCS Vocab</div>
     <div class="nav-right">
       <div class="sync-dot" id="sync-dot" title="Senkronizasyon durumu"></div>
       <div class="nav-tabs">
-        <button class="nav-tab active" onclick="showScreen('study',this)">Çalış</button>
-        <button class="nav-tab" onclick="showScreen('list',this)">Liste</button>
+        <button class="nav-tab active" onclick="showScreen(&#39;study&#39;,this)">Çalış</button>
+        <button class="nav-tab" onclick="showScreen(&#39;list&#39;,this)">Liste</button>
       </div>
     </div>
   </div>
 
   <!-- STUDY SCREEN -->
   <div class="screen active" id="screen-study">
-    <div id="study-home">
+    <div id="study-home" style="display: none;">
       <!-- Stats (hidden) -->
       <div style="display:none">
-        <div id="st-total">0</div>
-        <div id="st-known">0</div>
-        <div id="st-unknown">0</div>
+        <div id="st-total">46</div>
+        <div id="st-known">18</div>
+        <div id="st-unknown">28</div>
       </div>
       <!-- Week chart -->
       <div class="week-chart">
         <div class="wc-title">Son 7 gun</div>
-        <div class="wc-bars" id="wc-bars"></div>
+        <div class="wc-bars" id="wc-bars"><div class="wc-bar-wrap" onclick="showBarPopup(event,0,0)"><div class="wc-bar " style="height:3px"></div><div class="wc-day">Car</div></div><div class="wc-bar-wrap" onclick="showBarPopup(event,1,0)"><div class="wc-bar " style="height:3px"></div><div class="wc-day">Per</div></div><div class="wc-bar-wrap" onclick="showBarPopup(event,2,0)"><div class="wc-bar " style="height:3px"></div><div class="wc-day">Cum</div></div><div class="wc-bar-wrap" onclick="showBarPopup(event,3,20)"><div class="wc-bar has-data" style="height:4px"></div><div class="wc-day">Cmt</div></div><div class="wc-bar-wrap" onclick="showBarPopup(event,4,2)"><div class="wc-bar has-data" style="height:3px"></div><div class="wc-day">Paz</div></div><div class="wc-bar-wrap" onclick="showBarPopup(event,5,230)"><div class="wc-bar has-data" style="height:46px"></div><div class="wc-day">Pzt</div></div><div class="wc-bar-wrap" onclick="showBarPopup(event,6,134)"><div class="wc-bar today" style="height:27px"></div><div class="wc-day">Sal</div></div></div>
       </div>
       <!-- Mode selection -->
       <div class="mode-panel">
         <div class="mode-panel-title">Mod</div>
         <div class="mode-buttons">
           <div class="mode-btn on" data-mode="fill" onclick="selectMode(this)">
-            <div class="mode-btn-left"><span class="mode-btn-title">Boşluk Doldur</span><span class="mode-btn-sub">Cümledeki boşluğu tamamla</span></div>
+            <div class="mode-btn-left"><span class="mode-btn-title">Boşluk Doldur</span><span class="mode-btn-sub">Cümledeki boşluğu tamamla</span><div class="mode-btn-resume"><button class="resume-btn" onclick="event.stopPropagation();resumeMode(&quot;fill&quot;)">▶ Devam Et <span style="opacity:.7;font-size:9px">1/92</span></button><button class="finish-btn" onclick="event.stopPropagation();discardSession(&quot;fill&quot;)">✕ Sil</button></div></div>
             <span class="mode-btn-arrow">›</span>
           </div>
           <div class="mode-btn" data-mode="mcq" onclick="selectMode(this)">
-            <div class="mode-btn-left"><span class="mode-btn-title">Çoktan Seçmeli</span><span class="mode-btn-sub">İngilizce → Türkçe, 4 şık</span></div>
+            <div class="mode-btn-left"><span class="mode-btn-title">Çoktan Seçmeli</span><span class="mode-btn-sub">İngilizce → Türkçe, 4 şık</span><div class="mode-btn-resume"><button class="resume-btn" onclick="event.stopPropagation();resumeMode(&quot;mcq&quot;)">▶ Devam Et <span style="opacity:.7;font-size:9px">2/46</span></button><button class="finish-btn" onclick="event.stopPropagation();discardSession(&quot;mcq&quot;)">✕ Sil</button></div></div>
             <span class="mode-btn-arrow">›</span>
           </div>
           <div class="mode-btn" data-mode="en-tr" onclick="selectMode(this)">
-            <div class="mode-btn-left"><span class="mode-btn-title">İngilizce → Türkçe</span><span class="mode-btn-sub">Kelimeyi gör, anlamı bul</span></div>
+            <div class="mode-btn-left"><span class="mode-btn-title">İngilizce → Türkçe</span><span class="mode-btn-sub">Kelimeyi gör, anlamı bul</span><div class="mode-btn-resume"><button class="resume-btn" onclick="event.stopPropagation();resumeMode(&quot;en-tr&quot;)">▶ Devam Et <span style="opacity:.7;font-size:9px">6/46</span></button><button class="finish-btn" onclick="event.stopPropagation();discardSession(&quot;en-tr&quot;)">✕ Sil</button></div></div>
             <span class="mode-btn-arrow">›</span>
           </div>
           <div class="mode-btn" data-mode="tr-en" onclick="selectMode(this)">
@@ -273,7 +273,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
         <div class="fp-title">Filtre</div>
         <div class="fp-section">
           <div class="fp-label">Bölüm</div>
-          <div class="chip-row" id="ep-chips"></div>
+          <div class="chip-row" id="ep-chips"><div class="ep-chip" data-type="ep" data-val="S1E3" onclick="toggleEpChip(this)">S1E3 <span class="ep-pct">%45</span></div><div class="ep-chip" data-type="ep" data-val="Temel1" onclick="toggleEpChip(this)">Temel1 <span class="ep-pct">%27</span></div></div>
         </div>
         <div class="fp-section">
           <div class="fp-label">Durum</div>
@@ -284,12 +284,12 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
           </div>
         </div>
         <button class="start-btn" onclick="startStudy()">Çalışmaya Başla</button>
-        <div class="sel-count" id="sel-count"></div>
+        <div class="sel-count" id="sel-count">46 kelime secili</div>
       </div>
     </div>
-    <div id="study-card" style="display:none">
-      <div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%"></div></div>
-      <div id="study-area"></div>
+    <div id="study-card" style="display: block;">
+      <div class="progress-bar"><div class="progress-fill" id="prog" style="width: 1%;"></div></div>
+      <div id="study-area"><div class="flashcard" style="min-height: auto; margin-bottom: 12px;"><div class="card-top"><div class="card-ep">Temel1</div><div style="font-size:11px;color:var(--muted)">2/92</div></div><div style="font-size:16px;line-height:1.9;color:var(--text)">I was going to <span style="color:var(--accent);font-weight:700;font-size:18px">_____</span> the issue, but the meeting ended earlier than expected.</div></div><div style="font-size: 11px; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.06em;">Bosluga hangi kelime gelir?</div><div class="quiz-options"><button class="quiz-option wrong" disabled="">set off</button><button class="quiz-option reveal" disabled="">bring up</button><button class="quiz-option" disabled="">take over</button><button class="quiz-option" disabled="">come across</button></div><div id="fz-fb"><div style="margin-top: 12px; background: var(--card); border-right-color: ; border-right-style: ; border-right-width: ; border-bottom-color: ; border-bottom-style: ; border-bottom-width: ; border-left-color: ; border-left-style: ; border-left-width: ; border-image-source: ; border-image-slice: ; border-image-width: ; border-image-outset: ; border-image-repeat: ; border-radius: 14px; padding: 18px; border-top: 3px solid var(--red);"><div style="font-size: 12px; font-weight: 700; color: var(--red); margin-bottom: 10px;">Yanlis — Dogru: bring up</div><div><div class="sent-with-play" style="margin-bottom:12px" id="fz-sent-top-r"><div style="font-size: 15px; line-height: 1.8; color: var(--text); flex: 1 1 0%;">I was going to <span style="color:var(--green);font-weight:700;text-decoration:underline">bring up</span> the issue, but the meeting ended earlier than expected.</div><button class="inline-play">▶</button></div></div><div class="card-tr">konuyu açmak</div><div class="card-colloc" style="margin-top: 10px;">Colocation: <span>bring up a topic / bring something up in conversation / don't bring it up</span></div><div class="sent-with-play" style="margin-top: 8px;"><div class="card-example" style="flex: 1 1 0%; margin-bottom: 0px;">I didn’t want to bring it up, but we really need to talk about what happened yesterday.</div><button class="inline-play">▶</button></div><div class="sent-with-play" style="margin-top: 8px;"><div class="card-example" style="flex: 1 1 0%; margin-bottom: 0px;">She brought up an interesting point during the meeting that no one had considered before.</div><button class="inline-play">▶</button></div><div class="card-trap" style="margin-top: 8px;"><strong>Dikkat:</strong> 'grow up' ile karışır — burada konu açmak anlamı</div></div></div><div style="display: flex; justify-content: space-between; margin-top: 10px; padding: 0px 4px;"><button style="font-size:13px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:inherit;padding:8px 4px;">◀ Önceki</button><button style="font-size:13px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:inherit;padding:8px 4px;">Sonraki ▶</button></div></div>
     </div>
   </div>
 
@@ -320,7 +320,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <div class="form-title">JSON Dosyasını Yapıştır</div>
       <div class="form-group">
         <label class="form-label">JSON listesini yapıştır</label>
-        <textarea class="form-textarea" id="f-bulk" style="min-height:110px;font-size:12px;" placeholder='[{"word":"show up","tr":"gelmek","episode":"S1E1","fill_sentences":[{"sentence":"He did not _____ until late.","options":["show up","run into","look into","come across"],"answer":"show up"}]}]'></textarea>
+        <textarea class="form-textarea" id="f-bulk" style="min-height:110px;font-size:12px;" placeholder="[{&quot;word&quot;:&quot;show up&quot;,&quot;tr&quot;:&quot;gelmek&quot;,&quot;episode&quot;:&quot;S1E1&quot;,&quot;fill_sentences&quot;:[{&quot;sentence&quot;:&quot;He did not _____ until late.&quot;,&quot;options&quot;:[&quot;show up&quot;,&quot;run into&quot;,&quot;look into&quot;,&quot;come across&quot;],&quot;answer&quot;:&quot;show up&quot;}]}]"></textarea>
       </div>
       <button class="btn-primary" onclick="bulkAdd()">Tümünü Ekle</button>
     </div>
@@ -353,10 +353,10 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
     <div class="sheet-handle"></div>
     <div class="sheet-title" style="margin-bottom:16px">Tema</div>
     <div class="theme-grid">
-      <div class="theme-item" onclick="setTheme('slate')"><div class="theme-swatch sw-slate" id="sw-slate"></div><div class="theme-name">Gri</div></div>
-      <div class="theme-item" onclick="setTheme('white')"><div class="theme-swatch sw-white" id="sw-white"></div><div class="theme-name">Beyaz</div></div>
-      <div class="theme-item" onclick="setTheme('pearl')"><div class="theme-swatch sw-pearl" id="sw-pearl"></div><div class="theme-name">İnci</div></div>
-      <div class="theme-item" onclick="setTheme('amber')"><div class="theme-swatch sw-amber" id="sw-amber"></div><div class="theme-name">Amber</div></div>
+      <div class="theme-item" onclick="setTheme(&#39;slate&#39;)"><div class="theme-swatch sw-slate" id="sw-slate"></div><div class="theme-name">Gri</div></div>
+      <div class="theme-item" onclick="setTheme(&#39;white&#39;)"><div class="theme-swatch sw-white" id="sw-white"></div><div class="theme-name">Beyaz</div></div>
+      <div class="theme-item" onclick="setTheme(&#39;pearl&#39;)"><div class="theme-swatch sw-pearl" id="sw-pearl"></div><div class="theme-name">İnci</div></div>
+      <div class="theme-item" onclick="setTheme(&#39;amber&#39;)"><div class="theme-swatch sw-amber active" id="sw-amber"></div><div class="theme-name">Amber</div></div>
     </div>
   </div>
 </div>
@@ -1418,5 +1418,6 @@ try{window.speechSynthesis&&(window.speechSynthesis.onvoiceschanged=()=>{});}cat
 initTheme();updateStats();buildWeekChart();buildFilterPanel();updateModeResumeBtns();
 
 </script>
-</body>
-</html>
+
+
+</body></html>
