@@ -52,12 +52,19 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .mode-btn{width:100%;padding:16px 20px;border-radius:14px;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;font-family:inherit;text-align:left;transition:all .15s;display:flex;align-items:center;justify-content:space-between;}
 .mode-btn:active{opacity:.8;}
 .mode-btn-left{display:flex;flex-direction:column;gap:3px;}
+.mode-btn-icon{font-size:20px;margin-right:12px;flex-shrink:0;}
 .mode-btn-title{font-size:17px;font-weight:600;color:var(--text);}
 .mode-btn-sub{font-size:11px;color:var(--muted);}
 .mode-btn-arrow{font-size:18px;color:var(--muted);opacity:.5;}
-.mode-btn.on{border-color:var(--accent);background:var(--card);}
+.mode-btn.on{border-color:var(--accent);background:var(--card);border-left:4px solid var(--accent);}
 .mode-btn.on .mode-btn-title{color:var(--accent);}
 .mode-btn.on .mode-btn-arrow{color:var(--accent);opacity:1;}
+/* Konfeti */
+@keyframes confetti-fall{0%{transform:translateY(-20px) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
+.confetti-piece{position:fixed;width:8px;height:8px;top:-10px;border-radius:2px;pointer-events:none;z-index:9999;animation:confetti-fall linear forwards;}
+/* Yazarak Çalış kutucuk dalgası */
+@keyframes box-pop{0%{transform:scale(1);}40%{transform:scale(1.25);}100%{transform:scale(1);}}
+.type-letter-box.pop{animation:box-pop .35s ease;}
 .mode-btn-resume{display:flex;gap:5px;margin-top:6px;}
 .resume-btn,.finish-btn{font-size:10px;font-weight:700;padding:4px 10px;border-radius:6px;border:none;cursor:pointer;font-family:inherit;transition:all .15s;}
 .resume-btn{background:rgba(224,200,112,.18);color:var(--accent);}
@@ -288,23 +295,28 @@ body.settings-open .nav{pointer-events:all;background:var(--card) !important;mar
       <div class="mode-panel">
         <div class="mode-panel-title">Mod</div>
         <div class="mode-buttons">
-          <div class="mode-btn on" data-mode="fill" onclick="selectMode(this)">
+          <div class="mode-btn on" data-mode="fill" onclick="selectMode(this)" style="align-items:center">
+            <span class="mode-btn-icon">📝</span>
             <div class="mode-btn-left"><span class="mode-btn-title">Boşluk Doldur</span><span class="mode-btn-sub">Cümledeki boşluğu tamamla</span></div>
             <span class="mode-btn-arrow">›</span>
           </div>
-          <div class="mode-btn" data-mode="mcq" onclick="selectMode(this)">
+          <div class="mode-btn" data-mode="mcq" onclick="selectMode(this)" style="align-items:center">
+            <span class="mode-btn-icon">🃏</span>
             <div class="mode-btn-left"><span class="mode-btn-title">Çoktan Seçmeli</span><span class="mode-btn-sub">İngilizce → Türkçe, 4 şık</span></div>
             <span class="mode-btn-arrow">›</span>
           </div>
-          <div class="mode-btn" data-mode="type" onclick="selectMode(this)">
+          <div class="mode-btn" data-mode="type" onclick="selectMode(this)" style="align-items:center">
+            <span class="mode-btn-icon">✍️</span>
             <div class="mode-btn-left"><span class="mode-btn-title">Yazarak Çalış</span><span class="mode-btn-sub">Cümleyi harf harf tamamla</span></div>
             <span class="mode-btn-arrow">›</span>
           </div>
-          <div class="mode-btn" data-mode="en-tr" onclick="selectMode(this)">
+          <div class="mode-btn" data-mode="en-tr" onclick="selectMode(this)" style="align-items:center">
+            <span class="mode-btn-icon">🔤</span>
             <div class="mode-btn-left"><span class="mode-btn-title">İngilizce → Türkçe</span><span class="mode-btn-sub">Kelimeyi gör, anlamı bul</span></div>
             <span class="mode-btn-arrow">›</span>
           </div>
-          <div class="mode-btn" data-mode="tr-en" onclick="selectMode(this)">
+          <div class="mode-btn" data-mode="tr-en" onclick="selectMode(this)" style="align-items:center">
+            <span class="mode-btn-icon">🔁</span>
             <div class="mode-btn-left"><span class="mode-btn-title">Türkçe → İngilizce</span><span class="mode-btn-sub">Anlamı gör, kelimeyi bul</span></div>
             <span class="mode-btn-arrow">›</span>
           </div>
@@ -615,7 +627,44 @@ function buildWeekChart(){
   bars.innerHTML=entries.map((e,i)=>'<div class="wc-bar-wrap" onclick="showBarPopup(event,'+i+','+e.n+')">'+'<div class="wc-bar '+(e.isToday?'today':e.n>0?'has-data':'')+'" style="height:'+Math.max(3,Math.round(e.n/max*46))+'px"></div>'+'<div class="wc-day">'+e.label+'</div>'+'</div>').join('');
 }
 let popupTimer=null;
-window.showBarPopup=function(evt,idx,count){document.querySelectorAll('.wc-popup').forEach(p=>p.remove());if(count===0){showToast('Bu gun calisma yok');return;}const wrap=evt.currentTarget;const chart=document.querySelector('.week-chart');const cr=chart.getBoundingClientRect();const wr=wrap.getBoundingClientRect();const popup=document.createElement('div');popup.className='wc-popup';popup.textContent=count+' kelime';popup.style.left=(wr.left+wr.width/2-cr.left)+'px';chart.appendChild(popup);clearTimeout(popupTimer);popupTimer=setTimeout(()=>popup.remove(),2000);};
+// ── KONFETİ ──
+function launchConfetti(){
+  const colors=['#e0c870','#90a8d8','#50c880','#f472b6','#fb923c','#a78bfa','#38bdf8'];
+  for(let i=0;i<80;i++){
+    const el=document.createElement('div');
+    el.className='confetti-piece';
+    el.style.left=Math.random()*100+'vw';
+    el.style.background=colors[Math.floor(Math.random()*colors.length)];
+    el.style.width=(6+Math.random()*8)+'px';
+    el.style.height=(6+Math.random()*8)+'px';
+    el.style.borderRadius=Math.random()>0.5?'50%':'2px';
+    el.style.animationDuration=(1.2+Math.random()*2)+'s';
+    el.style.animationDelay=(Math.random()*0.8)+'s';
+    document.body.appendChild(el);
+    el.addEventListener('animationend',()=>el.remove());
+  }
+}
+
+// ── HAFTALIK GRAFİK ANİMASYONLU TOOLTIP ──
+window.showBarPopup=function(evt,idx,count){
+  document.querySelectorAll('.wc-popup').forEach(p=>p.remove());
+  if(count===0){showToast('Bu gün çalışma yok');return;}
+  const wrap=evt.currentTarget;
+  const chart=document.querySelector('.week-chart');
+  const cr=chart.getBoundingClientRect();
+  const wr=wrap.getBoundingClientRect();
+  const popup=document.createElement('div');
+  popup.className='wc-popup';
+  popup.innerHTML='<span style="font-weight:700;color:var(--accent)">'+count+'</span> <span style="font-size:11px">kelime</span>';
+  popup.style.left=(wr.left+wr.width/2-cr.left)+'px';
+  popup.style.opacity='0';
+  popup.style.transform='translateX(-50%) translateY(6px)';
+  popup.style.transition='opacity .18s,transform .18s';
+  chart.appendChild(popup);
+  requestAnimationFrame(()=>{popup.style.opacity='1';popup.style.transform='translateX(-50%) translateY(0)';});
+  clearTimeout(popupTimer);
+  popupTimer=setTimeout(()=>{popup.style.opacity='0';popup.style.transform='translateX(-50%) translateY(6px)';setTimeout(()=>popup.remove(),200);},2000);
+};
 function logActivity(){const t=today();if(!db.activity)db.activity={};db.activity[t]=(db.activity[t]||0)+1;}
 
 // ── MODE SELECTION ──
@@ -1067,6 +1116,7 @@ function showFlashSummary(){
   document.getElementById('prog').style.width='100%';
   document.getElementById('study-area').innerHTML='<div class="summary"><div class="summary-title">Bitti!</div><div class="summary-sub">'+sTotal+' kelime</div><div class="summary-3"><div class="summary-item"><div class="summary-n" style="color:var(--green)">'+sKnown+'</div><div class="summary-l">Bildim</div></div><div class="summary-item"><div class="summary-n" style="color:var(--muted)">'+sSkipped+'</div><div class="summary-l">Atlandi</div></div><div class="summary-item"><div class="summary-n" style="color:var(--accent)">'+Math.round(sKnown/Math.max(sTotal,1)*100)+'%</div><div class="summary-l">Basari</div></div></div>'+'<button class="done-btn" onclick="backToHome(true)">Tamam</button></div>';
   buildWeekChart();buildFilterPanel();
+  if(pct===100)launchConfetti();
 }
 window.backToHome=function(discard){_quizSwipeLeft=null;_quizSwipeRight=null;if(!discard){saveSession();}else{clearSession();}document.getElementById('study-home').style.display='block';document.getElementById('study-card').style.display='none';document.getElementById('prog').style.width='0%';document.getElementById('study-area').innerHTML='';updateStats();buildWeekChart();buildFilterPanel();updateModeResumeBtns();};
 
@@ -1200,6 +1250,7 @@ function mqSummary(){
     startMcq(words);
   });
   document.getElementById('mq-back').addEventListener('click',()=>backToHome(true));
+  if(pct===100)launchConfetti();
 }
 
 // ── FILL MODE ──
@@ -1345,6 +1396,7 @@ function fzSummary(){
     startFill(words);
   });
   document.getElementById('fz-back').addEventListener('click',()=>backToHome(true));
+  if(pct===100)launchConfetti();
 }
 
 // ── TYPE MODE (Yazarak Çalış) ──
@@ -1642,20 +1694,30 @@ function tyCheck(){
   const idx2=db.words.findIndex(x=>x.id===w.id);
   if(idx2!==-1){setProgress(db.words[idx2],'type',ok?'known':'unknown');logActivity();updateStreak();saveDb();}
 
-  // Re-render boxes with color
+  // Re-render boxes with color + dalga animasyonu
   const oldRow=document.getElementById('ty-blank-row');
   if(oldRow){
     const newRow=tyBuildBlankRow(item.answer,TY.letterStates,false);
-    // Color each box
+    const boxes=[];
     newRow.querySelectorAll('.type-letter-box').forEach(box=>{
       const si=parseInt(box.dataset.stateIdx);
       const s=TY.letterStates[si];
       if(!s||s.isSpace||s.revealed)return;
       box.textContent=ok?s.char:(s.entered||'_');
       box.classList.add(ok?'correct-box':(s.entered===s.char?'correct-box':'wrong-box'));
+      if(ok) boxes.push(box);
     });
     newRow.id='ty-blank-row';
     oldRow.replaceWith(newRow);
+    // Dalgalı pop animasyonu — sadece doğruysa
+    if(ok){
+      boxes.forEach((box,i)=>{
+        setTimeout(()=>{
+          box.classList.add('pop');
+          box.addEventListener('animationend',()=>box.classList.remove('pop'),{once:true});
+        },i*60);
+      });
+    }
   }
 
   // Disable keyboard
@@ -1715,6 +1777,7 @@ function tySummary(){
     startType(words);
   });
   document.getElementById('ty-back').addEventListener('click',()=>backToHome(true));
+  if(pct===100)launchConfetti();
 }
 window.bulkAdd=function(){
   const raw=document.getElementById('f-bulk').value.trim();
