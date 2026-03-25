@@ -1474,6 +1474,17 @@ function tyBuildBlankRow(answer, states, interactive){
     grpDiv.className='type-word-group';
     group.stateIndices.forEach((si,ci)=>{
       const st=states[si];
+      // Harf değilse (boşluk, slash vs.) — düz metin olarak göster
+      if(st.isSpace){
+        if(st.char!==' '){
+          // slash, tire gibi görünür karakterler
+          const sp=document.createElement('div');
+          sp.style.cssText='font-size:15px;font-weight:600;color:var(--muted);display:flex;align-items:center;padding:0 2px;';
+          sp.textContent=st.char;
+          grpDiv.appendChild(sp);
+        }
+        return;
+      }
       const box=document.createElement('div');
       box.className='type-letter-box';
       box.dataset.stateIdx=si;
@@ -1504,12 +1515,18 @@ function tyBuildBlankRow(answer, states, interactive){
   return row;
 }
 
-// Build space-aware states (skip space chars)
+// Build space-aware states — sadece a-z harfler için kutu, geri kalanı otomatik göster
 function buildStatesFromAnswer(answer){
   const states=[];
   for(let i=0;i<answer.length;i++){
-    if(answer[i]===' '){states.push({char:' ',revealed:true,entered:' ',isSpace:true});}
-    else{states.push({char:answer[i].toLowerCase(),revealed:false,entered:'',isSpace:false});}
+    const ch=answer[i];
+    const isLetter=/[a-zA-Z]/.test(ch);
+    if(isLetter){
+      states.push({char:ch.toLowerCase(),revealed:false,entered:'',isSpace:false});
+    } else {
+      // boşluk, slash, tire, nokta vs. — otomatik göster
+      states.push({char:ch,revealed:true,entered:ch,isSpace:true});
+    }
   }
   return states;
 }
@@ -1697,7 +1714,7 @@ function tyCheck(){
   const {w,item}=TY.queue[TY.idx];
   const answer=item.answer.toLowerCase();
   // Build user answer from states
-  const userAns=TY.letterStates.map(s=>s.isSpace?' ':s.entered||'_').join('');
+  const userAns=TY.letterStates.map(s=>s.isSpace?s.char:s.entered||'_').join('');
   const ok=userAns===answer;
   TY.answered=true;
 
