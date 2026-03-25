@@ -9,13 +9,18 @@
 <style>
 :root{--bg:#1c1e24;--surface:#24272f;--card:#2c3040;--border:#3c4054;--accent:#e0c870;--accent2:#90a8d8;--text:#dce0f0;--muted:#a0a8c0;--green:#50c880;--red:#d06868;--blue:#6090d0;--bb:#162018;--bbo:#2a4030;--bbc:#50c880;}
 [data-theme="white"]{--bg:#ffffff;--surface:#f2f3f7;--card:#e8eaf0;--border:#c8ccd8;--accent:#1a5fb4;--accent2:#6040a8;--text:#141828;--muted:#505870;--green:#1a7840;--red:#b83030;--blue:#1a5fb4;--bb:#e4f4ec;--bbo:#90d0a8;--bbc:#1a7840;}
-[data-theme="pearl"]{--bg:#eceef4;--surface:#e2e4ec;--card:#d8dae4;--border:#c0c4d4;--accent:#3a5fa8;--accent2:#6850a0;--text:#1a1e30;--muted:#606880;--green:#1a7040;--red:#a83030;--blue:#3a5fa8;--bb:#dceee4;--bbo:#88c8a0;--bbc:#1a7040;}
+[data-theme="night"]{--bg:#0d1117;--surface:#161b22;--card:#1c2330;--border:#30363d;--accent:#58a6ff;--accent2:#bc8cff;--text:#e6edf3;--muted:#8b949e;--green:#3fb950;--red:#f85149;--blue:#58a6ff;--bb:#0d2a1a;--bbo:#1a4a2a;--bbc:#3fb950;}
 [data-theme="amber"]{--bg:#fdf8f0;--surface:#f5ede0;--card:#ede0cc;--border:#d4c0a0;--accent:#c07010;--accent2:#a05818;--text:#2a1e08;--muted:#887060;--green:#287840;--red:#a83030;--blue:#3860a0;--bb:#e8f4e8;--bbo:#90c898;--bbc:#287840;}
+[data-theme="fildisi"]{--bg:#f5f2ec;--surface:#ede8de;--card:#e4ddd0;--border:#ccc4b4;--accent:#5c4a1c;--accent2:#7c5c3c;--text:#28240c;--muted:#8c7460;--green:#1a6430;--red:#a83030;--blue:#3860a0;--bb:#e8f4e8;--bbo:#a0c8a0;--bbc:#1a6430;}
+[data-theme="krem"]{--bg:#fdf8f0;--surface:#f8f0e4;--card:#f0e8d4;--border:#dcd0b8;--accent:#b45309;--accent2:#7c5c3c;--text:#2c2014;--muted:#8c7460;--green:#15803d;--red:#b83030;--blue:#3860a0;--bb:#e8f4e8;--bbo:#a0c8a0;--bbc:#15803d;}
+[data-theme="pastel"]{--bg:#f0f4ff;--surface:#e4ecff;--card:#d8e4ff;--border:#c0d0f0;--accent:#3b5bdb;--accent2:#9775fa;--text:#1e2860;--muted:#6070a8;--green:#2f9e44;--red:#c92a2a;--blue:#3b5bdb;--bb:#e8f4e8;--bbo:#a0c8a0;--bbc:#2f9e44;}
+[data-theme="buz"]{--bg:#e8f0f8;--surface:#dce8f4;--card:#ccdcee;--border:#b0c8e0;--accent:#2563eb;--accent2:#7c3aed;--text:#1a2840;--muted:#5878a0;--green:#16a34a;--red:#c92a2a;--blue:#2563eb;--bb:#e8f4e8;--bbo:#a0c8a0;--bbc:#16a34a;}
+[data-theme="col"]{--bg:#1c1508;--surface:#261e0e;--card:#322814;--border:#4a3c20;--accent:#e8b430;--accent2:#d4944c;--text:#f0dfa8;--muted:#a08840;--green:#7ec850;--red:#d06868;--blue:#6090d0;--bb:#162018;--bbo:#2a4030;--bbc:#7ec850;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;overscroll-behavior:none;}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',sans-serif;min-height:100vh;transition:background .25s,color .25s;}
 .app{max-width:480px;margin:0 auto;padding:20px 16px 80px;}
-.nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-top:env(safe-area-inset-top);}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-top:env(safe-area-inset-top);position:sticky;top:0;z-index:100;background:var(--bg);padding-bottom:8px;}
 .logo{font-size:17px;font-weight:700;color:var(--accent);}
 .nav-right{display:flex;align-items:center;gap:8px;}
 .sync-dot{width:8px;height:8px;border-radius:50%;background:transparent;transition:background .3s;}
@@ -176,6 +181,10 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .type-score-badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:var(--accent);background:rgba(224,200,112,.12);border:1px solid rgba(224,200,112,.25);border-radius:8px;padding:4px 10px;margin-bottom:8px;}
 .type-score-delta{font-size:11px;color:var(--red);font-weight:600;}
 
+/* SETTINGS SHEET TABS */
+.settings-tab-btn{flex:1;padding:9px 6px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;}
+.settings-tab-btn.active{background:var(--card);color:var(--text);border-color:var(--accent);}
+
 /* ADD FORM */
 .add-form{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:12px;}
 .form-title{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:14px;text-transform:uppercase;letter-spacing:.07em;}
@@ -190,12 +199,12 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .btn-primary:active{opacity:.8;}
 
 /* SHEETS */
-.sheet-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:140;}
+.sheet-overlay{display:none;position:fixed;top:var(--nav-bottom,60px);left:0;right:0;bottom:0;background:rgba(0,0,0,.55);z-index:140;}
 .sheet-overlay.show{display:block;}
-.sheet{display:none;position:fixed;bottom:0;left:0;right:0;z-index:150;max-width:480px;margin:0 auto;}
+.sheet{display:none;position:fixed;top:var(--nav-bottom,60px);left:0;right:0;z-index:150;max-width:480px;margin:0 auto;}
 .sheet.show{display:block;}
-.sheet-inner{background:var(--card);border:1px solid var(--border);border-radius:20px 20px 0 0;padding:20px 20px calc(24px + env(safe-area-inset-bottom));}
-.sheet-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px;}
+.sheet-inner{background:var(--card);border:1px solid var(--border);border-radius:0 0 20px 20px;padding:16px 20px 24px;}
+.sheet-handle{display:none;}
 .sheet-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:16px;}
 .sheet-section{margin-bottom:14px;}
 .sheet-label{font-size:11px;color:var(--muted);margin-bottom:7px;}
@@ -206,8 +215,13 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .theme-swatch.active{border-color:var(--accent);}
 .sw-slate{background:linear-gradient(135deg,#1c1e24 50%,#e0c870 50%);}
 .sw-white{background:linear-gradient(135deg,#fff 50%,#1a5fb4 50%);border:2px solid #c8ccd8;}
-.sw-pearl{background:linear-gradient(135deg,#eceef4 50%,#3a5fa8 50%);border:2px solid #c0c4d4;}
+.sw-night{background:linear-gradient(135deg,#0d1117 50%,#58a6ff 50%);border:2px solid #30363d;}
 .sw-amber{background:linear-gradient(135deg,#fdf8f0 50%,#c07010 50%);border:2px solid #d4c0a0;}
+.sw-fildisi{background:linear-gradient(135deg,#f5f2ec 50%,#5c4a1c 50%);border:2px solid #ccc4b4;}
+.sw-krem{background:linear-gradient(135deg,#fdf8f0 50%,#b45309 50%);border:2px solid #dcd0b8;}
+.sw-pastel{background:linear-gradient(135deg,#f0f4ff 50%,#3b5bdb 50%);border:2px solid #c0d0f0;}
+.sw-buz{background:linear-gradient(135deg,#e8f0f8 50%,#2563eb 50%);border:2px solid #b0c8e0;}
+.sw-col{background:linear-gradient(135deg,#1c1508 50%,#e8b430 50%);}
 .theme-name{font-size:11px;color:var(--muted);font-weight:500;}
 
 /* LIST */
@@ -231,7 +245,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .btn-del{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:20px;padding:2px 6px;line-height:1;}
 
 /* CONFIRM */
-.confirm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;align-items:flex-end;justify-content:center;}
+.confirm-overlay{display:none;position:fixed;top:var(--nav-bottom,60px);left:0;right:0;bottom:0;background:rgba(0,0,0,.65);z-index:200;align-items:flex-end;justify-content:center;}
 .confirm-overlay.show{display:flex;}
 .confirm-box{background:var(--card);border:1px solid var(--border);border-radius:20px 20px 0 0;padding:24px 20px calc(32px + env(safe-area-inset-bottom));width:100%;max-width:480px;text-align:center;}
 .confirm-title{font-size:15px;font-weight:600;margin-bottom:6px;}
@@ -253,7 +267,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
     <div class="nav-right">
       <div class="sync-dot" id="sync-dot" title="Senkronizasyon durumu"></div>
       <div class="nav-tabs">
-        <button class="nav-tab" onclick="showScreen(document.getElementById('screen-list').classList.contains('active')?'study':'list',this)" id="settings-tab" style="font-size:18px;line-height:1;padding:6px 12px">☰</button>
+        <button class="nav-tab" onclick="toggleSettingsSheet()" id="settings-tab" style="font-size:18px;line-height:1;padding:6px 12px">☰</button>
       </div>
     </div>
   </div>
@@ -323,39 +337,114 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
     </div>
   </div>
 
-  <!-- LIST SCREEN -->
-  <div class="screen" id="screen-list">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-      <div style="font-size:15px;font-weight:700;color:var(--text)">Ayarlar</div>
-    </div>
-    <div class="list-toolbar">
-      <button class="tool-btn" onclick="showAddScreen()">+ Ekle</button>
-      <button class="tool-btn" onclick="openRenameSheet()">Düzenle</button>
-      <button class="tool-btn" onclick="openThemeSheet()">Tema</button>
-      <button class="tool-btn" style="color:var(--red)" onclick="openBulkDelete()">Toplu sil</button>
-    </div>
-    <div class="list-spacer"></div>
-    <div class="list-header">
-      <div class="list-count" id="list-count">0 kelime</div>
-      <div class="list-filter-row">
-        <button class="lf-btn active" onclick="resetListFilter(this)">Tümü</button>
-        <button class="lf-btn" onclick="openListFilter()">Filtrele</button>
-        <button class="lf-btn" onclick="copyListWords()">Kopyala</button>
-        <button class="lf-btn" onclick="exportFiltered()">Dışa Aktar</button>
-      </div>
-    </div>
-    <div class="word-list" id="word-list"></div>
-  </div>
+  <!-- LIST SCREEN kaldırıldı, sheet'e taşındı -->
+  <!-- ADD SCREEN kaldırıldı, sheet'e taşındı -->
+</div>
 
-  <!-- ADD SCREEN -->
-  <div class="screen" id="screen-add">
-    <div class="add-form">
-      <div class="form-title">JSON Dosyasını Yapıştır</div>
-      <div class="form-group">
-        <label class="form-label">JSON listesini yapıştır</label>
-        <textarea class="form-textarea" id="f-bulk" style="min-height:110px;font-size:12px;" placeholder='[{"word":"show up","tr":"gelmek","episode":"S1E1","fill_sentences":[{"sentence":"He did not _____ until late.","options":["show up","run into","look into","come across"],"answer":"show up"}]}]'></textarea>
+<!-- AYARLAR SHEET -->
+<div class="sheet-overlay" id="settings-overlay" onclick="closeSettingsSheet()"></div>
+<div class="sheet" id="settings-sheet" style="max-height:80vh;">
+  <div class="sheet-inner" style="overflow-y:auto;max-height:80vh;padding-bottom:calc(24px + env(safe-area-inset-bottom))">
+    <div class="sheet-handle"></div>
+    <!-- Sekmeler -->
+    <div style="display:flex;gap:6px;margin-bottom:18px;">
+      <button class="settings-tab-btn active" id="stab-list" onclick="switchSettingsTab('list')">Kelimeler</button>
+      <button class="settings-tab-btn" id="stab-add" onclick="switchSettingsTab('add')">Yönet</button>
+      <button class="settings-tab-btn" id="stab-opts" onclick="switchSettingsTab('opts')">Seçenekler</button>
+    </div>
+
+    <!-- Kelimeler sekmesi -->
+    <div id="settings-pane-list">
+      <div class="list-header" style="margin-top:4px;">
+        <div class="list-count" id="list-count">0 kelime</div>
+        <div class="list-filter-row">
+          <button class="lf-btn active" onclick="resetListFilter(this)">Tümü</button>
+          <button class="lf-btn" onclick="openListFilter()">Filtrele</button>
+          <button class="lf-btn" onclick="copyListWords()">Kopyala</button>
+          <button class="lf-btn" onclick="exportFiltered()">Dışa Aktar</button>
+        </div>
       </div>
-      <button class="btn-primary" onclick="bulkAdd()">Tümünü Ekle</button>
+      <div class="word-list" id="word-list" style="margin-top:10px;"></div>
+    </div>
+
+    <!-- Yönet sekmesi -->
+    <div id="settings-pane-add" style="display:none;">
+      <!-- JSON Ekle -->
+      <div class="add-form">
+        <div class="form-title">JSON Dosyasını Yapıştır</div>
+        <div class="form-group">
+          <label class="form-label">JSON listesini yapıştır</label>
+          <textarea class="form-textarea" id="f-bulk" style="min-height:110px;font-size:12px;" placeholder='[{"word":"show up","tr":"gelmek","episode":"S1E1","fill_sentences":[{"sentence":"He did not _____ until late.","options":["show up","run into","look into","come across"],"answer":"show up"}]}]'></textarea>
+        </div>
+        <button class="btn-primary" onclick="bulkAdd()">Tümünü Ekle</button>
+      </div>
+      <!-- Düzenle -->
+      <div style="display:flex;gap:6px;margin-bottom:10px;">
+        <button class="tool-btn" style="flex:1" onclick="toggleInlineRename()">Düzenle</button>
+        <button class="tool-btn" style="flex:1;color:var(--red)" onclick="toggleInlineBulkDelete()">Toplu Sil</button>
+      </div>
+      <!-- Inline Rename -->
+      <div id="inline-rename" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;">
+        <div class="sheet-label" style="margin-bottom:8px">Bölüm Adını Değiştir</div>
+        <div class="chip-row" id="rn-ep-chips-inline" style="margin-bottom:8px;"></div>
+        <div id="rn-input-inline" style="display:none;">
+          <input class="form-input" id="rn-new-name-inline" placeholder="Yeni bölüm adı" style="margin-bottom:8px;">
+          <div style="display:flex;gap:6px;">
+            <button class="sheet-apply" style="background:var(--surface);color:var(--text);border:1px solid var(--border);" onclick="cancelInlineRename()">Vazgeç</button>
+            <button class="sheet-apply" onclick="confirmInlineRename()">Yeniden Adlandır</button>
+          </div>
+        </div>
+      </div>
+      <!-- Inline Bulk Delete -->
+      <div id="inline-bulk-delete" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;">
+        <div class="sheet-label" style="margin-bottom:8px">Hangi bölümü silmek istiyorsun?</div>
+        <div class="chip-row" id="bd-ep-chips-inline" style="margin-bottom:8px;"></div>
+        <div id="bd-count-inline" style="font-size:12px;color:var(--muted);margin-bottom:8px;"></div>
+        <div style="display:flex;gap:6px;">
+          <button class="sheet-apply" style="background:var(--surface);color:var(--text);border:1px solid var(--border);" onclick="cancelInlineBulkDelete()">Vazgeç</button>
+          <button class="sheet-apply" style="background:rgba(208,104,104,.15);color:var(--red);border:1px solid rgba(208,104,104,.35);" onclick="confirmInlineBulkDelete()">Sil</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seçenekler sekmesi -->
+    <div id="settings-pane-opts" style="display:none;">
+      <div class="sheet-section">
+        <div class="sheet-label">Tema</div>
+        <div class="theme-grid" style="grid-template-columns:repeat(3,1fr);">
+          <div class="theme-item" onclick="setTheme('slate')"><div class="theme-swatch sw-slate" id="sw-slate"></div><div class="theme-name">Gri</div></div>
+          <div class="theme-item" onclick="setTheme('white')"><div class="theme-swatch sw-white" id="sw-white"></div><div class="theme-name">Beyaz</div></div>
+          <div class="theme-item" onclick="setTheme('night')"><div class="theme-swatch sw-night" id="sw-night"></div><div class="theme-name">Gece</div></div>
+          <div class="theme-item" onclick="setTheme('amber')"><div class="theme-swatch sw-amber" id="sw-amber"></div><div class="theme-name">Amber</div></div>
+          <div class="theme-item" onclick="setTheme('fildisi')"><div class="theme-swatch sw-fildisi" id="sw-fildisi"></div><div class="theme-name">Fil Dişi</div></div>
+          <div class="theme-item" onclick="setTheme('krem')"><div class="theme-swatch sw-krem" id="sw-krem"></div><div class="theme-name">Krem</div></div>
+          <div class="theme-item" onclick="setTheme('pastel')"><div class="theme-swatch sw-pastel" id="sw-pastel"></div><div class="theme-name">Pastel</div></div>
+          <div class="theme-item" onclick="setTheme('buz')"><div class="theme-swatch sw-buz" id="sw-buz"></div><div class="theme-name">Buz</div></div>
+          <div class="theme-item" onclick="setTheme('col')"><div class="theme-swatch sw-col" id="sw-col"></div><div class="theme-name">Çöl Kumu</div></div>
+        </div>
+      </div>
+      <div class="sheet-section">
+        <div class="sheet-label">Seslendirme</div>
+        <div class="chip-row" id="tts-chips2">
+          <div class="chip" id="tts-chip-google2" onclick="selectTts('google',this)">Google</div>
+          <div class="chip" id="tts-chip-device2" onclick="selectTts('device',this)">Cihaz</div>
+        </div>
+      </div>
+      <div class="sheet-section">
+        <div class="sheet-label">Harf Al Modu (Yazarak Çalış)</div>
+        <div class="chip-row" id="hint-mode-chips">
+          <div class="chip" id="hint-chip-sequential" onclick="selectHintMode('sequential',this)">Soldan Sağa</div>
+          <div class="chip" id="hint-chip-random" onclick="selectHintMode('random',this)">Rastgele</div>
+          <div class="chip" id="hint-chip-tap" onclick="selectHintMode('tap',this)">Tıklayarak Seç</div>
+        </div>
+      </div>
+      <div class="sheet-section">
+        <div class="sheet-label">Boşluk Doldurma — Yanlış Şık Kaynağı</div>
+        <div class="chip-row" id="fill-src-chips">
+          <div class="chip" id="fill-src-chip-options" onclick="selectFillSrc('options',this)">Yüklenen Şıklar</div>
+          <div class="chip" id="fill-src-chip-group" onclick="selectFillSrc('group',this)">Gruptaki Kelimeler</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -376,87 +465,6 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
     </div>
     <button class="sheet-apply" onclick="applyListFilter()">Uygula</button>
-  </div>
-</div>
-
-<!-- THEME SHEET -->
-<div class="sheet-overlay" id="th-overlay" onclick="closeThemeSheet()"></div>
-<div class="sheet" id="th-sheet">
-  <div class="sheet-inner">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title" style="margin-bottom:16px">Tema</div>
-    <div class="theme-grid">
-      <div class="theme-item" onclick="setTheme('slate')"><div class="theme-swatch sw-slate" id="sw-slate"></div><div class="theme-name">Gri</div></div>
-      <div class="theme-item" onclick="setTheme('white')"><div class="theme-swatch sw-white" id="sw-white"></div><div class="theme-name">Beyaz</div></div>
-      <div class="theme-item" onclick="setTheme('pearl')"><div class="theme-swatch sw-pearl" id="sw-pearl"></div><div class="theme-name">İnci</div></div>
-      <div class="theme-item" onclick="setTheme('amber')"><div class="theme-swatch sw-amber" id="sw-amber"></div><div class="theme-name">Amber</div></div>
-    </div>
-  </div>
-</div>
-
-<!-- BULK DELETE SHEET -->
-<div class="sheet-overlay" id="bd-overlay" onclick="closeBulkDelete()"></div>
-<div class="sheet" id="bd-sheet">
-  <div class="sheet-inner">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title">Toplu sil</div>
-    <div class="sheet-section"><div class="sheet-label">Hangi bölümü silmek istiyorsun?</div><div class="chip-row" id="bd-ep-chips"></div></div>
-    <div style="display:flex;gap:8px;margin-top:8px;">
-      <button class="sheet-apply" style="background:var(--surface);color:var(--text);border:1px solid var(--border);" onclick="closeBulkDelete()">Vazgec</button>
-      <button class="sheet-apply" style="background:rgba(208,104,104,.15);color:var(--red);border:1px solid rgba(208,104,104,.35);" onclick="confirmBulkDelete()">Sil</button>
-    </div>
-    <div id="bd-count" style="font-size:12px;color:var(--muted);text-align:center;margin-top:8px;"></div>
-  </div>
-</div>
-
-<!-- RENAME EPISODE SHEET -->
-<div class="sheet-overlay" id="rn-overlay" onclick="closeRenameSheet()"></div>
-<div class="sheet" id="rn-sheet">
-  <div class="sheet-inner">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title">Düzenle</div>
-
-    <!-- Seslendirme -->
-    <div class="sheet-section">
-      <div class="sheet-label">Seslendirme</div>
-      <div class="chip-row" id="tts-chips">
-        <div class="chip" id="tts-chip-google" onclick="selectTts('google',this)">Google</div>
-        <div class="chip" id="tts-chip-device" onclick="selectTts('device',this)">Cihaz</div>
-      </div>
-    </div>
-
-    <!-- Harf Al Modu -->
-    <div class="sheet-section">
-      <div class="sheet-label">Harf Al Modu (Yazarak Çalış)</div>
-      <div class="chip-row" id="hint-mode-chips">
-        <div class="chip" id="hint-chip-sequential" onclick="selectHintMode('sequential',this)">Soldan Sağa</div>
-        <div class="chip" id="hint-chip-random" onclick="selectHintMode('random',this)">Rastgele</div>
-        <div class="chip" id="hint-chip-tap" onclick="selectHintMode('tap',this)">Tıklayarak Seç</div>
-      </div>
-    </div>
-
-    <!-- Boşluk Doldurma Şık Kaynağı -->
-    <div class="sheet-section">
-      <div class="sheet-label">Boşluk Doldurma — Yanlış Şık Kaynağı</div>
-      <div class="chip-row" id="fill-src-chips">
-        <div class="chip" id="fill-src-chip-options" onclick="selectFillSrc('options',this)">Yüklenen Şıklar</div>
-        <div class="chip" id="fill-src-chip-group" onclick="selectFillSrc('group',this)">Gruptaki Kelimeler</div>
-      </div>
-    </div>
-
-    <!-- Bölüm Yeniden Adlandır -->
-    <div class="sheet-section">
-      <div class="sheet-label">Bölüm Adını Değiştir</div>
-      <div class="chip-row" id="rn-ep-chips"></div>
-    </div>
-    <div class="sheet-section" id="rn-input-section" style="display:none">
-      <div class="sheet-label">Yeni ad</div>
-      <input class="form-input" id="rn-new-name" placeholder="Yeni bölüm adı" style="margin-top:4px">
-    </div>
-    <div style="display:flex;gap:8px;margin-top:12px;">
-      <button class="sheet-apply" style="background:var(--surface);color:var(--text);border:1px solid var(--border);" onclick="closeRenameSheet()">Vazgeç</button>
-      <button class="sheet-apply" id="rn-confirm-btn" style="display:none" onclick="confirmRename()">Yeniden Adlandır</button>
-    </div>
   </div>
 </div>
 
@@ -1779,8 +1787,13 @@ let currentTtsEngine = localStorage.getItem('bcs_tts_engine') || 'google';
 window.selectTts = function(engine, el) {
   currentTtsEngine = engine;
   localStorage.setItem('bcs_tts_engine', engine);
-  document.querySelectorAll('#tts-chips .chip').forEach(c => c.classList.remove('on'));
-  el.classList.add('on');
+  document.querySelectorAll('#tts-chips .chip, #tts-chips2 .chip').forEach(c => c.classList.remove('on'));
+  // highlight both sets
+  ['tts-chip-google','tts-chip-device','tts-chip-google2','tts-chip-device2'].forEach(id=>{
+    const e=document.getElementById(id);if(e)e.classList.remove('on');
+  });
+  const key=engine==='google'?'google':'device';
+  ['tts-chip-'+key,'tts-chip-'+key+'2'].forEach(id=>{const e=document.getElementById(id);if(e)e.classList.add('on');});
   showToast(engine === 'google' ? 'Google sesi aktif' : 'Cihaz sesi aktif');
 };
 
@@ -1828,46 +1841,86 @@ function initFillSrcChips() {
     if(el) el.classList.toggle('on', currentFillSrc===s);
   });
 }
-let selectedRenameEp=null;
-window.openRenameSheet=function(){
-  selectedRenameEp=null;
-  const row=document.getElementById('rn-ep-chips');
-  const eps=getEps();
-  row.innerHTML=eps.length===0?'<span style="font-size:12px;color:var(--muted)">Bölüm yok</span>':eps.map(ep=>'<div class="chip" data-ep="'+escH(ep)+'" onclick="selectRenameEp(this)">'+escH(ep)+'</div>').join('');
-  document.getElementById('rn-input-section').style.display='none';
-  document.getElementById('rn-confirm-btn').style.display='none';
-  document.getElementById('rn-new-name').value='';
-  initTtsChips();
-  initHintModeChips();
-  initFillSrcChips();
-  document.getElementById('rn-sheet').classList.add('show');
-  document.getElementById('rn-overlay').classList.add('show');
+let selectedRenameEp=null; // legacy compat
+
+// ── INLINE RENAME ──
+let selectedRenameEpInline=null;
+window.toggleInlineRename=function(){
+  const el=document.getElementById('inline-rename');
+  const bd=document.getElementById('inline-bulk-delete');
+  if(bd)bd.style.display='none';
+  const isOpen=el.style.display!=='none';
+  el.style.display=isOpen?'none':'block';
+  if(!isOpen){
+    const eps=getEps();
+    document.getElementById('rn-ep-chips-inline').innerHTML=eps.length===0?'<span style="font-size:12px;color:var(--muted)">Bölüm yok</span>':eps.map(ep=>'<div class="chip" data-ep="'+escH(ep)+'" onclick="selectRenameEpInline(this)">'+escH(ep)+'</div>').join('');
+    document.getElementById('rn-input-inline').style.display='none';
+    document.getElementById('rn-new-name-inline').value='';
+    selectedRenameEpInline=null;
+  }
 };
-window.closeRenameSheet=function(){
-  document.getElementById('rn-sheet').classList.remove('show');
-  document.getElementById('rn-overlay').classList.remove('show');
-  selectedRenameEp=null;
-};
-window.selectRenameEp=function(el){
-  document.querySelectorAll('#rn-ep-chips .chip').forEach(c=>c.classList.remove('on'));
+window.selectRenameEpInline=function(el){
+  document.querySelectorAll('#rn-ep-chips-inline .chip').forEach(c=>c.classList.remove('on'));
   el.classList.add('on');
-  selectedRenameEp=el.dataset.ep;
-  document.getElementById('rn-new-name').value=selectedRenameEp;
-  document.getElementById('rn-input-section').style.display='block';
-  document.getElementById('rn-confirm-btn').style.display='block';
+  selectedRenameEpInline=el.dataset.ep;
+  document.getElementById('rn-new-name-inline').value=selectedRenameEpInline;
+  document.getElementById('rn-input-inline').style.display='block';
 };
-window.confirmRename=function(){
-  const newName=document.getElementById('rn-new-name').value.trim();
-  if(!selectedRenameEp){showToast('Önce bölüm seç');return;}
+window.cancelInlineRename=function(){
+  document.getElementById('inline-rename').style.display='none';
+  selectedRenameEpInline=null;
+};
+window.confirmInlineRename=function(){
+  const newName=document.getElementById('rn-new-name-inline').value.trim();
+  if(!selectedRenameEpInline){showToast('Önce bölüm seç');return;}
   if(!newName){showToast('Yeni ad boş olamaz');return;}
-  if(newName===selectedRenameEp){closeRenameSheet();return;}
-  const count=(db.words||[]).filter(w=>w.episode===selectedRenameEp).length;
-  (db.words||[]).forEach(w=>{if(w.episode===selectedRenameEp)w.episode=newName;});
-  saveDb();closeRenameSheet();renderList('all');buildFilterPanel();
+  if(newName===selectedRenameEpInline){cancelInlineRename();return;}
+  const count=(db.words||[]).filter(w=>w.episode===selectedRenameEpInline).length;
+  (db.words||[]).forEach(w=>{if(w.episode===selectedRenameEpInline)w.episode=newName;});
+  saveDb();cancelInlineRename();renderList('all');buildFilterPanel();
   showToast(count+' kelime "'+newName+'" olarak güncellendi');
 };
 
-// ── LIST ──
+// ── INLINE BULK DELETE ──
+window.toggleInlineBulkDelete=function(){
+  const el=document.getElementById('inline-bulk-delete');
+  const rn=document.getElementById('inline-rename');
+  if(rn)rn.style.display='none';
+  const isOpen=el.style.display!=='none';
+  el.style.display=isOpen?'none':'block';
+  if(!isOpen){
+    const eps=getEps();
+    document.getElementById('bd-ep-chips-inline').innerHTML=eps.length===0?'<span style="font-size:12px;color:var(--muted)">Kelime yok</span>':eps.map(ep=>'<div class="chip" data-type="bd-ep-inline" data-val="'+ep+'" onclick="toggleChip(this);updateBdCountInline()">'+escH(ep)+'</div>').join('');
+    document.getElementById('bd-count-inline').textContent='';
+  }
+};
+window.updateBdCountInline=function(){
+  const sel=[...document.querySelectorAll('[data-type="bd-ep-inline"].on')].map(c=>c.dataset.val);
+  const n=sel.length===0?0:(db.words||[]).filter(w=>sel.includes(w.episode)).length;
+  document.getElementById('bd-count-inline').textContent=sel.length===0?'Bölüm seçilmedi':n+' kelime silinecek';
+};
+window.cancelInlineBulkDelete=function(){
+  document.getElementById('inline-bulk-delete').style.display='none';
+};
+window.confirmInlineBulkDelete=function(){
+  const sel=[...document.querySelectorAll('[data-type="bd-ep-inline"].on')].map(c=>c.dataset.val);
+  if(!sel.length){showToast('Önce bölüm seç');return;}
+  const n=(db.words||[]).filter(w=>sel.includes(w.episode)).length;
+  if(!n){showToast('Bu bölümlerde kelime yok');cancelInlineBulkDelete();return;}
+  db.words=(db.words||[]).filter(w=>!sel.includes(w.episode));
+  saveDb();cancelInlineBulkDelete();renderList('all');updateStats();buildFilterPanel();
+  showToast(n+' kelime silindi');
+};
+
+// ── LEGACY stubs (eski kod çağırırsa hata vermesin) ──
+window.openRenameSheet=window.toggleInlineRename;
+window.closeRenameSheet=window.cancelInlineRename;
+window.openBulkDelete=window.toggleInlineBulkDelete;
+window.closeBulkDelete=window.cancelInlineBulkDelete;
+window.openThemeSheet=function(){switchSettingsTab('opts');};
+window.closeThemeSheet=function(){};
+window.updateBdCount=window.updateBdCountInline;
+window.confirmBulkDelete=window.confirmInlineBulkDelete;
 function renderList(mode){
   let words=[...(db.words||[])];
   if(mode==='filtered'){
@@ -1900,18 +1953,10 @@ window.askDelete=function(id,word){pendingDeleteId=id;document.getElementById('c
 window.closeConfirm=function(){pendingDeleteId=null;document.getElementById('confirm-overlay').classList.remove('show');};
 window.confirmDelete=function(){if(!pendingDeleteId)return;db.words=(db.words||[]).filter(w=>String(w.id)!==String(pendingDeleteId));saveDb();window.closeConfirm();renderList('all');updateStats();buildFilterPanel();showToast('Silindi');};
 
-window.openBulkDelete=function(){
-  const row=document.getElementById('bd-ep-chips');const eps=getEps();
-  row.innerHTML=eps.length===0?'<span style="font-size:12px;color:var(--muted)">Kelime yok</span>':eps.map(ep=>'<div class="chip" data-type="bd-ep" data-val="'+ep+'" onclick="toggleChip(this);updateBdCount()">'+escH(ep)+'</div>').join('');
-  document.getElementById('bd-sheet').classList.add('show');document.getElementById('bd-overlay').classList.add('show');
-  window.updateBdCount();
-};
-window.closeBulkDelete=function(){document.getElementById('bd-sheet').classList.remove('show');document.getElementById('bd-overlay').classList.remove('show');};
-window.updateBdCount=function(){const sel=[...document.querySelectorAll('[data-type="bd-ep"].on')].map(c=>c.dataset.val);const n=sel.length===0?0:(db.words||[]).filter(w=>sel.includes(w.episode)).length;document.getElementById('bd-count').textContent=sel.length===0?'Bolum secilmedi':n+' kelime silinecek';};
-window.confirmBulkDelete=function(){const sel=[...document.querySelectorAll('[data-type="bd-ep"].on')].map(c=>c.dataset.val);if(!sel.length){showToast('Once bolum sec');return;}const n=(db.words||[]).filter(w=>sel.includes(w.episode)).length;if(!n){showToast('Bu bolumlerde kelime yok');window.closeBulkDelete();return;}db.words=(db.words||[]).filter(w=>!sel.includes(w.episode));saveDb();window.closeBulkDelete();renderList('all');updateStats();buildFilterPanel();showToast(n+' kelime silindi');};
-
 // ── LIST FILTER ──
 window.openListFilter=function(){
+  const nav=document.querySelector('.nav');
+  if(nav){const r=nav.getBoundingClientRect();document.documentElement.style.setProperty('--nav-bottom',r.bottom+'px');}
   const row=document.getElementById('lf-ep-chips');const eps=getEps();
   row.innerHTML=eps.length===0?'<span style="font-size:12px;color:var(--muted)">Kelime yok</span>':eps.map(ep=>'<div class="chip" data-type="lf-ep" data-val="'+ep+'" onclick="toggleChip(this)">'+escH(ep)+'</div>').join('');
   document.getElementById('lf-sheet').classList.add('show');document.getElementById('lf-overlay').classList.add('show');
@@ -1933,29 +1978,57 @@ window.resetListFilter=function(btn){
   btn.classList.add('active');renderList('all');
 };
 
-// ── SCREEN NAV ──
+// ── SETTINGS SHEET ──
+window.openSettingsSheet=function(){
+  // Nav'ın alt kenarını hesapla
+  const nav=document.querySelector('.nav');
+  if(nav){const r=nav.getBoundingClientRect();document.documentElement.style.setProperty('--nav-bottom',r.bottom+'px');}
+  renderList('all');
+  initHintModeChips();
+  initFillSrcChips();
+  initTtsChips2();
+  document.getElementById('settings-sheet').classList.add('show');
+  document.getElementById('settings-overlay').classList.add('show');
+  document.getElementById('settings-tab').textContent='✕';
+};
+window.closeSettingsSheet=function(){
+  document.getElementById('settings-sheet').classList.remove('show');
+  document.getElementById('settings-overlay').classList.remove('show');
+  document.getElementById('settings-tab').textContent='☰';
+};
+window.toggleSettingsSheet=function(){
+  const open=document.getElementById('settings-sheet').classList.contains('show');
+  if(open) closeSettingsSheet(); else openSettingsSheet();
+};
+window.switchSettingsTab=function(tab){
+  ['list','add','opts'].forEach(t=>{
+    document.getElementById('settings-pane-'+t).style.display=t===tab?'block':'none';
+    document.getElementById('stab-'+t).classList.toggle('active',t===tab);
+  });
+  if(tab==='list') renderList('all');
+};
+
+function initTtsChips2(){
+  ['google','device'].forEach(e=>{
+    const el=document.getElementById('tts-chip-'+e+'2');
+    if(el) el.classList.toggle('on', currentTtsEngine===e);
+  });
+}
+
 window.showScreen=function(name,btn){
   const studyCard=document.getElementById('study-card');
   if(studyCard&&studyCard.style.display!=='none'){saveSession();}
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById('screen-'+name).classList.add('active');
-  const settingsTab=document.getElementById('settings-tab');
-  if(settingsTab){
-    const isSettings=name==='list';
-    settingsTab.classList.toggle('active',isSettings);
-    settingsTab.textContent=isSettings?'✕':'☰';
+  if(name==='study'){
+    document.getElementById('study-home').style.display='block';
+    document.getElementById('study-card').style.display='none';
+    buildFilterPanel();buildWeekChart();updateModeResumeBtns();
   }
-  if(name==='study'){document.getElementById('study-home').style.display='block';document.getElementById('study-card').style.display='none';buildFilterPanel();buildWeekChart();updateModeResumeBtns();}
-  if(name==='list')renderList('all');
   updateStats();
 };
 
 window.showAddScreen=function(){
-  const studyCard=document.getElementById('study-card');
-  if(studyCard&&studyCard.style.display!=='none'){saveSession();}
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('screen-add').classList.add('active');
+  openSettingsSheet();
+  setTimeout(()=>switchSettingsTab('add'),50);
 };
 
 // ── TOAST ──
@@ -1966,6 +2039,9 @@ window.showToast=showToast;
 document.getElementById('confirm-overlay').addEventListener('click',function(e){if(e.target===this)window.closeConfirm();});
 try{window.speechSynthesis&&(window.speechSynthesis.onvoiceschanged=()=>{});}catch(e){}
 initTheme();updateStats();buildWeekChart();buildFilterPanel();updateModeResumeBtns();
+// nav yüksekliğini CSS variable'a yaz
+function updateNavBottom(){const nav=document.querySelector('.nav');if(nav){const r=nav.getBoundingClientRect();document.documentElement.style.setProperty('--nav-bottom',r.bottom+'px');}}
+updateNavBottom();window.addEventListener('resize',updateNavBottom);
 
 </script>
 </body>
