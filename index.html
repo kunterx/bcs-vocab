@@ -1448,70 +1448,56 @@ function buildLetterStates(answer){
   return answer.split('').map(ch=>({char:ch,revealed:false,entered:''}));
 }
 
-// answer may have spaces (e.g. "fell into") — we render word groups
+// answer may have spaces/slashes etc — render from states directly
 function tyBuildBlankRow(answer, states, interactive){
-  const words=[];
-  let wi=0, li=0;
-  // split answer into word groups keeping track of state indices
-  const parts=answer.split(' ');
-  let stateIdx=0;
-  parts.forEach((part,pi)=>{
-    const group={chars:[],stateIndices:[]};
-    for(let c=0;c<part.length;c++){
-      group.chars.push(part[c]);
-      group.stateIndices.push(stateIdx);
-      stateIdx++;
-    }
-    if(pi<parts.length-1) stateIdx++; // skip space state
-    words.push(group);
-  });
-
   const row=document.createElement('div');
   row.className='type-blank-row';
 
-  words.forEach((group,gi)=>{
-    const grpDiv=document.createElement('div');
-    grpDiv.className='type-word-group';
-    group.stateIndices.forEach((si,ci)=>{
-      const st=states[si];
-      // Harf değilse (boşluk, slash vs.) — düz metin olarak göster
-      if(st.isSpace){
-        if(st.char!==' '){
-          // slash, tire gibi görünür karakterler
-          const sp=document.createElement('div');
-          sp.style.cssText='font-size:15px;font-weight:600;color:var(--muted);display:flex;align-items:center;padding:0 2px;';
-          sp.textContent=st.char;
-          grpDiv.appendChild(sp);
-        }
-        return;
-      }
-      const box=document.createElement('div');
-      box.className='type-letter-box';
-      box.dataset.stateIdx=si;
-      if(st.revealed){
-        box.textContent=st.char;
-        box.classList.add('revealed');
-      } else if(st.entered){
-        box.textContent=st.entered;
-      } else {
-        // show underline hint
-        const ul=document.createElement('div');ul.className='type-letter-underline';box.appendChild(ul);
-      }
-      // tap-to-hint mode: clicking a box reveals that letter
-      if(interactive && currentHintMode==='tap' && !st.revealed && !TY.answered){
-        box.style.cursor='pointer';
-        box.addEventListener('click',(e)=>{e.stopPropagation();tyHintTap(si);});
-      }
-      grpDiv.appendChild(box);
-    });
-    row.appendChild(grpDiv);
-    // space between word groups
-    if(gi<words.length-1){
+  // states dizisini grupla: boşluk state'leri grup ayırıcı, diğerleri grup içi
+  let currentGroup=null;
+
+  states.forEach((st,si)=>{
+    if(st.isSpace && st.char===' '){
+      // Boşluk — grubu bitir
+      if(currentGroup&&currentGroup.children.length>0) row.appendChild(currentGroup);
       const sp=document.createElement('div');
       sp.style.cssText='width:10px;flex-shrink:0;';
       row.appendChild(sp);
+      currentGroup=null;
+    } else {
+      if(!currentGroup){
+        currentGroup=document.createElement('div');
+        currentGroup.className='type-word-group';
+      }
+      if(st.isSpace){
+        // slash, tire gibi görünür ama yazılmayan karakterler
+        const sp=document.createElement('div');
+        sp.style.cssText='font-size:15px;font-weight:600;color:var(--muted);display:flex;align-items:center;padding:0 2px;';
+        sp.textContent=st.char;
+        currentGroup.appendChild(sp);
+      } else {
+        // Normal harf — kutu
+        const box=document.createElement('div');
+        box.className='type-letter-box';
+        box.dataset.stateIdx=si;
+        if(st.revealed){
+          box.textContent=st.char;
+          box.classList.add('revealed');
+        } else if(st.entered){
+          box.textContent=st.entered;
+        } else {
+          const ul=document.createElement('div');ul.className='type-letter-underline';box.appendChild(ul);
+        }
+        if(interactive && currentHintMode==='tap' && !st.revealed && !TY.answered){
+          box.style.cursor='pointer';
+          box.addEventListener('click',(e)=>{e.stopPropagation();tyHintTap(si);});
+        }
+        currentGroup.appendChild(box);
+      }
     }
   });
+  // Son grubu ekle
+  if(currentGroup&&currentGroup.children.length>0) row.appendChild(currentGroup);
   return row;
 }
 
