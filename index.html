@@ -487,7 +487,18 @@ body.settings-open .nav{pointer-events:all;background:var(--card) !important;mar
   </div>
 </div>
 
-<!-- CONFIRM DELETE -->
+<!-- DUPLICATE WORDS CONFIRM -->
+<div class="confirm-overlay" id="dup-overlay" style="display:none">
+  <div class="confirm-box">
+    <div class="confirm-title">Bazı kelimeler zaten mevcut</div>
+    <div id="dup-list" style="max-height:160px;overflow-y:auto;margin:10px 0;text-align:left;"></div>
+    <div class="confirm-sub" id="dup-sub"></div>
+    <div class="confirm-btns">
+      <button class="confirm-cancel" onclick="closeDupDialog()">Hayır</button>
+      <button class="confirm-del" style="background:rgba(96,144,208,.15);border-color:rgba(96,144,208,.35);color:var(--blue)" onclick="confirmDupAdd()">Evet, Üstüne Yaz</button>
+    </div>
+  </div>
+</div>
 <div class="confirm-overlay" id="confirm-overlay">
   <div class="confirm-box">
     <div class="confirm-title">Kelimeyi sil?</div>
@@ -1793,6 +1804,9 @@ function tySummary(){
   document.getElementById('ty-back').addEventListener('click',()=>backToHome(true));
   if(pct===100)launchConfetti();
 }
+let _pendingDupWords=[];
+let _pendingNewWords=[];
+
 window.bulkAdd=function(){
   const raw=document.getElementById('f-bulk').value.trim();
   if(!raw){showToast('Once listeyi yapistir');return;}
@@ -1800,10 +1814,19 @@ window.bulkAdd=function(){
   try{words=JSON.parse(raw);}catch(e){showToast('Format hatasi');return;}
   if(!Array.isArray(words)){showToast('[ ] icinde olmali');return;}
   if(!db.words)db.words=[];
-  let added=0;
+
+  const dupes=[];
+  const newWords=[];
   words.forEach(w=>{
     if(!w.word||!w.tr)return;
-    if(db.words.find(x=>x.word.toLowerCase()===w.word.toLowerCase()))return;
+    const existing=db.words.find(x=>x.word.toLowerCase()===w.word.toLowerCase());
+    if(existing) dupes.push({newW:w, existing});
+    else newWords.push(w);
+  });
+
+  // Önce yenileri ekle
+  let added=0;
+  newWords.forEach(w=>{
     db.words.push({
       id:Date.now()+Math.random(),
       word:w.word,tr:w.tr,pos:w.pos||'',
@@ -1817,8 +1840,60 @@ window.bulkAdd=function(){
     });
     added++;
   });
+
+  if(dupes.length>0){
+    // Kaydet ama textarea'yı temizleme henüz
+    if(added>0){saveDb();updateStats();buildFilterPanel();}
+    _pendingDupWords=dupes;
+    _pendingNewWords=newWords;
+    // Dialog'u göster
+    const listEl=document.getElementById('dup-list');
+    listEl.innerHTML=dupes.map(d=>{
+      const ep=d.existing.episode?'<span style="font-size:10px;color:var(--muted);margin-left:6px">'+escH(d.existing.episode)+'</span>':'';
+      return '<div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:13px"><span style="font-weight:700;color:var(--accent)">'+escH(d.newW.word)+'</span>'+ep+'<span style="font-size:11px;color:var(--muted);margin-left:6px">→ '+escH(d.existing.episode||'?')+'</span></div>';
+    }).join('');
+    document.getElementById('dup-sub').textContent=dupes.length+' kelime daha önce yüklenmişti. Üstüne yazılsın mı?';
+    document.getElementById('dup-overlay').style.display='flex';
+  } else {
+    saveDb();document.getElementById('f-bulk').value='';
+    showToast(added+' kelime eklendi');updateStats();buildFilterPanel();
+  }
+};
+
+window.closeDupDialog=function(){
+  document.getElementById('dup-overlay').style.display='none';
+  _pendingDupWords=[];
+  document.getElementById('f-bulk').value='';
+  showToast((_pendingNewWords.length)+' kelime eklendi');
+  _pendingNewWords=[];
+};
+
+window.confirmDupAdd=function(){
+  document.getElementById('dup-overlay').style.display='none';
+  let overwritten=0;
+  _pendingDupWords.forEach(({newW})=>{
+    const idx=db.words.findIndex(x=>x.word.toLowerCase()===newW.word.toLowerCase());
+    if(idx!==-1){
+      // Mevcut kelimeyi güncelle, progress ve id'yi koru
+      const old=db.words[idx];
+      db.words[idx]={
+        ...old,
+        tr:newW.tr,pos:newW.pos||old.pos,
+        register:newW.register||old.register,
+        collocation:newW.collocation||old.collocation,
+        example:newW.example||old.example,
+        example2:newW.example2||old.example2,
+        fill_sentences:newW.fill_sentences||old.fill_sentences,
+        trap:newW.trap||old.trap,
+        episode:newW.episode||old.episode,
+      };
+      overwritten++;
+    }
+  });
+  _pendingDupWords=[];
+  _pendingNewWords=[];
   saveDb();document.getElementById('f-bulk').value='';
-  showToast(added+' kelime eklendi');updateStats();buildFilterPanel();
+  showToast(overwritten+' kelime güncellendi');updateStats();buildFilterPanel();
 };
 
 window.addOne=function(){
