@@ -1407,7 +1407,6 @@ function tyBuildBlankRow(answer, states, interactive){
       // tap-to-hint mode: clicking a box reveals that letter
       if(interactive && currentHintMode==='tap' && !st.revealed && !TY.answered){
         box.style.cursor='pointer';
-        box.style.borderColor='var(--accent2)';
         box.addEventListener('click',(e)=>{e.stopPropagation();tyHintTap(si);});
       }
       grpDiv.appendChild(box);
