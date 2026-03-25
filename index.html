@@ -11,9 +11,7 @@
 [data-theme="white"]{--bg:#ffffff;--surface:#f2f3f7;--card:#e8eaf0;--border:#c8ccd8;--accent:#1a5fb4;--accent2:#6040a8;--text:#141828;--muted:#505870;--green:#1a7840;--red:#b83030;--blue:#1a5fb4;--bb:#e4f4ec;--bbo:#90d0a8;--bbc:#1a7840;}
 [data-theme="night"]{--bg:#0d1117;--surface:#161b22;--card:#1c2330;--border:#30363d;--accent:#58a6ff;--accent2:#bc8cff;--text:#e6edf3;--muted:#8b949e;--green:#3fb950;--red:#f85149;--blue:#58a6ff;--bb:#0d2a1a;--bbo:#1a4a2a;--bbc:#3fb950;}
 [data-theme="amber"]{--bg:#fdf8f0;--surface:#f5ede0;--card:#ede0cc;--border:#d4c0a0;--accent:#c07010;--accent2:#a05818;--text:#2a1e08;--muted:#887060;--green:#287840;--red:#a83030;--blue:#3860a0;--bb:#e8f4e8;--bbo:#90c898;--bbc:#287840;}
-[data-theme="fildisi"]{--bg:#f5f2ec;--surface:#ede8de;--card:#e4ddd0;--border:#ccc4b4;--accent:#5c4a1c;--accent2:#7c5c3c;--text:#28240c;--muted:#8c7460;--green:#1a6430;--red:#a83030;--blue:#3860a0;--bb:#e8f4e8;--bbo:#a0c8a0;--bbc:#1a6430;}
 [data-theme="krem"]{--bg:#fdf8f0;--surface:#f8f0e4;--card:#f0e8d4;--border:#dcd0b8;--accent:#b45309;--accent2:#7c5c3c;--text:#2c2014;--muted:#8c7460;--green:#15803d;--red:#b83030;--blue:#3860a0;--bb:#e8f4e8;--bbo:#a0c8a0;--bbc:#15803d;}
-[data-theme="pastel"]{--bg:#f0f4ff;--surface:#e4ecff;--card:#d8e4ff;--border:#c0d0f0;--accent:#3b5bdb;--accent2:#9775fa;--text:#1e2860;--muted:#6070a8;--green:#2f9e44;--red:#c92a2a;--blue:#3b5bdb;--bb:#e8f4e8;--bbo:#a0c8a0;--bbc:#2f9e44;}
 [data-theme="buz"]{--bg:#e8f0f8;--surface:#dce8f4;--card:#ccdcee;--border:#b0c8e0;--accent:#2563eb;--accent2:#7c3aed;--text:#1a2840;--muted:#5878a0;--green:#16a34a;--red:#c92a2a;--blue:#2563eb;--bb:#e8f4e8;--bbo:#a0c8a0;--bbc:#16a34a;}
 [data-theme="col"]{--bg:#1c1508;--surface:#261e0e;--card:#322814;--border:#4a3c20;--accent:#e8b430;--accent2:#d4944c;--text:#f0dfa8;--muted:#a08840;--green:#7ec850;--red:#d06868;--blue:#6090d0;--bb:#162018;--bbo:#2a4030;--bbc:#7ec850;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -187,7 +185,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 /* Ayarlar açıkken arkaplan kilitle */
 body.settings-open{overflow:hidden;}
 body.settings-open .app{pointer-events:none;}
-body.settings-open .nav{pointer-events:all;background:var(--card) !important;margin-bottom:0 !important;padding-bottom:16px !important;margin-left:-16px !important;margin-right:-16px !important;padding-left:16px !important;padding-right:16px !important;}
+body.settings-open .nav{pointer-events:all;background:var(--card) !important;margin-bottom:0 !important;padding-bottom:16px !important;margin-left:-16px !important;margin-right:-16px !important;margin-top:-20px !important;padding-left:16px !important;padding-right:16px !important;padding-top:calc(20px + env(safe-area-inset-top)) !important;}
 
 /* ADD FORM */
 .add-form{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:12px;}
@@ -218,11 +216,8 @@ body.settings-open .nav{pointer-events:all;background:var(--card) !important;mar
 .theme-swatch.active{border-color:var(--accent);}
 .sw-slate{background:linear-gradient(135deg,#1c1e24 50%,#e0c870 50%);}
 .sw-white{background:linear-gradient(135deg,#fff 50%,#1a5fb4 50%);border:2px solid #c8ccd8;}
-.sw-night{background:linear-gradient(135deg,#0d1117 50%,#58a6ff 50%);border:2px solid #30363d;}
 .sw-amber{background:linear-gradient(135deg,#fdf8f0 50%,#c07010 50%);border:2px solid #d4c0a0;}
-.sw-fildisi{background:linear-gradient(135deg,#f5f2ec 50%,#5c4a1c 50%);border:2px solid #ccc4b4;}
 .sw-krem{background:linear-gradient(135deg,#fdf8f0 50%,#b45309 50%);border:2px solid #dcd0b8;}
-.sw-pastel{background:linear-gradient(135deg,#f0f4ff 50%,#3b5bdb 50%);border:2px solid #c0d0f0;}
 .sw-buz{background:linear-gradient(135deg,#e8f0f8 50%,#2563eb 50%);border:2px solid #b0c8e0;}
 .sw-col{background:linear-gradient(135deg,#1c1508 50%,#e8b430 50%);}
 .theme-name{font-size:11px;color:var(--muted);font-weight:500;}
@@ -419,11 +414,8 @@ body.settings-open .nav{pointer-events:all;background:var(--card) !important;mar
         <div class="theme-grid" style="grid-template-columns:repeat(3,1fr);">
           <div class="theme-item" onclick="setTheme('slate')"><div class="theme-swatch sw-slate" id="sw-slate"></div><div class="theme-name">Gri</div></div>
           <div class="theme-item" onclick="setTheme('white')"><div class="theme-swatch sw-white" id="sw-white"></div><div class="theme-name">Beyaz</div></div>
-          <div class="theme-item" onclick="setTheme('night')"><div class="theme-swatch sw-night" id="sw-night"></div><div class="theme-name">Gece</div></div>
           <div class="theme-item" onclick="setTheme('amber')"><div class="theme-swatch sw-amber" id="sw-amber"></div><div class="theme-name">Amber</div></div>
-          <div class="theme-item" onclick="setTheme('fildisi')"><div class="theme-swatch sw-fildisi" id="sw-fildisi"></div><div class="theme-name">Fil Dişi</div></div>
           <div class="theme-item" onclick="setTheme('krem')"><div class="theme-swatch sw-krem" id="sw-krem"></div><div class="theme-name">Krem</div></div>
-          <div class="theme-item" onclick="setTheme('pastel')"><div class="theme-swatch sw-pastel" id="sw-pastel"></div><div class="theme-name">Pastel</div></div>
           <div class="theme-item" onclick="setTheme('buz')"><div class="theme-swatch sw-buz" id="sw-buz"></div><div class="theme-name">Buz</div></div>
           <div class="theme-item" onclick="setTheme('col')"><div class="theme-swatch sw-col" id="sw-col"></div><div class="theme-name">Çöl Kumu</div></div>
         </div>
