@@ -182,8 +182,12 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .type-score-delta{font-size:11px;color:var(--red);font-weight:600;}
 
 /* SETTINGS SHEET TABS */
-.settings-tab-btn{flex:1;padding:9px 6px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;}
-.settings-tab-btn.active{background:var(--card);color:var(--text);border-color:var(--accent);}
+.settings-tab-btn{flex:1;padding:10px 6px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;}
+.settings-tab-btn.active{background:var(--accent);color:var(--bg);border-color:var(--accent);}
+/* Ayarlar açıkken arkaplan kilitle */
+body.settings-open{overflow:hidden;}
+body.settings-open .app{pointer-events:none;}
+body.settings-open .nav{pointer-events:all;background:var(--card) !important;}
 
 /* ADD FORM */
 .add-form{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:12px;}
@@ -204,7 +208,6 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .sheet{display:none;position:fixed;top:var(--nav-bottom,60px);left:0;right:0;z-index:150;max-width:480px;margin:0 auto;}
 .sheet.show{display:block;}
 .sheet-inner{background:var(--card);border:1px solid var(--border);border-radius:0 0 20px 20px;padding:16px 20px 24px;}
-.sheet-handle{display:none;}
 .sheet-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:16px;}
 .sheet-section{margin-bottom:14px;}
 .sheet-label{font-size:11px;color:var(--muted);margin-bottom:7px;}
@@ -344,14 +347,16 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 <!-- AYARLAR SHEET -->
 <div class="sheet-overlay" id="settings-overlay" onclick="closeSettingsSheet()"></div>
 <div class="sheet" id="settings-sheet" style="max-height:80vh;">
-  <div class="sheet-inner" style="overflow-y:auto;max-height:80vh;padding-bottom:calc(24px + env(safe-area-inset-bottom))">
+  <div class="sheet-inner" style="background:var(--card);overflow-y:auto;max-height:80vh;padding-bottom:calc(24px + env(safe-area-inset-bottom))">
     <div class="sheet-handle"></div>
     <!-- Sekmeler -->
-    <div style="display:flex;gap:6px;margin-bottom:18px;">
+    <div style="display:flex;gap:6px;margin-bottom:4px;">
       <button class="settings-tab-btn active" id="stab-list" onclick="switchSettingsTab('list')">Kelimeler</button>
       <button class="settings-tab-btn" id="stab-add" onclick="switchSettingsTab('add')">Yönet</button>
       <button class="settings-tab-btn" id="stab-opts" onclick="switchSettingsTab('opts')">Seçenekler</button>
     </div>
+    <!-- Sekme altı boşluk — buton kalınlığı kadar -->
+    <div style="height:44px;"></div>
 
     <!-- Kelimeler sekmesi -->
     <div id="settings-pane-list">
@@ -1980,7 +1985,6 @@ window.resetListFilter=function(btn){
 
 // ── SETTINGS SHEET ──
 window.openSettingsSheet=function(){
-  // Nav'ın alt kenarını hesapla
   const nav=document.querySelector('.nav');
   if(nav){const r=nav.getBoundingClientRect();document.documentElement.style.setProperty('--nav-bottom',r.bottom+'px');}
   renderList('all');
@@ -1990,11 +1994,13 @@ window.openSettingsSheet=function(){
   document.getElementById('settings-sheet').classList.add('show');
   document.getElementById('settings-overlay').classList.add('show');
   document.getElementById('settings-tab').textContent='✕';
+  document.body.classList.add('settings-open');
 };
 window.closeSettingsSheet=function(){
   document.getElementById('settings-sheet').classList.remove('show');
   document.getElementById('settings-overlay').classList.remove('show');
   document.getElementById('settings-tab').textContent='☰';
+  document.body.classList.remove('settings-open');
 };
 window.toggleSettingsSheet=function(){
   const open=document.getElementById('settings-sheet').classList.contains('show');
