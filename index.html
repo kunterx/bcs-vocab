@@ -210,8 +210,8 @@ body.settings-open .nav{pointer-events:all;background:var(--card) !important;mar
 /* SHEETS */
 .sheet-overlay{display:none;position:fixed;top:var(--nav-bottom,60px);left:0;right:0;bottom:0;background:rgba(0,0,0,.55);z-index:140;}
 .sheet-overlay.show{display:block;}
-.sheet{display:none;position:fixed;top:var(--nav-bottom,60px);left:0;right:0;z-index:150;max-width:480px;margin:0 auto;}
-.sheet.show{display:block;}
+.sheet{display:none;position:fixed;top:var(--nav-bottom,60px);left:0;right:0;bottom:0;z-index:150;max-width:480px;margin:0 auto;flex-direction:column;}
+.sheet.show{display:flex;}
 .sheet-inner{background:var(--card);border:1px solid var(--border);border-radius:0 0 20px 20px;padding:16px 20px 24px;}
 .sheet-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:16px;}
 .sheet-section{margin-bottom:14px;}
@@ -352,15 +352,36 @@ position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transfor
         <div class="fp-section" style="margin-bottom:0">
           <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;" onclick="toggleDetailSearch()">
             <div class="fp-label" style="margin-bottom:0">Detaylı Ara</div>
-            <span id="detail-search-arrow" style="color:var(--muted);font-size:13px;transition:transform .2s">▼</span>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span id="custom-list-badge" style="display:none;font-size:10px;font-weight:700;background:rgba(224,200,112,.2);color:var(--accent);border-radius:6px;padding:2px 7px;"></span>
+              <span id="detail-search-arrow" style="color:var(--muted);font-size:13px;transition:transform .2s">▼</span>
+            </div>
           </div>
           <div id="detail-search-panel" style="display:none;margin-top:10px;">
-            <div style="display:flex;gap:6px;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 12px;margin-bottom:8px;">
-              <span style="color:var(--muted);font-size:14px;">🔍</span>
+            <!-- Arama kutusu -->
+            <div style="display:flex;gap:6px;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 12px;margin-bottom:10px;">
+              <span style="color:var(--muted);font-size:14px;">&#128269;</span>
               <input id="fp-search-input" type="text" placeholder="İngilizce veya Türkçe ara..." style="flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:14px;font-family:inherit;" oninput="fpSearchWords(this.value)">
-              <button onclick="document.getElementById('fp-search-input').value='';fpSearchWords('');" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0;line-height:1;">✕</button>
+              <button onclick="document.getElementById('fp-search-input').value='';fpSearchWords('');" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0;line-height:1;">&#10005;</button>
             </div>
-            <div id="fp-search-results" style="max-height:240px;overflow-y:auto;display:grid;gap:5px;"></div>
+            <!-- Bölüm chip'leri (ana filtreden bağımsız, sadece listeyi filtreler) -->
+            <div style="margin-bottom:8px;">
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px;">Bölüm</div>
+              <div class="chip-row" id="fp-ep-chips"></div>
+            </div>
+            <!-- Durum filtresi — Tümü toggle'lanabilir -->
+            <div style="margin-bottom:10px;">
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px;">Durum</div>
+              <div class="chip-row">
+                <div class="chip on" data-type="fp-status" data-val="all" onclick="toggleFpStatus(this)">Tümü</div>
+                <div class="chip" data-type="fp-status" data-val="known" onclick="toggleFpStatus(this)">Bilinen</div>
+                <div class="chip" data-type="fp-status" data-val="unknown" onclick="toggleFpStatus(this)">Bilinmeyen</div>
+              </div>
+            </div>
+            <!-- Custom liste özeti -->
+            <div id="fp-custom-info" style="display:none;font-size:12px;color:var(--accent);margin-bottom:8px;font-weight:600;"></div>
+            <!-- Arama + liste sonuçları -->
+            <div id="fp-search-results" style="display:grid;gap:5px;"></div>
           </div>
         </div>
         <button class="start-btn" onclick="startStudy()" style="margin-top:14px;">Çalışmaya Başla</button>
@@ -379,50 +400,60 @@ position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transfor
 
 <!-- AYARLAR SHEET -->
 <div class="sheet-overlay" id="settings-overlay" onclick="closeSettingsSheet()"></div>
-<div class="sheet" id="settings-sheet" style="max-height:80vh;">
-  <div class="sheet-inner" style="background:var(--card);overflow-y:auto;max-height:80vh;padding-bottom:calc(24px + env(safe-area-inset-bottom))">
-    <div class="sheet-handle"></div>
-    <!-- Sekmeler -->
-    <div style="display:flex;gap:6px;margin-bottom:4px;">
+<div class="sheet" id="settings-sheet" style="max-height:calc(100vh - var(--nav-bottom,60px));display:none;flex-direction:column;">
+  <!-- SABİT BAŞLIK: sekmeler -->
+  <div style="background:var(--card);border-bottom:1px solid var(--border);padding:12px 16px 10px;border-radius:0;flex-shrink:0;">
+    <div style="display:flex;gap:6px;">
       <button class="settings-tab-btn active" id="stab-list" onclick="switchSettingsTab('list')">Kelimeler</button>
       <button class="settings-tab-btn" id="stab-add" onclick="switchSettingsTab('add')">Yönet</button>
       <button class="settings-tab-btn" id="stab-opts" onclick="switchSettingsTab('opts')">Seçenekler</button>
     </div>
-    <!-- Sekme altı boşluk — buton kalınlığı kadar -->
-    <div style="height:44px;"></div>
+  </div>
+
+  <!-- KAYAN İÇERİK -->
+  <div style="overflow-y:auto;flex:1;padding-bottom:calc(24px + env(safe-area-inset-bottom));">
 
     <!-- Kelimeler sekmesi -->
     <div id="settings-pane-list">
-      <div style="position:sticky;top:0;z-index:10;background:var(--card);padding-bottom:10px;margin-top:4px;">
+      <!-- Arama + filtreler (liste ile birlikte kayar) -->
+      <div style="padding:12px 16px 0;">
+        <!-- Arama kutusu -->
         <div style="display:flex;gap:6px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 12px;margin-bottom:10px;">
           <span style="color:var(--muted);font-size:14px;">&#128269;</span>
-          <input id="word-search-input" type="text" placeholder="İngilizce veya Turkce ara..." style="flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:14px;font-family:inherit;" oninput="filterWordList(this.value)">
+          <input id="word-search-input" type="text" placeholder="İngilizce veya Türkçe ara..." style="flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:14px;font-family:inherit;" oninput="filterWordList(this.value)">
           <button onclick="document.getElementById('word-search-input').value='';filterWordList('');" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0;line-height:1;">&#10005;</button>
         </div>
+        <!-- Bölüm chip'leri -->
         <div style="margin-bottom:8px;">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px;">Bolum</div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px;">Bölüm</div>
           <div class="chip-row" id="lf-ep-chips-inline"></div>
         </div>
+        <!-- Durum chip'leri — Tümü toggle'lanabilir -->
         <div style="margin-bottom:8px;">
           <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px;">Durum</div>
           <div class="chip-row">
-            <div class="chip on" data-type="lf-status-inline" data-val="all" onclick="toggleLfStatusInline(this)">Tumu</div>
+            <div class="chip on" data-type="lf-status-inline" data-val="all" onclick="toggleLfStatusInline(this)">Tümü</div>
             <div class="chip" data-type="lf-status-inline" data-val="known" onclick="toggleLfStatusInline(this)">Bilinen</div>
             <div class="chip" data-type="lf-status-inline" data-val="unknown" onclick="toggleLfStatusInline(this)">Bilinmeyen</div>
           </div>
         </div>
-        <div style="display:flex;gap:6px;">
+        <!-- Araçlar -->
+        <div style="display:flex;gap:6px;margin-bottom:10px;">
           <button class="lf-btn" onclick="copyListWords()" style="flex:1;text-align:center;">Kopyala</button>
-          <button class="lf-btn" onclick="exportFiltered()" style="flex:1;text-align:center;">Disa Aktar</button>
+          <button class="lf-btn" onclick="exportFiltered()" style="flex:1;text-align:center;">Dışa Aktar</button>
         </div>
+        <!-- Kelime sayısı -->
+        <div style="font-size:12px;color:var(--muted);margin-bottom:6px;" id="list-count">0 kelime</div>
+        <!-- Arama sonuçları (üstte) -->
+        <div id="word-search-results-top" style="display:none;margin-bottom:10px;"></div>
       </div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:6px;" id="list-count">0 kelime</div>
-      <div id="word-search-results-top" style="display:none;margin-bottom:10px;"></div>
-      <div class="word-list" id="word-list"></div>
+      <!-- Ana liste -->
+      <div class="word-list" id="word-list" style="padding:0 16px;"></div>
+      <div style="height:16px;"></div>
     </div>
 
     <!-- Yönet sekmesi -->
-    <div id="settings-pane-add" style="display:none;">
+    <div id="settings-pane-add" style="display:none;padding:12px 16px 0;">
       <!-- JSON Ekle -->
       <div class="add-form">
         <div class="form-title">JSON Dosyasını Yapıştır</div>
@@ -462,7 +493,7 @@ position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transfor
     </div>
 
     <!-- Seçenekler sekmesi -->
-    <div id="settings-pane-opts" style="display:none;">
+    <div id="settings-pane-opts" style="display:none;padding:12px 16px 0;">
       <div class="sheet-section">
         <div class="sheet-label">Tema</div>
         <div class="theme-grid" style="grid-template-columns:repeat(3,1fr);">
@@ -497,7 +528,8 @@ position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transfor
         </div>
       </div>
     </div>
-  </div>
+
+  </div><!-- /kayan içerik -->
 </div>
 
 <!-- LIST FILTER SHEET kaldırıldı - inline filtre kullanılıyor -->
@@ -775,7 +807,12 @@ window.toggleEpChip=function(el){
     fpSearchWords(document.getElementById('fp-search-input').value);
   }
 };
-window.toggleStatus=function(el){document.querySelectorAll('[data-type="status"]').forEach(c=>c.classList.remove('on'));el.classList.add('on');updateSelCount();};
+window.toggleStatus=function(el){
+  const wasOn=el.classList.contains('on');
+  document.querySelectorAll('[data-type="status"]').forEach(c=>c.classList.remove('on'));
+  if(!wasOn) el.classList.add('on');
+  updateSelCount();
+};
 window.toggleLfStatus=function(el){document.querySelectorAll('[data-type="lf-status"]').forEach(c=>c.classList.remove('on'));el.classList.add('on');};
 window.toggleChip=function(el){el.classList.toggle('on');};
 
@@ -2182,13 +2219,12 @@ window.updateBdCount=window.updateBdCountInline;
 window.confirmBulkDelete=window.confirmInlineBulkDelete;
 function renderList(mode){
   let words=[...(db.words||[])];
-  // inline filtreler
-  const selEps=[...document.querySelectorAll('[data-type="lf-status-inline"]')]; // bölüm chips
   const activeEps=[...document.querySelectorAll('#lf-ep-chips-inline .chip.on')].map(c=>c.dataset.val);
   const statusEl=document.querySelector('[data-type="lf-status-inline"].on');
-  const status=statusEl?statusEl.dataset.val:'all';
+  const status=statusEl?statusEl.dataset.val:null; // null = hiç seçili değil → 0 kelime
   if(activeEps.length>0) words=words.filter(w=>activeEps.includes(w.episode));
-  if(status==='known') words=words.filter(w=>isKnownInMode(w,currentMode));
+  if(status===null){ words=[]; } // hiç durum seçili değil
+  else if(status==='known') words=words.filter(w=>isKnownInMode(w,currentMode));
   else if(status==='unknown') words=words.filter(w=>!isKnownInMode(w,currentMode));
   currentListWords=words;
   const searchVal=(document.getElementById('word-search-input')||{}).value||'';
@@ -2196,8 +2232,10 @@ function renderList(mode){
 }
 
 window.toggleLfStatusInline=function(el){
+  const val=el.dataset.val;
+  const wasOn=el.classList.contains('on');
   document.querySelectorAll('[data-type="lf-status-inline"]').forEach(c=>c.classList.remove('on'));
-  el.classList.add('on');
+  if(!wasOn) el.classList.add('on'); // toggle: tekrar basınca kapat
   renderList('filtered');
 };
 
@@ -2362,7 +2400,21 @@ window.showAddScreen=function(){
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2400);}
 window.showToast=showToast;
 
-// ── DETAYLI ARA (Ana Sayfa Filtre Paneli) ──
+// ── DETAYLI ARA — Custom liste ──
+let customListIds=new Set();
+
+function updateCustomBadge(){
+  const badge=document.getElementById('custom-list-badge');
+  const info=document.getElementById('fp-custom-info');
+  if(customListIds.size>0){
+    if(badge){badge.style.display='';badge.textContent=customListIds.size+' seçili';}
+    if(info){info.style.display='';info.textContent=customListIds.size+' kelime custom listede';}
+  } else {
+    if(badge)badge.style.display='none';
+    if(info)info.style.display='none';
+  }
+}
+
 window.toggleDetailSearch=function(){
   const panel=document.getElementById('detail-search-panel');
   const arrow=document.getElementById('detail-search-arrow');
@@ -2370,42 +2422,91 @@ window.toggleDetailSearch=function(){
   panel.style.display=isOpen?'none':'block';
   if(arrow)arrow.style.transform=isOpen?'':'rotate(180deg)';
   if(!isOpen){
+    buildFpEpChips();
+    fpSearchWords(document.getElementById('fp-search-input').value||'');
     document.getElementById('fp-search-input').focus();
-    fpSearchWords('');
+  }
+};
+
+function buildFpEpChips(){
+  const row=document.getElementById('fp-ep-chips');
+  if(!row) return;
+  const eps=getEps();
+  if(!eps.length){row.innerHTML='<span style="font-size:12px;color:var(--muted)">Kelime yok</span>';return;}
+  // Mevcut seçimleri koru
+  const prevOn=new Set([...row.querySelectorAll('.chip.on')].map(c=>c.dataset.val));
+  row.innerHTML=eps.map(ep=>'<div class="chip'+(prevOn.has(ep)?' on':'')+'" data-type="fp-ep" data-val="'+ep+'" onclick="toggleFpEp(this)">'+escH(ep)+'</div>').join('');
+}
+
+window.toggleFpEp=function(el){
+  el.classList.toggle('on');
+  fpSearchWords(document.getElementById('fp-search-input').value||'');
+};
+
+window.toggleFpStatus=function(el){
+  const wasOn=el.classList.contains('on');
+  document.querySelectorAll('[data-type="fp-status"]').forEach(c=>c.classList.remove('on'));
+  if(!wasOn) el.classList.add('on');
+  fpSearchWords(document.getElementById('fp-search-input').value||'');
+};
+
+window.toggleCustomWord=function(id){
+  if(customListIds.has(id)) customListIds.delete(id);
+  else customListIds.add(id);
+  updateCustomBadge();
+  const btn=document.querySelector('[data-custom-id="'+id+'"]');
+  if(btn){
+    const inC=customListIds.has(id);
+    btn.textContent=inC?'−':'+';
+    btn.style.color=inC?'var(--red)':'var(--green)';
+    btn.style.borderColor=inC?'rgba(208,104,104,.4)':'rgba(80,200,128,.4)';
+    btn.style.background=inC?'rgba(208,104,104,.12)':'rgba(80,200,128,.12)';
   }
 };
 
 window.fpSearchWords=function(query){
   const q=(query||'').toLowerCase().trim();
   const results=document.getElementById('fp-search-results');
-  if(!results)return;
-  const selEps=[...document.querySelectorAll('[data-type="ep"].on')].map(c=>c.dataset.val);
-  if(!q && selEps.length===0){
-    results.innerHTML='<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px;">Bölüm seçin veya kelime arayın</div>';
-    return;
-  }
-  let words=(db.words||[]);
+  if(!results) return;
+  const selEps=[...document.querySelectorAll('[data-type="fp-ep"].on')].map(c=>c.dataset.val);
+  const statusEl=document.querySelector('[data-type="fp-status"].on');
+  const status=statusEl?statusEl.dataset.val:null;
+  let words=[...(db.words||[])];
   if(selEps.length>0) words=words.filter(w=>selEps.includes(w.episode));
-  const filtered=q?words.filter(w=>(w.word||'').toLowerCase().includes(q)||(w.tr||'').toLowerCase().includes(q)):words;
-  if(!filtered.length){
-    results.innerHTML='<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px;">Sonuç bulunamadı</div>';
+  if(status===null){ words=[]; }
+  else if(status==='known') words=words.filter(w=>isKnownInMode(w,currentMode));
+  else if(status==='unknown') words=words.filter(w=>!isKnownInMode(w,currentMode));
+  if(!q && selEps.length===0 && status===null){
+    results.innerHTML='<div style="text-align:center;padding:14px;color:var(--muted);font-size:13px;">Bölüm seçin veya kelime arayın</div>';
     return;
   }
-  results.innerHTML=filtered.map(w=>{
-    const d=w.difficulty||0;const dc=d?DC[d]:'var(--muted)';
-    function hl(text){
-      if(!q) return escH(text||'');
-      return escH(text||'').replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<mark style="background:rgba(224,200,112,.3);color:var(--accent);border-radius:2px">$1</mark>');
-    }
+  function wordRow(w,isMatch){
+    const d=w.difficulty||0; const dc=d?DC[d]:'var(--muted)';
+    const inC=customListIds.has(w.id);
+    function hl(t){ if(!q||!isMatch) return escH(t||''); return escH(t||'').replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<mark style="background:rgba(224,200,112,.3);color:var(--accent);border-radius:2px">$1</mark>');}
     return '<div class="word-item" style="font-size:14px;">'
       +'<div style="flex:1;min-width:0"><div class="wi-word" style="font-size:14px">'+hl(w.word)+'</div>'
       +'<div class="wi-meta">'+escH(w.episode||'')+' — '+hl(w.tr)+'</div></div>'
-      +'<div class="wi-right">'
+      +'<div class="wi-right" style="gap:5px;">'
       +(d?'<span class="diff-badge" style="color:'+dc+';background:'+dc+'22">'+d+'</span>':'')
-      +'<button class="wi-speak" onclick="event.stopPropagation();speak(\''+w.word.replace(/'/g,"\\'")+'\')">&#9654;</button>'
-      +'<button onclick="event.stopPropagation();askDelete(\''+w.id+'\',\''+w.word.replace(/'/g,"\\'")+'\');" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:2px 6px;line-height:1;">&times;</button>'
+      +'<button onclick="event.stopPropagation();speak(\''+w.word.replace(/'/g,"\\'")+'\');" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 4px;">&#9654;</button>'
+      +'<button data-custom-id="'+w.id+'" onclick="toggleCustomWord(\''+w.id+'\')" style="min-width:28px;height:28px;border-radius:7px;border:1px solid '+(inC?'rgba(208,104,104,.4)':'rgba(80,200,128,.4)')+';background:'+(inC?'rgba(208,104,104,.12)':'rgba(80,200,128,.12)')+';color:'+(inC?'var(--red)':'var(--green)')+';font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;">'+(inC?'−':'+')+'</button>'
       +'</div></div>';
-  }).join('');
+  }
+  if(q){
+    const matched=words.filter(w=>(w.word||'').toLowerCase().includes(q)||(w.tr||'').toLowerCase().includes(q));
+    const rest=words.filter(w=>!((w.word||'').toLowerCase().includes(q)||(w.tr||'').toLowerCase().includes(q)));
+    let html='';
+    if(matched.length){
+      html='<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);margin-bottom:5px;">Eşleşmeler ('+matched.length+')</div>'+matched.map(w=>wordRow(w,true)).join('');
+      if(rest.length) html+='<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:8px 0 5px;">Diğer</div>'+rest.map(w=>wordRow(w,false)).join('');
+    } else {
+      html='<div style="text-align:center;padding:12px;color:var(--muted);font-size:13px;">Eşleşme yok</div>'+rest.map(w=>wordRow(w,false)).join('');
+    }
+    results.innerHTML=html;
+  } else {
+    results.innerHTML=words.length?words.map(w=>wordRow(w,false)).join(''):'<div style="text-align:center;padding:14px;color:var(--muted);font-size:13px;">Kelime yok</div>';
+  }
 };
 
 // ── INIT ──
