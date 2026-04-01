@@ -248,6 +248,25 @@ body.settings-open .nav{pointer-events:all;background:var(--card) !important;mar
 .skip-badge{font-size:10px;padding:2px 7px;border-radius:5px;background:rgba(160,168,192,.15);color:var(--muted);}
 .wi-speak{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px;}
 .btn-del{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:20px;padding:2px 6px;line-height:1;}
+.word-item-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;transition:border-color .2s;}
+.word-item-wrap.open{border-color:var(--accent);}
+.word-item-wrap .word-item{background:transparent;border:none;border-radius:0;cursor:pointer;}
+.wi-expand{display:none;padding:0 14px 14px 14px;border-top:1px solid var(--border);}
+.word-item-wrap.open .wi-expand{display:block;}
+.wi-section{margin-top:10px;}
+.wi-sec-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:5px;}
+.wi-colloc-text{font-size:13px;color:var(--muted);line-height:1.6;}
+.wi-ex{font-size:13px;font-style:italic;color:var(--muted);border-left:2px solid var(--accent);padding-left:10px;margin-bottom:6px;line-height:1.6;display:flex;align-items:flex-start;}
+.wi-ex span{flex:1;}
+.wi-trap-text{font-size:12px;color:var(--muted);line-height:1.5;}
+.wi-trap-text b{color:var(--red);}
+.wi-more{font-size:12px;color:var(--accent2);text-decoration:underline;cursor:pointer;display:inline-block;margin-top:6px;user-select:none;}
+.wi-qs{display:none;margin-top:8px;}
+.wi-qs.open{display:block;}
+.wi-q{font-size:13px;font-style:italic;color:var(--muted);border-left:2px solid var(--accent2);padding-left:10px;margin-bottom:6px;line-height:1.6;display:flex;align-items:flex-start;}
+.wi-q span{flex:1;}
+.wi-play{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:0 0 0 8px;opacity:.7;flex-shrink:0;line-height:inherit;}
+.wi-play:active{opacity:1;}
 
 /* CONFIRM */
 .confirm-overlay{display:none;position:fixed;top:var(--nav-bottom,60px);left:0;right:0;bottom:0;background:rgba(0,0,0,.65);z-index:200;align-items:flex-end;justify-content:center;}
@@ -262,7 +281,7 @@ body.settings-open .nav{pointer-events:all;background:var(--card) !important;mar
 
 /* WORD SEARCH STICKY */
 #settings-pane-list .word-search-sticky{position:sticky;top:0;z-index:10;background:var(--card);padding-bottom:8px;margin-bottom:0;}
-position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 20px;font-size:13px;color:var(--text);opacity:0;transition:opacity .3s;pointer-events:none;z-index:300;white-space:nowrap;}
+.toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 20px;font-size:13px;color:var(--text);opacity:0;transition:opacity .3s;pointer-events:none;z-index:300;white-space:nowrap;}
 .toast.show{opacity:1;}
 </style>
 </head>
@@ -555,6 +574,24 @@ const dbRef = ref(database, 'vocab');
 
 // ── STATE ──
 const DC = {1:'#50c880',2:'#90c050',3:'#e0c870',4:'#e09040',5:'#d06868'};
+// ── FILL BLANKS HELPER ──
+// answer "a / b / c" formatındaysa parçaları sırayla boşluklara yerleştirir
+function fillBlanks(sentence, answer){
+  var parts=(answer||'').split(/\s*\/\s*/);
+  var i=0;
+  return sentence.replace(/_{2,}/g,function(){
+    return parts[i]!==undefined ? parts[i++] : (parts[parts.length-1]||answer);
+  });
+}
+function fillBlanksHTML(sentence, answer, style){
+  var parts=(answer||'').split(/\s*\/\s*/);
+  var i=0;
+  return escH(sentence).replace(/_{3,}/g,function(){
+    var part=parts[i]!==undefined ? parts[i++] : (parts[parts.length-1]||answer);
+    return '<span style="'+style+'">'+escH(part)+'</span>';
+  });
+}
+
 let db = {words:[], streak:0, lastStudy:null, activity:{}};
 let queue=[], retryIds=[], current=null, flipped=false;
 let sKnown=0, sSkipped=0, sDiff={1:0,2:0,3:0,4:0,5:0}, sTotal=0;
@@ -570,18 +607,21 @@ function saveSession(){
   try{
     if(currentMode==='fill'){
       if(!FZ.queue.length)return;
+      if(FZ.idx>=FZ.queue.length){clearSession('fill');return;}
       const qSer=FZ.queue.map(({w,item})=>({wid:w.id,sentence:item.sentence}));
       localStorage.setItem(sessionKey('fill'),JSON.stringify({
         mode:'fill',queue:qSer,idx:FZ.idx,correct:FZ.correct,wrong:FZ.wrong,history:FZ.history
       }));
     } else if(currentMode==='type'){
       if(!TY.queue.length)return;
+      if(TY.idx>=TY.queue.length){clearSession('type');return;}
       const qSer=TY.queue.map(({w,item})=>({wid:w.id,sentence:item.sentence}));
       localStorage.setItem(sessionKey('type'),JSON.stringify({
         mode:'type',queue:qSer,idx:TY.idx,totalScore:TY.totalScore,history:TY.history
       }));
     } else if(currentMode==='mcq'){
       if(!MQ.queue.length)return;
+      if(MQ.idx>=MQ.queue.length){clearSession('mcq');return;}
       const qSer=MQ.queue.map(w=>w.id);
       localStorage.setItem(sessionKey('mcq'),JSON.stringify({
         mode:'mcq',queue:qSer,idx:MQ.idx,correct:MQ.correct,wrong:MQ.wrong,history:MQ.history
@@ -962,7 +1002,7 @@ function updateModeResumeBtns(){
     if(!btn)return;
     let existing=btn.querySelector('.mode-btn-resume');
     const sess=loadSession(mode);
-    const hasSess=sess&&sess.mode===mode;
+    const hasSess=hasSession(mode);
     if(hasSess){
       let idxDisp='',totalDisp='';
       if(sess.mode==='fill'||sess.mode==='mcq'||sess.mode==='type'){
@@ -1566,8 +1606,8 @@ function fzShow(){
   // Restore detail card if revisiting
   if(hist){
     const ok=hist.ok;
-    const filledSent=escH(item.sentence).replace(/___+/g,`<span style="color:var(--green);font-weight:700;text-decoration:underline">${escH(item.answer)}</span>`);
-    const fullSent=item.sentence.replace(/___+/g,item.answer);
+    const filledSent=fillBlanksHTML(item.sentence,item.answer,'color:var(--green);font-weight:700;text-decoration:underline');
+    const fullSent=fillBlanks(item.sentence,item.answer);
     const label=ok?'Dogru! — '+escH(item.answer):'Yanlis — Dogru: '+escH(item.answer);
     const topHTML='<div class="sent-with-play" style="margin-bottom:12px" id="fz-sent-top-r"></div>';
     const det=buildDetailHTML(w,ok,label,topHTML);
@@ -1603,8 +1643,8 @@ function fzAnswer(chosen,answer,item,w,options){
   const idx=db.words.findIndex(x=>x.id===w.id);
   if(idx!==-1){setProgress(db.words[idx],'fill',ok?'known':'unknown');logActivity();updateStreak();saveDb();}
 
-  const filledSent=escH(item.sentence).replace(/___+/g,`<span style="color:var(--green);font-weight:700;text-decoration:underline">${escH(answer)}</span>`);
-  const fullSent=item.sentence.replace(/___+/g,answer);
+  const filledSent=fillBlanksHTML(item.sentence,answer,'color:var(--green);font-weight:700;text-decoration:underline');
+  const fullSent=fillBlanks(item.sentence,answer);
   const label=ok?'Dogru! — '+escH(answer):'Yanlis — Dogru: '+escH(answer);
   const topHTML='<div class="sent-with-play" style="margin-bottom:12px" id="fz-sent-top"></div>';
   const det=buildDetailHTML(w,ok,label,topHTML);
@@ -2001,8 +2041,8 @@ function tyCheck(){
 
 function tyRenderFeedback(w,item,ok,hintCount,score){
   const label=ok?'✓ Doğru! +'+score+'p':'✗ Yanlış — Doğru: '+escH(item.answer);
-  const filledSent=escH(item.sentence).replace(/___+/g,`<span style="color:${ok?'var(--green)':'var(--red)'};font-weight:700;text-decoration:underline">${escH(item.answer)}</span>`);
-  const fullSent=item.sentence.replace(/___+/g,item.answer);
+    const filledSent=fillBlanksHTML(item.sentence,item.answer,'color:'+(ok?'var(--green)':'var(--red)')+';font-weight:700;text-decoration:underline');
+  const fullSent=fillBlanks(item.sentence,item.answer);
   const topHTML='<div class="sent-with-play" style="margin-bottom:12px" id="ty-sent-top"></div>';
   const det=buildDetailHTML(w,ok,label,topHTML);
   const sentRow=det.querySelector('#ty-sent-top');
@@ -2374,19 +2414,72 @@ function buildInlineEpChips(){
 }
 
 function wordItemHTML(w, q){
-  const d=w.difficulty||0; const dc=d?DC[d]:'var(--muted)';
-  const esc=s=>escH(s||'');
+  var d=w.difficulty||0; var dc=d?DC[d]:'var(--muted)';
+  var esc=function(s){return escH(s||'');};
+  var wid='wix'+String(w.id).replace(/\W/g,'');
   function hl(text){
     if(!q) return esc(text);
     return esc(text).replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<mark style="background:rgba(224,200,112,.3);color:var(--accent);border-radius:2px">$1</mark>');
   }
-  return '<div class="word-item"><div style="flex:1;min-width:0"><div class="wi-word">'+hl(w.word)+'</div><div class="wi-meta">'+esc(w.episode||'')+' — '+hl(w.tr)+'</div></div><div class="wi-right">'+
+  var collocH='';
+  var collocVal=w.collocations||w.collocation||'';
+  if(collocVal){
+    collocH='<div class="wi-section"><div class="wi-sec-label">Collocations</div><div class="wi-colloc-text">'+esc(collocVal)+'</div></div>';
+  }
+  var exH=''; var exArr=[];
+  if(w.example1) exArr.push(w.example1);
+  else if(w.example) exArr.push(w.example);
+  if(w.example2) exArr.push(w.example2);
+  if(exArr.length){
+    var exItems=exArr.slice(0,2).map(function(s){
+      var enc=encodeURIComponent(s);
+      return '<div class="wi-ex"><span>'+esc(s)+'</span><button class="wi-play" onclick="event.stopPropagation();speak(decodeURIComponent(\''+enc+'\')))" >&#9654;</button></div>';
+    }).join('');
+    exH='<div class="wi-section"><div class="wi-sec-label">Örnek Cümleler</div>'+exItems+'</div>';
+  }
+  var trapH='';
+  if(w.trap){
+    trapH='<div class="wi-section"><div class="wi-sec-label">Trap / Dikkat</div><div class="wi-trap-text"><b style="color:var(--red)">⚠</b> '+esc(w.trap)+'</div></div>';
+  }
+  var qsH='';
+  var qArr=[];
+  if(w.fill_sentences&&w.fill_sentences.length){
+    w.fill_sentences.forEach(function(fs){
+      if(fs&&fs.sentence){
+        var ans=esc(fs.answer||w.word||'');
+        var filled=fillBlanksHTML(fs.sentence,fs.answer||w.word||'','color:var(--accent);font-weight:700');
+        var plain=fillBlanks(fs.sentence,fs.answer||w.word||'');
+        qArr.push({h:filled,p:plain});
+      }
+    });
+  }
+  if(qArr.length){
+    var qItems=qArr.map(function(item){
+      var enc=encodeURIComponent(item.p);
+      return '<div class="wi-q"><span>'+item.h+'</span><button class="wi-play" onclick="event.stopPropagation();speak(decodeURIComponent(\''+enc+'\'))">&#9654;</button></div>';
+    }).join('');
+    qsH='<span class="wi-more" onclick="event.stopPropagation();wiMoreToggle(this,\'qs'+wid+'\')">Daha fazla ▸</span><div class="wi-qs" id="qs'+wid+'">'+qItems+'</div>';
+  }
+  var hasX=collocH||exH||trapH||qsH;
+  var expandH=hasX?'<div class="wi-expand">'+collocH+exH+trapH+qsH+'</div>':'';
+  var wordE=w.word.replace(/'/g,"\\'");
+  var idE=String(w.id).replace(/'/g,"\\'");
+  var header='<div class="word-item" onclick="this.closest(\'.word-item-wrap\').classList.toggle(\'open\')">'+
+    '<div style="flex:1;min-width:0"><div class="wi-word">'+hl(w.word)+'</div>'+
+    '<div class="wi-meta">'+esc(w.episode||'')+' — '+hl(w.tr)+'</div></div>'+
+    '<div class="wi-right">'+
     (d?'<span class="diff-badge" style="color:'+dc+';background:'+dc+'22">'+d+'</span>':'')+
-    '<button class="wi-speak" onclick="speak(\''+w.word.replace(/'/g,"\\'")+'\')">&#9654;</button>'+
-    '<button class="btn-del" onclick="askDelete(\''+w.id+'\',\''+w.word.replace(/'/g,"\\'")+'\')">&times;</button>'+
+    '<button class="wi-speak" onclick="event.stopPropagation();speak(\''+w.word.replace(/'/g,"\\'")+'\')" >&#9654;</button>'+
+    '<button class="btn-del" onclick="event.stopPropagation();askDelete(\''+idE+'\',\''+wordE+'\')">&#215;</button>'+
     '</div></div>';
+  return '<div class="word-item-wrap">'+header+expandH+'</div>';
 }
-
+window.wiMoreToggle=function(el,qsId){
+  var qs=document.getElementById(qsId);
+  if(!qs)return;
+  qs.classList.toggle('open');
+  el.textContent=qs.classList.contains('open')?'Daha az ▴':'Daha fazla ▸';
+};
 function copyBtn(){ return '<div style="display:flex;gap:6px;margin:8px 0 4px;"><button class="lf-btn" onclick="copyListWords()" style="flex:1;text-align:center;font-weight:700;">Kopyala</button><button class="lf-btn" onclick="exportFiltered()" style="flex:1;text-align:center;font-weight:700;">Disa Aktar</button></div>'; }
 function copySearchBtn(matched){
   const words=matched;
