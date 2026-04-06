@@ -997,6 +997,50 @@ document.addEventListener('mousedown',e=>{if(!e.target.closest('button'))_quizSw
 document.addEventListener('mouseup',e=>{_quizSwipeEnd(e.clientX);});
 function initQuizSwipe(container,onSwipeLeft,onSwipeRight){_quizSwipeLeft=onSwipeLeft;_quizSwipeRight=onSwipeRight;_quizSwipeActive=false;}
 
+// ── Global klavye navigasyonu (tüm modlar) ──
+document.addEventListener('keydown',function(e){
+  // Settings açıksa veya input/textarea odaklanmışsa yoksay
+  if(document.getElementById('settings-sheet').classList.contains('show'))return;
+  const tag=(document.activeElement||{}).tagName||'';
+  if(tag==='INPUT'||tag==='TEXTAREA')return;
+  // Çalışma ekranı aktif mi?
+  const studyCard=document.getElementById('study-card');
+  if(!studyCard||studyCard.style.display==='none')return;
+
+  if(e.key==='ArrowRight'){
+    e.preventDefault();
+    if(_quizSwipeLeft)_quizSwipeLeft(); // sola swipe = sonraki
+  } else if(e.key==='ArrowLeft'){
+    e.preventDefault();
+    if(_quizSwipeRight)_quizSwipeRight(); // sağa swipe = önceki
+  } else if(e.key==='Backspace'&&currentMode==='type'&&!TY.answered){
+    e.preventDefault();
+    tyKeyPress('⌫');
+  } else if(e.key.length===1&&/^[a-zA-Z]$/.test(e.key)&&currentMode==='type'&&!TY.answered){
+    tyKeyPress(e.key.toLowerCase());
+  } else if(e.key==='Enter'){
+    e.preventDefault();
+    // type modu
+    if(currentMode==='type'){
+      if(!TY.answered){const cb=document.getElementById('ty-check-btn');if(cb)cb.click();}
+      else{TY.idx++;tyShow();}
+    }
+    // fill modu — cevap verilmişse sonraki
+    else if(currentMode==='fill'){
+      if(FZ.answered){FZ.idx++;fzShow();}
+    }
+    // mcq — cevap verilmişse sonraki
+    else if(currentMode==='mcq'){
+      if(MQ.answered){MQ.idx++;mqShow();}
+    }
+    // flashcard modları (en-tr, tr-en) — çevir veya bildim
+    else{
+      if(!flipped){flipCard();}
+      else{answerKnown();}
+    }
+  }
+});
+
 const MQ={queue:[],idx:0,correct:0,wrong:0,answered:false,opts:[],history:{}};
 function startMcq(words){Object.assign(MQ,{queue:shuffle(words),idx:0,correct:0,wrong:0,history:{}});document.getElementById('study-home').style.display='none';document.getElementById('study-card').style.display='block';document.getElementById('prog').style.width='0%';mqShow();}
 function mqProgress(){document.getElementById('prog').style.width=Math.round(MQ.idx/MQ.queue.length*100)+'%';}
@@ -1202,9 +1246,15 @@ function tyShow(){
     blankRow.style.cursor='pointer';
     blankRow.addEventListener('click',()=>{hiddenInput.focus();});
     hiddenInput.addEventListener('keydown',(e)=>{
-      if(TY.answered)return;
-      if(e.key==='Backspace'){e.preventDefault();tyKeyPress('⌫');}
-      else if(e.key==='Enter'){e.preventDefault();const cb=document.getElementById('ty-check-btn');if(cb)cb.click();}
+      if(e.key==='Backspace'){e.preventDefault();if(!TY.answered)tyKeyPress('⌫');return;}
+      if(e.key==='Enter'){
+        e.preventDefault();
+        if(!TY.answered){const cb=document.getElementById('ty-check-btn');if(cb)cb.click();}
+        else{TY.idx++;tyShow();}
+        return;
+      }
+      if(e.key==='ArrowRight'){e.preventDefault();if(_quizSwipeLeft)_quizSwipeLeft();return;}
+      if(e.key==='ArrowLeft'){e.preventDefault();if(_quizSwipeRight)_quizSwipeRight();return;}
     });
     hiddenInput.addEventListener('input',(e)=>{
       if(TY.answered)return;
