@@ -998,6 +998,23 @@ document.addEventListener('mouseup',e=>{_quizSwipeEnd(e.clientX);});
 function initQuizSwipe(container,onSwipeLeft,onSwipeRight){_quizSwipeLeft=onSwipeLeft;_quizSwipeRight=onSwipeRight;_quizSwipeActive=false;}
 
 // ── Global klavye navigasyonu (tüm modlar) ──
+// ── Yön tuşu navigasyonu için seçili şık indexi ──
+let _kbOptIdx=-1;
+function _kbOptHighlight(opts,idx){
+  opts.forEach((b,i)=>b.style.outline=i===idx?'2px solid var(--accent)':'');
+}
+function _kbOptMove(delta){
+  const opts=[...document.querySelectorAll('.quiz-options .quiz-option:not([disabled])')];
+  if(!opts.length)return;
+  if(delta===1){// aşağı: ilk şıktan başla
+    _kbOptIdx=_kbOptIdx<0?0:Math.min(_kbOptIdx+1,opts.length-1);
+  } else {// yukarı: son şıktan başla
+    _kbOptIdx=_kbOptIdx<0?opts.length-1:Math.max(_kbOptIdx-1,0);
+  }
+  _kbOptHighlight(opts,_kbOptIdx);
+  opts[_kbOptIdx].scrollIntoView({block:'nearest'});
+}
+
 document.addEventListener('keydown',function(e){
   // Settings açıksa veya input/textarea odaklanmışsa yoksay
   if(document.getElementById('settings-sheet').classList.contains('show'))return;
@@ -1009,10 +1026,16 @@ document.addEventListener('keydown',function(e){
 
   if(e.key==='ArrowRight'){
     e.preventDefault();
-    if(_quizSwipeLeft)_quizSwipeLeft(); // sola swipe = sonraki
+    if(_quizSwipeLeft)_quizSwipeLeft();
   } else if(e.key==='ArrowLeft'){
     e.preventDefault();
-    if(_quizSwipeRight)_quizSwipeRight(); // sağa swipe = önceki
+    if(_quizSwipeRight)_quizSwipeRight();
+  } else if(e.key==='ArrowDown'&&(currentMode==='fill'||currentMode==='mcq')){
+    e.preventDefault();
+    _kbOptMove(1);
+  } else if(e.key==='ArrowUp'&&(currentMode==='fill'||currentMode==='mcq')){
+    e.preventDefault();
+    _kbOptMove(-1);
   } else if(e.key==='Backspace'&&currentMode==='type'&&!TY.answered){
     e.preventDefault();
     tyKeyPress('⌫');
@@ -1025,15 +1048,22 @@ document.addEventListener('keydown',function(e){
       if(!TY.answered){const cb=document.getElementById('ty-check-btn');if(cb)cb.click();}
       else{TY.idx++;tyShow();}
     }
-    // fill modu — cevap verilmişse sonraki
+    // fill modu
     else if(currentMode==='fill'){
-      if(FZ.answered){FZ.idx++;fzShow();}
+      if(!FZ.answered){
+        // seçili şık varsa onu tıkla
+        const opts=[...document.querySelectorAll('.quiz-options .quiz-option:not([disabled])')];
+        if(_kbOptIdx>=0&&opts[_kbOptIdx]){opts[_kbOptIdx].click();}
+      } else {_kbOptIdx=-1;FZ.idx++;fzShow();}
     }
-    // mcq — cevap verilmişse sonraki
+    // mcq
     else if(currentMode==='mcq'){
-      if(MQ.answered){MQ.idx++;mqShow();}
+      if(!MQ.answered){
+        const opts=[...document.querySelectorAll('.quiz-options .quiz-option:not([disabled])')];
+        if(_kbOptIdx>=0&&opts[_kbOptIdx]){opts[_kbOptIdx].click();}
+      } else {_kbOptIdx=-1;MQ.idx++;mqShow();}
     }
-    // flashcard modları (en-tr, tr-en) — çevir veya bildim
+    // flashcard modları
     else{
       if(!flipped){flipCard();}
       else{answerKnown();}
@@ -1047,6 +1077,7 @@ function mqProgress(){document.getElementById('prog').style.width=Math.round(MQ.
 
 function mqShow(){
   if(MQ.idx>=MQ.queue.length){mqSummary();return;}
+  _kbOptIdx=-1;
   mqProgress();
   const w=MQ.queue[MQ.idx];const all=db.words||[];const area=document.getElementById('study-area');const hist=MQ.history[MQ.idx];
   if(hist){MQ.opts=hist.opts;}else{const others=shuffle(all.filter(x=>x.id!==w.id&&x.tr)).slice(0,3);if(others.length<3){MQ.idx++;mqShow();return;}MQ.opts=shuffle([{t:w.tr,ok:true},...others.map(o=>({t:o.tr,ok:false}))]);}
@@ -1103,6 +1134,7 @@ function fzProgress(){document.getElementById('prog').style.width=Math.round(FZ.
 
 function fzShow(){
   if(FZ.idx>=FZ.queue.length){fzSummary();return;}
+  _kbOptIdx=-1;
   fzProgress();
   const {w,item}=FZ.queue[FZ.idx];const area=document.getElementById('study-area');const hist=FZ.history[FZ.idx];
   FZ.answered=!!hist;
@@ -1250,7 +1282,7 @@ function tyShow(){
       if(e.key==='Enter'){
         e.preventDefault();
         if(!TY.answered){const cb=document.getElementById('ty-check-btn');if(cb)cb.click();}
-        else{TY.idx++;tyShow();}
+        // cevap verildikten sonra enter → global keydown handler halleder
         return;
       }
       if(e.key==='ArrowRight'){e.preventDefault();if(_quizSwipeLeft)_quizSwipeLeft();return;}
@@ -1308,6 +1340,9 @@ function tyCheck(){
   if(oldRow){const newRow=tyBuildBlankRow(item.answer,TY.letterStates,false);const boxes=[];newRow.querySelectorAll('.type-letter-box').forEach(box=>{const si=parseInt(box.dataset.stateIdx);const s=TY.letterStates[si];if(!s||s.isSpace||s.revealed)return;box.textContent=ok?s.char:(s.entered||'_');box.classList.add(ok?'correct-box':(s.entered===s.char?'correct-box':'wrong-box'));if(ok)boxes.push(box);});newRow.id='ty-blank-row';oldRow.replaceWith(newRow);if(ok){boxes.forEach((box,i)=>{setTimeout(()=>{box.classList.add('pop');box.addEventListener('animationend',()=>box.classList.remove('pop'),{once:true});},i*60);});}}
   document.querySelectorAll('#ty-keyboard .kb-key').forEach(k=>k.disabled=true);
   const hiddenInp=document.getElementById('ty-hidden-input');if(hiddenInp)hiddenInp.blur();
+  // Ekran klavyesi modunda klavyeyi ve hint banner'ı gizle
+  const kbEl=document.getElementById('ty-keyboard');if(kbEl)kbEl.style.display='none';
+  const kbHintEl=document.querySelector('#study-area [style*="Klavyeyi"]');if(kbHintEl)kbHintEl.closest('div').style.display='none';
   const hb=document.getElementById('ty-hint-btn');if(hb)hb.disabled=true;
   const cb=document.getElementById('ty-check-btn');if(cb){cb.textContent='Sonraki ▶';cb.onclick=()=>{TY.idx++;tyShow();};}
   const sv=document.getElementById('ty-score-val');if(sv)sv.textContent=TY.totalScore;
