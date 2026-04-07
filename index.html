@@ -252,6 +252,21 @@ body.settings-open .nav{pointer-events:all;background:var(--card) !important;mar
 #settings-pane-list .word-search-sticky{position:sticky;top:0;z-index:10;background:var(--card);padding-bottom:8px;margin-bottom:0;}
 .toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 20px;font-size:13px;color:var(--text);opacity:0;transition:opacity .3s;pointer-events:none;z-index:300;white-space:nowrap;}
 .toast.show{opacity:1;}
+
+/* ── FIX 1: JSON Export action sheet ── */
+.export-action-sheet{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:500;align-items:flex-end;justify-content:center;}
+.export-action-sheet.show{display:flex;}
+.export-action-box{background:var(--card);border:1px solid var(--border);border-radius:20px 20px 0 0;padding:20px 20px calc(28px + env(safe-area-inset-bottom));width:100%;max-width:480px;}
+.export-action-title{font-size:13px;font-weight:700;color:var(--muted);text-align:center;margin-bottom:16px;text-transform:uppercase;letter-spacing:.07em;}
+.export-action-btn{width:100%;padding:15px 20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;font-size:15px;font-weight:600;color:var(--text);cursor:pointer;font-family:inherit;text-align:left;margin-bottom:8px;display:flex;align-items:center;gap:12px;transition:background .15s;}
+.export-action-btn:active{opacity:.75;}
+.export-action-btn:last-of-type{margin-bottom:0;}
+.export-action-cancel{width:100%;padding:14px;background:transparent;border:1px solid var(--border);border-radius:12px;font-size:14px;color:var(--muted);cursor:pointer;font-family:inherit;margin-top:10px;}
+
+/* ── FIX 3: ep score delete confirm ── */
+.ep-score-del-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.65);z-index:600;align-items:flex-end;justify-content:center;}
+.ep-score-del-overlay.show{display:flex;}
+.ep-score-del-box{background:var(--card);border:1px solid var(--border);border-radius:20px 20px 0 0;padding:24px 20px calc(32px + env(safe-area-inset-bottom));width:100%;max-width:480px;text-align:center;}
 </style>
 </head>
 <body>
@@ -387,7 +402,8 @@ body.settings-open .nav{pointer-events:all;background:var(--card) !important;mar
             <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px;" id="list-count">Listem (0)</div>
             <div id="list-action-btns" style="display:none;flex-direction:row;gap:6px;margin-bottom:8px;">
               <button class="lf-btn" onclick="copyListWords()" style="flex:1;text-align:center;font-weight:700;">Kopyala</button>
-              <button class="lf-btn" onclick="exportFiltered()" style="flex:1;text-align:center;font-weight:700;">Disa Aktar</button>
+              <!-- FIX 1: renamed to JSON Export, now opens action sheet -->
+              <button class="lf-btn" onclick="openExportActionSheet('list')" style="flex:1;text-align:center;font-weight:700;">JSON Export</button>
             </div>
             <div class="word-list" id="word-list"></div>
           </div>
@@ -473,6 +489,41 @@ body.settings-open .nav{pointer-events:all;background:var(--card) !important;mar
   </div>
 </div>
 
+<!-- FIX 1: JSON Export action sheet -->
+<div class="export-action-sheet" id="export-action-sheet" onclick="if(event.target===this)closeExportActionSheet()">
+  <div class="export-action-box">
+    <div class="export-action-title">JSON Export</div>
+    <button class="export-action-btn" onclick="doExportDownload()">
+      <span style="font-size:20px">⬇️</span>
+      <div>
+        <div style="font-size:15px;font-weight:600;color:var(--text)">İndir</div>
+        <div style="font-size:12px;color:var(--muted)">JSON dosyası olarak kaydet</div>
+      </div>
+    </button>
+    <button class="export-action-btn" onclick="doExportClipboard()">
+      <span style="font-size:20px">📋</span>
+      <div>
+        <div style="font-size:15px;font-weight:600;color:var(--text)">Clipboard'a Kopyala</div>
+        <div style="font-size:12px;color:var(--muted)">JSON metnini panoya kopyala</div>
+      </div>
+    </button>
+    <button class="export-action-cancel" onclick="closeExportActionSheet()">Vazgeç</button>
+  </div>
+</div>
+
+<!-- FIX 3: ep score delete confirm overlay -->
+<div class="ep-score-del-overlay" id="ep-score-del-overlay" onclick="if(event.target===this)closeEpScoreDelOverlay()">
+  <div class="ep-score-del-box">
+    <div class="confirm-title">Başarı yüzdelerini sil?</div>
+    <div class="confirm-word" id="ep-score-del-ep"></div>
+    <div class="confirm-sub" id="ep-score-del-sub">Bu bölüme ait kaydedilmiş tüm skor sıfırlanacak.</div>
+    <div class="confirm-btns" style="margin-top:4px;">
+      <button class="confirm-cancel" onclick="closeEpScoreDelOverlay()">Vazgeç</button>
+      <button class="confirm-del" onclick="confirmEpScoreDel()">Sil</button>
+    </div>
+  </div>
+</div>
+
 <div class="confirm-overlay" id="dup-overlay" style="display:none">
   <div class="confirm-box">
     <div class="confirm-title">Bazı kelimeler zaten mevcut</div>
@@ -526,8 +577,6 @@ function fillBlanks(sentence, answer){
   });
 }
 
-// ── FIX 1: fillBlanksHTML now accepts optional speakText param ──
-// When speakText is provided, clicking the underlined answer span speaks the full sentence
 function fillBlanksHTML(sentence, answer, style, speakText){
   var parts=(answer||'').split(/\s*\/\s*/);
   var i=0;
@@ -630,11 +679,9 @@ function saveDb(){
   },600);
 }
 
-// ── FIX 2: saveEpScore writes immediately to Firebase, no debounce ──
 function saveEpScore(mode, eps, score){
   if(!db.epScores) db.epScores={};
   eps.forEach(ep=>{ db.epScores[mode+':'+ep]=score; });
-  // Immediate write — no debounce, score must reach Firebase before user navigates away
   set(dbRef, db)
     .then(()=>setSyncDot('ok'))
     .catch(()=>{ setSyncDot('error'); showToast('Skor kaydedilemedi'); });
@@ -736,6 +783,10 @@ function epProgress(ep,mode){
   return Math.round(known/words.length*100);
 }
 
+// ── FIX 3: long-press state for ep chips ──
+let _epLpTimer=null;
+let _epScoreDelPendingEp=null;
+
 function buildFilterPanel(){
   const row=document.getElementById('ep-chips');if(!row)return;
   const eps=getEps();
@@ -743,10 +794,60 @@ function buildFilterPanel(){
   row.innerHTML=eps.map(ep=>{
     const score=getEpScore(currentMode,ep);
     const scoreStr=score!==null?' <span class="ep-pct" style="color:var(--green)">%'+score+'✓</span>':'';
-    return '<div class="ep-chip" data-type="ep" data-val="'+ep+'" onclick="toggleEpChip(this)">'+escH(ep)+scoreStr+'</div>';
+    return '<div class="ep-chip" data-type="ep" data-val="'+ep+'" data-ep="'+escH(ep)+'" onclick="toggleEpChip(this)">'+escH(ep)+scoreStr+'</div>';
   }).join('');
+
+  // Attach long-press listeners for score deletion
+  row.querySelectorAll('.ep-chip').forEach(chip=>{
+    chip.addEventListener('touchstart', _epChipTouchStart, {passive:true});
+    chip.addEventListener('touchend', _epChipTouchEnd, {passive:true});
+    chip.addEventListener('touchmove', _epChipTouchMove, {passive:true});
+    chip.addEventListener('mousedown', _epChipMouseDown);
+    chip.addEventListener('mouseup', _epChipMouseUp);
+    chip.addEventListener('mouseleave', _epChipMouseUp);
+  });
+
   updateSelCount();
 }
+
+function _epChipTouchStart(e){
+  const ep=this.dataset.ep||this.dataset.val;
+  _epLpTimer=setTimeout(()=>{ _epLpTimer=null; openEpScoreDelOverlay(ep); },600);
+}
+function _epChipTouchEnd(e){if(_epLpTimer){clearTimeout(_epLpTimer);_epLpTimer=null;}}
+function _epChipTouchMove(e){if(_epLpTimer){clearTimeout(_epLpTimer);_epLpTimer=null;}}
+function _epChipMouseDown(e){
+  const ep=this.dataset.ep||this.dataset.val;
+  _epLpTimer=setTimeout(()=>{ _epLpTimer=null; openEpScoreDelOverlay(ep); },600);
+}
+function _epChipMouseUp(e){if(_epLpTimer){clearTimeout(_epLpTimer);_epLpTimer=null;}}
+
+function openEpScoreDelOverlay(ep){
+  // Check if there are any scores to delete for this ep across all modes
+  const modes=['fill','mcq','type','en-tr','tr-en'];
+  const hasAnyScore=modes.some(m=>getEpScore(m,ep)!==null);
+  if(!hasAnyScore){showToast('"'+ep+'" için kayıtlı skor yok');return;}
+  _epScoreDelPendingEp=ep;
+  document.getElementById('ep-score-del-ep').textContent=ep;
+  const scores=modes.map(m=>{const s=getEpScore(m,ep);return s!==null?m+': %'+s:null;}).filter(Boolean);
+  document.getElementById('ep-score-del-sub').textContent='Kayıtlı skorlar: '+scores.join(', ');
+  document.getElementById('ep-score-del-overlay').classList.add('show');
+}
+window.closeEpScoreDelOverlay=function(){
+  document.getElementById('ep-score-del-overlay').classList.remove('show');
+  _epScoreDelPendingEp=null;
+};
+window.confirmEpScoreDel=function(){
+  if(!_epScoreDelPendingEp)return;
+  const modes=['fill','mcq','type','en-tr','tr-en'];
+  clearEpScores(currentMode,[_epScoreDelPendingEp]);
+  // clear all modes for this ep
+  if(db.epScores){modes.forEach(m=>{delete db.epScores[m+':'+_epScoreDelPendingEp];});}
+  saveDb();
+  closeEpScoreDelOverlay();
+  buildFilterPanel();
+  showToast('Skorlar silindi');
+};
 
 function syncCustomIdsFromEps(){
   const selEps=[...document.querySelectorAll('[data-type="ep"].on')].map(c=>c.dataset.val);
@@ -997,8 +1098,6 @@ document.addEventListener('mousedown',e=>{if(!e.target.closest('button'))_quizSw
 document.addEventListener('mouseup',e=>{_quizSwipeEnd(e.clientX);});
 function initQuizSwipe(container,onSwipeLeft,onSwipeRight){_quizSwipeLeft=onSwipeLeft;_quizSwipeRight=onSwipeRight;_quizSwipeActive=false;}
 
-// ── Global klavye navigasyonu (tüm modlar) ──
-// ── Yön tuşu navigasyonu için seçili şık indexi ──
 let _kbOptIdx=-1;
 function _kbOptHighlight(opts,idx){
   opts.forEach((b,i)=>b.style.outline=i===idx?'2px solid var(--accent)':'');
@@ -1006,21 +1105,16 @@ function _kbOptHighlight(opts,idx){
 function _kbOptMove(delta){
   const opts=[...document.querySelectorAll('.quiz-options .quiz-option:not([disabled])')];
   if(!opts.length)return;
-  if(delta===1){// aşağı: ilk şıktan başla
-    _kbOptIdx=_kbOptIdx<0?0:Math.min(_kbOptIdx+1,opts.length-1);
-  } else {// yukarı: son şıktan başla
-    _kbOptIdx=_kbOptIdx<0?opts.length-1:Math.max(_kbOptIdx-1,0);
-  }
+  if(delta===1){_kbOptIdx=_kbOptIdx<0?0:Math.min(_kbOptIdx+1,opts.length-1);}
+  else{_kbOptIdx=_kbOptIdx<0?opts.length-1:Math.max(_kbOptIdx-1,0);}
   _kbOptHighlight(opts,_kbOptIdx);
   opts[_kbOptIdx].scrollIntoView({block:'nearest'});
 }
 
 document.addEventListener('keydown',function(e){
-  // Settings açıksa veya input/textarea odaklanmışsa yoksay
   if(document.getElementById('settings-sheet').classList.contains('show'))return;
   const tag=(document.activeElement||{}).tagName||'';
   if(tag==='INPUT'||tag==='TEXTAREA')return;
-  // Çalışma ekranı aktif mi?
   const studyCard=document.getElementById('study-card');
   if(!studyCard||studyCard.style.display==='none')return;
 
@@ -1043,27 +1137,22 @@ document.addEventListener('keydown',function(e){
     tyKeyPress(e.key.toLowerCase());
   } else if(e.key==='Enter'){
     e.preventDefault();
-    // type modu
     if(currentMode==='type'){
       if(!TY.answered){const cb=document.getElementById('ty-check-btn');if(cb)cb.click();}
       else{TY.idx++;tyShow();}
     }
-    // fill modu
     else if(currentMode==='fill'){
       if(!FZ.answered){
-        // seçili şık varsa onu tıkla
         const opts=[...document.querySelectorAll('.quiz-options .quiz-option:not([disabled])')];
         if(_kbOptIdx>=0&&opts[_kbOptIdx]){opts[_kbOptIdx].click();}
       } else {_kbOptIdx=-1;FZ.idx++;fzShow();}
     }
-    // mcq
     else if(currentMode==='mcq'){
       if(!MQ.answered){
         const opts=[...document.querySelectorAll('.quiz-options .quiz-option:not([disabled])')];
         if(_kbOptIdx>=0&&opts[_kbOptIdx]){opts[_kbOptIdx].click();}
       } else {_kbOptIdx=-1;MQ.idx++;mqShow();}
     }
-    // flashcard modları
     else{
       if(!flipped){flipCard();}
       else{answerKnown();}
@@ -1234,6 +1323,7 @@ function tyBuildBlankRow(answer,states,interactive){
 }
 function buildStatesFromAnswer(answer){const states=[];for(let i=0;i<answer.length;i++){const ch=answer[i];const isLetter=/[a-zA-Z]/.test(ch);if(isLetter){states.push({char:ch.toLowerCase(),revealed:false,entered:'',isSpace:false});}else{states.push({char:ch,revealed:true,entered:ch,isSpace:true});}}return states;}
 
+// ── FIX 2: tyShow — keyboard completely hidden for answered questions ──
 function tyShow(){
   if(TY.idx>=TY.queue.length){tySummary();return;}
   tyProgress();
@@ -1252,61 +1342,70 @@ function tyShow(){
   trRevealBtn.addEventListener('click',()=>{trRevealDiv.style.display='block';trRevealBtn.style.display='none';});
   trRevealWrap.append(trRevealBtn,trRevealDiv);
   const actionRow=document.createElement('div');actionRow.className='type-action-row';
-  const hintBtn=document.createElement('button');hintBtn.className='hint-btn';hintBtn.id='ty-hint-btn';hintBtn.innerHTML='Harf Al <span class="hint-cost">-10p</span>';if(TY.answered)hintBtn.disabled=true;if(currentHintMode==='tap')hintBtn.style.display='none';hintBtn.addEventListener('click',tyHint);
+  const hintBtn=document.createElement('button');hintBtn.className='hint-btn';hintBtn.id='ty-hint-btn';hintBtn.innerHTML='Harf Al <span class="hint-cost">-10p</span>';
+  if(TY.answered)hintBtn.disabled=true;
+  if(currentHintMode==='tap')hintBtn.style.display='none';
+  hintBtn.addEventListener('click',tyHint);
   const checkBtn=document.createElement('button');checkBtn.className='check-btn';checkBtn.id='ty-check-btn';checkBtn.textContent=TY.answered?'Sonraki ▶':'Kontrol Et';checkBtn.addEventListener('click',TY.answered?()=>{TY.idx++;tyShow();}:tyCheck);
   actionRow.append(hintBtn,checkBtn);
   const fb=document.createElement('div');fb.id='ty-fb';
-  const kb=tyBuildKeyboard(answer);
+
+  // ── FIX 2: Only build keyboard if NOT answered ──
+  const kb = TY.answered ? null : tyBuildKeyboard(answer);
+
   area.innerHTML='';const spacerTop=document.createElement('div');spacerTop.style.height='28px';const spacerBot=document.createElement('div');spacerBot.style.height='28px';
-  area.append(card,scoreBadge,trRevealWrap,spacerTop,blankRow,spacerBot,actionRow,fb,kb);
+
+  const children=[card,scoreBadge,trRevealWrap,spacerTop,blankRow,spacerBot,actionRow,fb];
+  if(kb) children.push(kb);
+  area.append(...children);
+
   if(hist){
     tyRenderFeedback(w,item,hist.ok,hist.hintCount,hist.score);
-    area.querySelectorAll('.kb-key').forEach(k=>k.disabled=true);
+    // No keyboard to disable — it was never created for answered questions
   }
-  // Cihaz klavyesi modunda: gizli input ekle, ekran klavyesini gizle
-  if(currentKbInput==='device'&&!TY.answered){
-    kb.style.display='none';
-    const hiddenInput=document.createElement('input');
-    hiddenInput.id='ty-hidden-input';
-    hiddenInput.setAttribute('autocomplete','off');
-    hiddenInput.setAttribute('autocorrect','off');
-    hiddenInput.setAttribute('autocapitalize','off');
-    hiddenInput.setAttribute('spellcheck','false');
-    hiddenInput.style.cssText='position:absolute;opacity:0;width:1px;height:1px;pointer-events:none;';
-    area.appendChild(hiddenInput);
-    // Boşluğa dokunulunca klavyeyi aç
-    blankRow.style.cursor='pointer';
-    blankRow.addEventListener('click',()=>{hiddenInput.focus();});
-    hiddenInput.addEventListener('keydown',(e)=>{
-      if(e.key==='Backspace'){e.preventDefault();if(!TY.answered)tyKeyPress('⌫');return;}
-      if(e.key==='Enter'){
-        e.preventDefault();
-        if(!TY.answered){const cb=document.getElementById('ty-check-btn');if(cb)cb.click();}
-        // cevap verildikten sonra enter → global keydown handler halleder
-        return;
-      }
-      if(e.key==='ArrowRight'){e.preventDefault();if(_quizSwipeLeft)_quizSwipeLeft();return;}
-      if(e.key==='ArrowLeft'){e.preventDefault();if(_quizSwipeRight)_quizSwipeRight();return;}
-    });
-    hiddenInput.addEventListener('input',(e)=>{
-      if(TY.answered)return;
-      const val=hiddenInput.value;
-      hiddenInput.value='';
-      if(val){const ch=val[val.length-1].toLowerCase();if(/[a-z]/.test(ch))tyKeyPress(ch);}
-    });
-    // Klavyeyi açmak için küçük bir banner ekle
-    const kbHint=document.createElement('div');
-    kbHint.style.cssText='text-align:center;margin-top:4px;';
-    const kbHintBtn=document.createElement('button');
-    kbHintBtn.style.cssText='font-size:13px;color:var(--accent);background:rgba(224,200,112,.12);border:1px solid rgba(224,200,112,.25);border-radius:8px;padding:8px 20px;cursor:pointer;font-family:inherit;';
-    kbHintBtn.textContent='⌨️ Klavyeyi Aç';
-    kbHintBtn.addEventListener('click',()=>{hiddenInput.focus();});
-    kbHint.appendChild(kbHintBtn);
-    actionRow.after(kbHint);
-    setTimeout(()=>{hiddenInput.focus();},100);
-  } else if(currentKbInput==='device'&&TY.answered){
-    kb.style.display='none';
+
+  // Cihaz klavyesi modunda (sadece cevap verilmemiş sorular için)
+  if(!TY.answered){
+    if(currentKbInput==='device'){
+      if(kb) kb.style.display='none';
+      const hiddenInput=document.createElement('input');
+      hiddenInput.id='ty-hidden-input';
+      hiddenInput.setAttribute('autocomplete','off');
+      hiddenInput.setAttribute('autocorrect','off');
+      hiddenInput.setAttribute('autocapitalize','off');
+      hiddenInput.setAttribute('spellcheck','false');
+      hiddenInput.style.cssText='position:absolute;opacity:0;width:1px;height:1px;pointer-events:none;';
+      area.appendChild(hiddenInput);
+      blankRow.style.cursor='pointer';
+      blankRow.addEventListener('click',()=>{hiddenInput.focus();});
+      hiddenInput.addEventListener('keydown',(e)=>{
+        if(e.key==='Backspace'){e.preventDefault();if(!TY.answered)tyKeyPress('⌫');return;}
+        if(e.key==='Enter'){
+          e.preventDefault();
+          if(!TY.answered){const cb=document.getElementById('ty-check-btn');if(cb)cb.click();}
+          return;
+        }
+        if(e.key==='ArrowRight'){e.preventDefault();if(_quizSwipeLeft)_quizSwipeLeft();return;}
+        if(e.key==='ArrowLeft'){e.preventDefault();if(_quizSwipeRight)_quizSwipeRight();return;}
+      });
+      hiddenInput.addEventListener('input',(e)=>{
+        if(TY.answered)return;
+        const val=hiddenInput.value;
+        hiddenInput.value='';
+        if(val){const ch=val[val.length-1].toLowerCase();if(/[a-z]/.test(ch))tyKeyPress(ch);}
+      });
+      const kbHint=document.createElement('div');
+      kbHint.style.cssText='text-align:center;margin-top:4px;';
+      const kbHintBtn=document.createElement('button');
+      kbHintBtn.style.cssText='font-size:13px;color:var(--accent);background:rgba(224,200,112,.12);border:1px solid rgba(224,200,112,.25);border-radius:8px;padding:8px 20px;cursor:pointer;font-family:inherit;';
+      kbHintBtn.textContent='⌨️ Klavyeyi Aç';
+      kbHintBtn.addEventListener('click',()=>{hiddenInput.focus();});
+      kbHint.appendChild(kbHintBtn);
+      actionRow.after(kbHint);
+      setTimeout(()=>{hiddenInput.focus();},100);
+    }
   }
+
   initQuizSwipe(area,()=>{TY.idx++;tyShow();},()=>{if(TY.idx>0){TY.idx--;tyShow();}});
 }
 
@@ -1338,10 +1437,9 @@ function tyCheck(){
   const idx2=db.words.findIndex(x=>x.id===w.id);if(idx2!==-1){setProgress(db.words[idx2],'type',ok?'known':'unknown');logActivity();updateStreak();saveDb();}
   const oldRow=document.getElementById('ty-blank-row');
   if(oldRow){const newRow=tyBuildBlankRow(item.answer,TY.letterStates,false);const boxes=[];newRow.querySelectorAll('.type-letter-box').forEach(box=>{const si=parseInt(box.dataset.stateIdx);const s=TY.letterStates[si];if(!s||s.isSpace||s.revealed)return;box.textContent=ok?s.char:(s.entered||'_');box.classList.add(ok?'correct-box':(s.entered===s.char?'correct-box':'wrong-box'));if(ok)boxes.push(box);});newRow.id='ty-blank-row';oldRow.replaceWith(newRow);if(ok){boxes.forEach((box,i)=>{setTimeout(()=>{box.classList.add('pop');box.addEventListener('animationend',()=>box.classList.remove('pop'),{once:true});},i*60);});}}
-  document.querySelectorAll('#ty-keyboard .kb-key').forEach(k=>k.disabled=true);
-  const hiddenInp=document.getElementById('ty-hidden-input');if(hiddenInp)hiddenInp.blur();
-  // Ekran klavyesi modunda klavyeyi ve hint banner'ı gizle
+  // ── FIX 2: Hide keyboard on answer ──
   const kbEl=document.getElementById('ty-keyboard');if(kbEl)kbEl.style.display='none';
+  const hiddenInp=document.getElementById('ty-hidden-input');if(hiddenInp)hiddenInp.blur();
   const kbHintEl=document.querySelector('#study-area [style*="Klavyeyi"]');if(kbHintEl)kbHintEl.closest('div').style.display='none';
   const hb=document.getElementById('ty-hint-btn');if(hb)hb.disabled=true;
   const cb=document.getElementById('ty-check-btn');if(cb){cb.textContent='Sonraki ▶';cb.onclick=()=>{TY.idx++;tyShow();};}
@@ -1410,7 +1508,36 @@ window.confirmDupAdd=function(){
   _pendingDupWords=[];_pendingNewWords=[];saveDb();document.getElementById('f-bulk').value='';showToast(overwritten+' kelime güncellendi');updateStats();buildFilterPanel();
 };
 
-window.exportFiltered=function(){if(!currentListWords.length){showToast('Liste boş');return;}try{const blob=new Blob([JSON.stringify(currentListWords,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='bcs_vocab_export.json';a.click();showToast(currentListWords.length+' kelime dışa aktarıldı');}catch(e){showToast('Hata');}};
+// ── FIX 1: Export functions ──
+let _exportContext='list'; // 'list' or 'search'
+
+window.openExportActionSheet=function(ctx){
+  _exportContext=ctx||'list';
+  document.getElementById('export-action-sheet').classList.add('show');
+};
+window.closeExportActionSheet=function(){
+  document.getElementById('export-action-sheet').classList.remove('show');
+};
+window.doExportDownload=function(){
+  closeExportActionSheet();
+  const words=_exportContext==='search'?(window._lastSearchMatched||[]):currentListWords;
+  if(!words.length){showToast('Liste boş');return;}
+  try{const blob=new Blob([JSON.stringify(words,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='bcs_vocab_export.json';a.click();showToast(words.length+' kelime dışa aktarıldı');}catch(e){showToast('Hata');}
+};
+window.doExportClipboard=function(){
+  closeExportActionSheet();
+  const words=_exportContext==='search'?(window._lastSearchMatched||[]):currentListWords;
+  if(!words.length){showToast('Liste boş');return;}
+  const text=JSON.stringify(words,null,2);
+  navigator.clipboard.writeText(text).then(()=>showToast(words.length+' kelime kopyalandı')).catch(()=>showToast('Kopyalama hatası'));
+};
+
+// Keep old exportFiltered for compatibility but route through new sheet
+window.exportFiltered=function(){openExportActionSheet('list');};
+
+window.exportSearchResults=function(){openExportActionSheet('search');};
+
+window.copyListWords=function(){if(!currentListWords.length){showToast('Liste bos');return;}const text=currentListWords.map(w=>w.word).join('\n');navigator.clipboard.writeText(text).then(()=>showToast(currentListWords.length+' kelime kopyalandi')).catch(()=>showToast('Kopyalama hatasi'));};
 
 let currentTtsEngine=localStorage.getItem('bcs_tts_engine')||'google';
 window.selectTts=function(engine,el){currentTtsEngine=engine;localStorage.setItem('bcs_tts_engine',engine);['tts-chip-google','tts-chip-device','tts-chip-google2','tts-chip-device2'].forEach(id=>{const e=document.getElementById(id);if(e)e.classList.remove('on');});const key=engine==='google'?'google':'device';['tts-chip-'+key,'tts-chip-'+key+'2'].forEach(id=>{const e=document.getElementById(id);if(e)e.classList.add('on');});showToast(engine==='google'?'Google sesi aktif':'Cihaz sesi aktif');};
@@ -1474,10 +1601,8 @@ window.filterWordList=function(query){
   if(list){if(!listWords.length){list.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:14px">Kelime yok</div>';}else{list.innerHTML=listWords.map(w=>wordItemHTML(w,'')).join('');}}
 };
 
-function copySearchBtn(matched){return '<div style="display:flex;gap:6px;margin:8px 0 4px;"><button class="lf-btn" onclick="copySearchResults()" style="flex:1;text-align:center;font-weight:700;">Kopyala</button><button class="lf-btn" onclick="exportSearchResults()" style="flex:1;text-align:center;font-weight:700;">Disa Aktar</button></div>';}
+function copySearchBtn(matched){return '<div style="display:flex;gap:6px;margin:8px 0 4px;"><button class="lf-btn" onclick="copySearchResults()" style="flex:1;text-align:center;font-weight:700;">Kopyala</button><button class="lf-btn" onclick="openExportActionSheet(\'search\')" style="flex:1;text-align:center;font-weight:700;">JSON Export</button></div>';}
 window.copySearchResults=function(){const matched=window._lastSearchMatched||[];if(!matched.length){showToast('Sonuc yok');return;}navigator.clipboard.writeText(matched.map(w=>w.word).join('\n')).then(()=>showToast(matched.length+' kelime kopyalandi')).catch(()=>showToast('Hata'));};
-window.exportSearchResults=function(){const matched=window._lastSearchMatched||[];if(!matched.length){showToast('Sonuc yok');return;}try{const blob=new Blob([JSON.stringify(matched,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='arama_sonucu.json';a.click();showToast(matched.length+' kelime disa aktarildi');}catch(e){showToast('Hata');}};
-window.copyListWords=function(){if(!currentListWords.length){showToast('Liste bos');return;}const text=currentListWords.map(w=>w.word).join('\n');navigator.clipboard.writeText(text).then(()=>showToast(currentListWords.length+' kelime kopyalandi')).catch(()=>showToast('Kopyalama hatasi'));};
 
 window.askDelete=function(id,word){pendingDeleteId=id;document.getElementById('confirm-word').textContent=word;document.getElementById('confirm-overlay').classList.add('show');};
 window.closeConfirm=function(){pendingDeleteId=null;document.getElementById('confirm-overlay').classList.remove('show');};
