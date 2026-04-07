@@ -679,9 +679,14 @@ function saveDb(){
   },600);
 }
 
+// ── DÜZELTME 1: sanitizeKey — Firebase key'lerinde yasak karakterleri temizler ──
+// Firebase Realtime Database key'lerinde . # $ [ ] / karakterleri yasak.
+// Arnel1/4, E1S3 gibi bölüm adlarındaki / karakteri kaydetmeyi engelliyordu.
+function sanitizeKey(s){return(s||'').replace(/[.#$[\]/]/g,'_');}
+
 function saveEpScore(mode, eps, score){
   if(!db.epScores) db.epScores={};
-  eps.forEach(ep=>{ db.epScores[mode+':'+ep]=score; });
+  eps.forEach(ep=>{ db.epScores[sanitizeKey(mode+':'+ep)]=score; });
   set(dbRef, db)
     .then(()=>setSyncDot('ok'))
     .catch(()=>{ setSyncDot('error'); showToast('Skor kaydedilemedi'); });
@@ -689,12 +694,12 @@ function saveEpScore(mode, eps, score){
 
 function getEpScore(mode, ep){
   if(!db.epScores) return null;
-  const v=db.epScores[mode+':'+ep];
+  const v=db.epScores[sanitizeKey(mode+':'+ep)];
   return (v!==undefined&&v!==null)?v:null;
 }
 function clearEpScores(mode, eps){
   if(!db.epScores) return;
-  eps.forEach(ep=>{ delete db.epScores[mode+':'+ep]; });
+  eps.forEach(ep=>{ delete db.epScores[sanitizeKey(mode+':'+ep)]; });
   saveDb();
 }
 
@@ -783,9 +788,9 @@ function epProgress(ep,mode){
   return Math.round(known/words.length*100);
 }
 
-// ── FIX 3: long-press state for ep chips ──
+// ── DÜZELTME 2: long-press state — tek ep yerine dizi ──
 let _epLpTimer=null;
-let _epScoreDelPendingEp=null;
+let _epScoreDelPendingEps=[];
 
 function buildFilterPanel(){
   const row=document.getElementById('ep-chips');if(!row)return;
@@ -822,31 +827,47 @@ function _epChipMouseDown(e){
 }
 function _epChipMouseUp(e){if(_epLpTimer){clearTimeout(_epLpTimer);_epLpTimer=null;}}
 
+// ── DÜZELTME 3: openEpScoreDelOverlay — seçili tüm ep'leri işler ──
+// Tek ep'e uzun basınca: o ep + seçili olanlar birlikte hedef olur.
+// Birden fazla ep seçiliyken uzun basınca hepsinin skorunu siler.
 function openEpScoreDelOverlay(ep){
-  // Check if there are any scores to delete for this ep across all modes
   const modes=['fill','mcq','type','en-tr','tr-en'];
-  const hasAnyScore=modes.some(m=>getEpScore(m,ep)!==null);
-  if(!hasAnyScore){showToast('"'+ep+'" için kayıtlı skor yok');return;}
-  _epScoreDelPendingEp=ep;
-  document.getElementById('ep-score-del-ep').textContent=ep;
-  const scores=modes.map(m=>{const s=getEpScore(m,ep);return s!==null?m+': %'+s:null;}).filter(Boolean);
-  document.getElementById('ep-score-del-sub').textContent='Kayıtlı skorlar: '+scores.join(', ');
+  const selEps=[...document.querySelectorAll('[data-type="ep"].on')].map(c=>c.dataset.val);
+  // Seçili ep yoksa sadece uzun basılan ep'i hedef al; varsa seçilileri kullan
+  const targetEps=selEps.length>0?selEps:[ep];
+  const hasAnyScore=targetEps.some(e=>modes.some(m=>getEpScore(m,e)!==null));
+  if(!hasAnyScore){showToast('Seçili bölümler için kayıtlı skor yok');return;}
+  _epScoreDelPendingEps=targetEps;
+  document.getElementById('ep-score-del-ep').textContent=
+    targetEps.length===1?targetEps[0]:targetEps.length+' bölüm seçili';
+  const allScores=[];
+  targetEps.forEach(e=>{modes.forEach(m=>{const s=getEpScore(m,e);if(s!==null)allScores.push(e+'/'+m+': %'+s);});});
+  document.getElementById('ep-score-del-sub').textContent=
+    allScores.length
+      ?'Kayıtlı: '+allScores.slice(0,5).join(', ')+(allScores.length>5?' ...':'')
+      :'Kaydedilmiş skor sıfırlanacak.';
   document.getElementById('ep-score-del-overlay').classList.add('show');
 }
+
 window.closeEpScoreDelOverlay=function(){
   document.getElementById('ep-score-del-overlay').classList.remove('show');
-  _epScoreDelPendingEp=null;
+  _epScoreDelPendingEps=[];
 };
+
 window.confirmEpScoreDel=function(){
-  if(!_epScoreDelPendingEp)return;
+  if(!_epScoreDelPendingEps.length)return;
   const modes=['fill','mcq','type','en-tr','tr-en'];
-  clearEpScores(currentMode,[_epScoreDelPendingEp]);
-  // clear all modes for this ep
-  if(db.epScores){modes.forEach(m=>{delete db.epScores[m+':'+_epScoreDelPendingEp];});}
+  if(db.epScores){
+    _epScoreDelPendingEps.forEach(ep=>{
+      modes.forEach(m=>{ delete db.epScores[sanitizeKey(m+':'+ep)]; });
+    });
+  }
   saveDb();
   closeEpScoreDelOverlay();
   buildFilterPanel();
-  showToast('Skorlar silindi');
+  showToast(_epScoreDelPendingEps.length===1
+    ?'Skorlar silindi'
+    :_epScoreDelPendingEps.length+' bölümün skorları silindi');
 };
 
 function syncCustomIdsFromEps(){
@@ -1361,7 +1382,6 @@ function tyShow(){
 
   if(hist){
     tyRenderFeedback(w,item,hist.ok,hist.hintCount,hist.score);
-    // No keyboard to disable — it was never created for answered questions
   }
 
   // Cihaz klavyesi modunda (sadece cevap verilmemiş sorular için)
