@@ -226,78 +226,6 @@ body.settings-open .nav{pointer-events:all;background:var(--card) !important;mar
 .word-item-wrap .word-item{background:transparent;border:none;border-radius:0;cursor:pointer;}
 .wi-expand{display:none;padding:0 14px 14px 14px;border-top:1px solid var(--border);}
 .word-item-wrap.open .wi-expand{display:block;}
-#study-home{display:grid;grid-template-columns:1fr;gap:14px;align-items:stretch;}
-#study-home>div:first-child{display:none !important;}
-#study-home>.week-chart{grid-column:1/-1;margin-bottom:0;}
-#study-home>.week-chart,.study-home-top .mode-panel,.study-home-top .filter-panel,.study-home-bottom-card{box-shadow:0 12px 30px rgba(0,0,0,.12);}
-.study-home-top{display:grid;grid-template-columns:1fr;gap:14px;align-items:start;background:none;border:none;padding:0;}
-#study-home .mode-panel{margin-bottom:0;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;min-height:0;}
-#study-home .filter-panel{margin-bottom:0;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;min-height:0;}
-#study-home .mode-panel{position:relative;}
-#study-home .mode-panel .mode-panel-title{margin-bottom:12px;}
-#study-home .mode-buttons{display:flex !important;grid-template-columns:none !important;flex-direction:column !important;gap:8px;align-items:stretch;margin:0;overflow:visible;width:100%;padding:0;background:none;border:none;border-radius:0;box-shadow:none;}
-#study-home .mode-buttons::-webkit-scrollbar{display:none;}
-#study-home .mode-btn{width:100% !important;padding:14px 18px;border-radius:14px;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;font-family:inherit;text-align:left;transition:all .15s;display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;column-gap:12px;}
-#study-home .mode-btn:active{opacity:.8;}
-#study-home .mode-btn-icon{font-size:20px;flex-shrink:0;color:var(--text);}
-#study-home .mode-btn-left{display:flex;align-items:center;gap:10px;min-width:0;}
-#study-home .mode-btn-title{font-size:17px;font-weight:600;color:var(--text);}
-#study-home .mode-btn-sub{display:none;}
-#study-home .mode-btn-arrow{display:none;}
-#study-home .mode-btn.on{border-color:var(--accent);background:var(--card);border-left:4px solid var(--accent);box-shadow:none;}
-#study-home .mode-btn.on .mode-btn-title{color:var(--accent);}
-#study-home .mode-btn.on .mode-btn-arrow{color:var(--accent);opacity:1;}
-#study-home .mode-btn-resume{display:flex;flex-direction:row;gap:5px;flex-wrap:nowrap;justify-content:flex-start;align-items:center;min-width:150px;}
-#study-home .resume-btn,#study-home .finish-btn{font-size:10px;font-weight:700;padding:4px 10px;border-radius:6px;border:none;cursor:pointer;font-family:inherit;transition:all .15s;}
-#study-home .resume-btn{background:rgba(224,200,112,.18);color:var(--accent);}
-#study-home .finish-btn{background:rgba(160,168,192,.13);color:var(--muted);}
-#study-home .resume-btn:active,#study-home .finish-btn:active{opacity:.7;}
-#study-home .mode-detail-card{display:none !important;}
-#study-home .filter-panel .fp-title{margin-bottom:12px;padding-left:1ch;font-size:12px;}
-#study-home .filter-panel .fp-section:first-of-type{margin-bottom:0;display:flex;flex-direction:column;flex:1;min-height:0;}
-#study-home .filter-panel{overflow:hidden;}
-#study-home .filter-panel .fp-section > div:empty{display:none;}
-#study-home .filter-panel .chips-scroll{flex:1 1 auto;min-height:40px;overflow-y:auto;overflow-x:hidden;padding-right:4px;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;touch-action:pan-y;}
-#study-home .filter-panel .chips-scroll::-webkit-scrollbar{width:0;height:0;display:none;}
-#ep-chips{display:flex;flex-wrap:wrap;gap:8px;}
-#ep-chips .ep-chip{justify-content:space-between;padding:10px 12px;border-radius:999px;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);box-shadow:none;}
-#ep-chips .ep-chip.on{background:var(--card);border-color:var(--accent);}
-#study-home .filter-panel .select-all-wrap{margin-top:12px;padding-top:6px;display:flex;justify-content:center !important;}
-#study-home .filter-panel #select-all-btn{display:block;margin:0 auto;text-align:center;padding:10px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:var(--card);}
-.study-home-bottom{grid-column:1/-1;display:grid;grid-template-columns:1fr;gap:14px;}
-.study-home-bottom-card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,0)) , var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px;}
-.study-home-bottom .fp-section{margin-bottom:0 !important;border-top:none !important;padding-top:0 !important;}
-.study-home-bottom .start-btn{margin-top:0;padding:15px 18px;font-size:16px;}
-.study-home-bottom .sel-count{margin-top:10px;text-align:center;}
-.study-home-start-card{display:flex;flex-direction:column;justify-content:center;}
-.study-dashboard{display:grid;gap:14px;}
-.dashboard-columns{display:grid;grid-template-columns:minmax(0,0.95fr) minmax(0,1.25fr);gap:14px;align-items:start;}
-.dashboard-col{display:grid;gap:14px;min-width:0;}
-.dashboard-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:16px;min-width:0;}
-.dashboard-card .mode-panel-title,.dashboard-card .fp-title{margin-bottom:12px;}
-.home-week-chart{margin-bottom:0;}
-.home-mode-card .mode-panel{margin-bottom:0;}
-.home-mode-card .mode-btn{background:rgba(255,255,255,.02);}
-.home-list-card{padding-bottom:12px;}
-.home-list-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}
-.home-list-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);}
-.home-list-sub{font-size:12px;color:var(--muted);}
-.home-search-box{display:flex;gap:6px;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 12px;margin-bottom:12px;}
-.home-search-box input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:14px;font-family:inherit;}
-.home-inline-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;}
-.home-inline-scroll{max-height:150px;overflow:auto;padding-right:2px;margin-bottom:10px;}
-.home-list-scroll{max-height:360px;overflow:auto;padding-right:2px;}
-.home-detail-card{padding-top:14px;}
-.home-start-card{display:grid;gap:10px;}
-.home-start-head{display:flex;align-items:center;justify-content:space-between;gap:12px;}
-.home-start-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);}
-.home-start-sub{font-size:13px;color:var(--muted);}
-@media (max-width:860px){
-  .study-home-top,.study-home-bottom{grid-template-columns:1fr;gap:12px;}
-  #study-home>.week-chart,.study-home-bottom{grid-column:1;}
-  .dashboard-columns{grid-template-columns:1fr;}
-  .home-list-scroll,.home-inline-scroll{max-height:none;}
-}
 .wi-section{margin-top:10px;}
 .wi-sec-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:5px;}
 .wi-colloc-text{font-size:13px;color:var(--muted);line-height:1.6;}
@@ -364,7 +292,6 @@ body.settings-open .nav{pointer-events:all;background:var(--card) !important;mar
         <div class="wc-title">Son 7 gun</div>
         <div class="wc-bars" id="wc-bars"></div>
       </div>
-      <div class="study-home-top">
       <div class="mode-panel">
         <div class="mode-panel-title">Mod</div>
         <div class="mode-buttons">
@@ -406,9 +333,10 @@ body.settings-open .nav{pointer-events:all;background:var(--card) !important;mar
         </div>
       </div>
       <div class="filter-panel">
-        <div class="fp-title">Kelime</div>
+        <div class="fp-title">Filtre</div>
         <div class="fp-section">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">
+            <div class="fp-label" style="margin-bottom:0;">Kelime Listesi</div>
             <button onclick="toggleSelectAll(this)" id="select-all-btn" style="font-size:11px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-family:inherit;text-decoration:underline;padding:0;">Tümünü Seç</button>
           </div>
           <div class="chip-row" id="ep-chips"></div>
@@ -433,8 +361,6 @@ body.settings-open .nav{pointer-events:all;background:var(--card) !important;mar
         <button class="start-btn" onclick="startStudy()" style="margin-top:14px;">Çalışmaya Başla</button>
         <div class="sel-count" id="sel-count"></div>
       </div>
-      </div>
-      <div class="study-home-bottom" id="study-home-bottom"></div>
     </div>
     <div id="study-card" style="display:none">
       <div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%"></div></div>
@@ -847,10 +773,8 @@ window.selectMode=function(el){
   document.querySelectorAll('.mode-btn').forEach(c=>c.classList.remove('on'));
   el.classList.add('on');
   currentMode=el.dataset.mode;
-  renderModeDetail(currentMode);
   buildFilterPanel();
   updateSelCount();
-  requestAnimationFrame(()=>requestAnimationFrame(syncStudyHomeTopHeight));
 };
 
 function getProgress(w,mode){if(!w.progress)return null;return w.progress[mode]||null;}
@@ -867,142 +791,11 @@ function epProgress(ep,mode){
 // ── DÜZELTME 2: long-press state — tek ep yerine dizi ──
 let _epLpTimer=null;
 let _epScoreDelPendingEps=[];
-const MODE_META={
-  'fill':{icon:'\uD83D\uDCDD',label:'Bosluk',title:'Bosluk Doldur',sub:'Cumledeki bosluklari tamamla'},
-  'mcq':{icon:'\uD83C\uDCCF',label:'Test',title:'Coktan Secmeli',sub:'Ingilizce kelimeyi dogru anlamla eslestir'},
-  'type':{icon:'\u270D\uFE0F',label:'Yaz',title:'Yazarak Calis',sub:'Kelimeyi harf harf yazarak tamamla'},
-  'en-tr':{icon:'\uD83D\uDD01',label:'En-Tr',title:'Ingilizce \u2192 Turkce',sub:'Kelimeyi gor, anlamini Turkce olarak bul'},
-  'tr-en':{icon:'\uD83D\uDD01',label:'Tr-En',title:'Turkce \u2192 Ingilizce',sub:'Anlami gor, Ingilizce kelimeyi bul'}
-};
-
-function ensureModeDetailCard(){
-  const panel=document.querySelector('#study-home .mode-panel');
-  if(!panel)return;
-  let card=panel.querySelector('#mode-detail-card');
-  if(!card){
-    card=document.createElement('div');
-    card.className='mode-detail-card';
-    card.id='mode-detail-card';
-    card.innerHTML='<div class="mode-detail-pointer"></div><div class="mode-detail-row"><div class="mode-detail-copy"><div class="mode-detail-head"><div class="mode-detail-icon" id="mode-detail-icon"></div><div class="mode-detail-title" id="mode-detail-title"></div></div><div class="mode-detail-sub" id="mode-detail-sub"></div></div><div class="mode-detail-actions" id="mode-detail-actions"></div></div>';
-    panel.appendChild(card);
-  }
-  return card;
-}
-
-function getPremiumModeMeta(mode){
-  const map={
-    'fill':{icon:'📝',label:'Bosluk',title:'Bosluk Doldur',sub:'Cumledeki bosluklari tamamla',anchor:'10%'},
-    'mcq':{icon:'🃏',label:'Test',title:'Coktan Secmeli',sub:'Ingilizce kelimeyi dogru anlamla eslestir',anchor:'30%'},
-    'type':{icon:'✍️',label:'Yaz',title:'Yazarak Calis',sub:'Kelimeyi harf harf yazarak tamamla',anchor:'50%'},
-    'en-tr':{icon:'🔁',label:'En-Tr',title:'Ingilizce → Turkce',sub:'Kelimeyi gor, anlamini Turkce olarak bul',anchor:'70%'},
-    'tr-en':{icon:'🔁',label:'Tr-En',title:'Turkce → Ingilizce',sub:'Anlami gor, Ingilizce kelimeyi bul',anchor:'90%'}
-  };
-  return map[mode]||null;
-}
-
-function simplifyModeButtons(){
-  const buttons=document.querySelectorAll('#study-home .mode-btn');
-  if(!buttons.length)return;
-  buttons.forEach(btn=>{
-    const mode=btn.dataset.mode;
-    const meta=(typeof MODE_META!=='undefined'?MODE_META[mode]:null)||getPremiumModeMeta(mode);
-    if(!meta)return;
-    btn.dataset.title=meta.title;
-    btn.dataset.sub=meta.sub;
-    btn.innerHTML='<div style="display:flex;align-items:center;gap:10px;min-width:0;"><span class="mode-btn-icon">'+meta.icon+'</span><div class="mode-btn-left"><span class="mode-btn-title">'+meta.title+'</span><span class="mode-btn-sub">'+meta.sub+'</span></div></div><div class="mode-btn-resume" data-mode-resume></div><span class="mode-btn-arrow">›</span>';
-  });
-  updateModeResumeBtns();
-}
-
-function renderModeDetail(mode){
-  const meta=(typeof MODE_META!=='undefined'?MODE_META[mode]:null)||getPremiumModeMeta(mode);
-  const iconEl=document.getElementById('mode-detail-icon');
-  const titleEl=document.getElementById('mode-detail-title');
-  const subEl=document.getElementById('mode-detail-sub');
-  const card=document.getElementById('mode-detail-card');
-  const panel=document.querySelector('#study-home .mode-panel');
-  if(panel)panel.dataset.mode=mode;
-  if(!meta||!iconEl||!titleEl||!subEl)return;
-  iconEl.textContent=meta.icon||'';
-  titleEl.textContent=meta.title;
-  subEl.textContent=meta.sub;
-  if(card)card.style.setProperty('--mode-anchor',meta.anchor||'10%');
-  updateModeResumeBtns();
-}
-
-function organizeStudyHomeLayout(){
-  const home=document.getElementById('study-home');
-  const filter=home?home.querySelector('.filter-panel'):null;
-  const bottom=document.getElementById('study-home-bottom');
-  if(!home||!filter||!bottom)return;
-  const sections=filter.querySelectorAll('.fp-section');
-  const detailSection=sections[1];
-  const startBtn=filter.querySelector('.start-btn');
-  const selCount=filter.querySelector('#sel-count');
-  const chips=filter.querySelector('#ep-chips');
-  const selectAllBtn=filter.querySelector('#select-all-btn');
-  if(chips){
-    let chipsScroll=filter.querySelector('.chips-scroll');
-    if(!chipsScroll){
-      chipsScroll=document.createElement('div');
-      chipsScroll.className='chips-scroll';
-      chips.parentElement.insertBefore(chipsScroll,chips);
-    }
-    if(chips.parentElement!==chipsScroll)chipsScroll.appendChild(chips);
-  }
-  if(chips&&selectAllBtn){
-    const oldRow=selectAllBtn.parentElement;
-    let wrap=filter.querySelector('.select-all-wrap');
-    if(!wrap){
-      wrap=document.createElement('div');
-      wrap.className='select-all-wrap';
-      wrap.style.cssText='display:flex;justify-content:flex-end;';
-      const host=filter.querySelector('.chips-scroll')||chips;
-      host.insertAdjacentElement('afterend',wrap);
-    }
-    if(selectAllBtn.parentElement!==wrap)wrap.appendChild(selectAllBtn);
-    if(oldRow&&oldRow!==wrap&&!oldRow.querySelector('button'))oldRow.remove();
-  }
-  let detailCard=bottom.querySelector('.study-home-detail-card');
-  if(!detailCard){
-    detailCard=document.createElement('div');
-    detailCard.className='study-home-bottom-card study-home-detail-card';
-    bottom.appendChild(detailCard);
-  }
-  let startCard=bottom.querySelector('.study-home-start-card');
-  if(!startCard){
-    startCard=document.createElement('div');
-    startCard.className='study-home-bottom-card study-home-start-card';
-    bottom.appendChild(startCard);
-  }
-  if(startBtn&&startBtn.parentElement!==startCard)startCard.appendChild(startBtn);
-  if(selCount&&selCount.parentElement!==startCard)startCard.appendChild(selCount);
-  if(detailSection&&detailSection.parentElement!==detailCard)detailCard.appendChild(detailSection);
-  bottom.appendChild(startCard);
-  bottom.appendChild(detailCard);
-  simplifyModeButtons();
-}
-
-function syncStudyHomeTopHeight(){
-  const mode=document.querySelector('#study-home .mode-panel');
-  const filter=document.querySelector('#study-home .filter-panel');
-  if(!mode||!filter)return;
-  if(window.innerWidth<=860){
-    filter.style.maxHeight='';
-    return;
-  }
-  filter.style.maxHeight=mode.offsetHeight+'px';
-}
-
-function queueStudyHomeTopHeightSync(){
-  requestAnimationFrame(()=>requestAnimationFrame(syncStudyHomeTopHeight));
-}
 
 function buildFilterPanel(){
-  organizeStudyHomeLayout();
   const row=document.getElementById('ep-chips');if(!row)return;
   const eps=getEps();
-  if(!eps.length){row.innerHTML='<span style="font-size:12px;color:var(--muted)">Kelime yok</span>';updateSelCount();queueStudyHomeTopHeightSync();return;}
+  if(!eps.length){row.innerHTML='<span style="font-size:12px;color:var(--muted)">Kelime yok</span>';updateSelCount();return;}
   row.innerHTML=eps.map(ep=>{
     const score=getEpScore(currentMode,ep);
     const scoreStr=score!==null?' <span class="ep-pct" style="color:var(--green)">%'+score+'✓</span>':'';
@@ -1020,7 +813,6 @@ function buildFilterPanel(){
   });
 
   updateSelCount();
-  queueStudyHomeTopHeightSync();
 }
 
 function _epChipTouchStart(e){
@@ -1139,26 +931,16 @@ function updateModeResumeBtns(){
   const modes=['fill','mcq','en-tr','tr-en','type'];
   modes.forEach(mode=>{
     const btn=document.querySelector('.mode-btn[data-mode="'+mode+'"]');if(!btn)return;
-    const hasSess=hasSession(mode);
-    const actions=btn.querySelector('[data-mode-resume]');
+    let existing=btn.querySelector('.mode-btn-resume');
+    const sess=loadSession(mode);const hasSess=hasSession(mode);
     if(hasSess){
-      btn.dataset.hasSession='1';
-      btn.title='Kayitli oturum var';
-      let sess=loadSession(mode),label='';
-      if(sess){
-        let idxDisp='',totalDisp='';
-        if(sess.mode==='fill'||sess.mode==='mcq'||sess.mode==='type'){idxDisp=sess.idx;totalDisp=sess.queue.length;}
-        else{const done=sess.sTotal-(sess.queue?sess.queue.length:0)-(sess.currentId?1:0);idxDisp=Math.max(0,done);totalDisp=sess.sTotal;}
-        label=totalDisp?' <span style="opacity:.7;font-size:9px">'+idxDisp+'/'+totalDisp+'</span>':'';
-      }
-      if(actions)actions.innerHTML='<button class="resume-btn" onclick="event.stopPropagation();resumeMode(\''+mode+'\')">&#9654; Devam Et'+label+'</button><button class="finish-btn" onclick="event.stopPropagation();discardSession(\''+mode+'\')">&#10005; Sil</button>';
-    } else {
-      delete btn.dataset.hasSession;
-      btn.title='';
-      if(actions)actions.innerHTML='';
-    }
+      let idxDisp='',totalDisp='';
+      if(sess.mode==='fill'||sess.mode==='mcq'||sess.mode==='type'){idxDisp=sess.idx;totalDisp=sess.queue.length;}else{const done=sess.sTotal-(sess.queue?sess.queue.length:0)-(sess.currentId?1:0);idxDisp=Math.max(0,done);totalDisp=sess.sTotal;}
+      const label=totalDisp?idxDisp+'/'+totalDisp:'';
+      if(!existing){existing=document.createElement('div');existing.className='mode-btn-resume';btn.querySelector('.mode-btn-left').appendChild(existing);}
+      existing.innerHTML='<button class="resume-btn" onclick="event.stopPropagation();resumeMode(&quot;'+mode+'&quot;)">▶ Devam Et'+(label?' <span style="opacity:.7;font-size:9px">'+label+'</span>':'')+'</button><button class="finish-btn" onclick="event.stopPropagation();discardSession(&quot;'+mode+'&quot;)">✕ Sil</button>';
+    } else {if(existing)existing.remove();}
   });
-  queueStudyHomeTopHeightSync();
 }
 
 window.resumeMode=function(mode){
@@ -1864,7 +1646,7 @@ document.getElementById('confirm-overlay').addEventListener('click',function(e){
 try{window.speechSynthesis&&(window.speechSynthesis.onvoiceschanged=()=>{});}catch(e){}
 initTheme();updateStats();buildWeekChart();buildFilterPanel();updateModeResumeBtns();
 function updateNavBottom(){const nav=document.querySelector('.nav');if(nav){const r=nav.getBoundingClientRect();document.documentElement.style.setProperty('--nav-bottom',r.bottom+'px');}}
-updateNavBottom();window.addEventListener('resize',()=>{updateNavBottom();syncStudyHomeTopHeight();});
+updateNavBottom();window.addEventListener('resize',updateNavBottom);
 </script>
 </body>
 </html>
